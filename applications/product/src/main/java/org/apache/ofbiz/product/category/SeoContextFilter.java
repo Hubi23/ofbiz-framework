@@ -67,7 +67,7 @@ public class SeoContextFilter implements Filter {
     private String allowedPaths = "";
     private String redirectPath = "";
     private String errorCode = "";
-    private List<String> allowedPathList = new ArrayList<String>();
+    private List<String> allowedPathList = new ArrayList<>();
 
     public void init(FilterConfig config) throws ServletException {
         this.config = config;
@@ -103,7 +103,7 @@ public class SeoContextFilter implements Filter {
 
         Map<String, String[]> parameterMap =request.getParameterMap();
         if (!parameterMap.isEmpty()) {
-            List<BasicNameValuePair> params = new ArrayList<BasicNameValuePair>();
+            List<BasicNameValuePair> params = new ArrayList<>();
             request.getParameterMap().forEach((name, values) -> {
                 for(String value : values) {
                     params.add(new BasicNameValuePair(name, value));

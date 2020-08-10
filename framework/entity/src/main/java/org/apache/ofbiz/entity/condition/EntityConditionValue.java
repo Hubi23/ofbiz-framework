@@ -100,7 +100,7 @@ public abstract class EntityConditionValue extends EntityConditionBase {
     public abstract EntityConditionValue freeze();
 
     public void toString(StringBuilder sb) {
-        addSqlValue(sb, null, new ArrayList<EntityConditionParam>(), false, null);
+        addSqlValue(sb, null, new ArrayList<>(), false, null);
     }
 
     @Override

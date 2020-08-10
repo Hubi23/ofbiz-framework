@@ -79,7 +79,7 @@ public class UtilCodecTests {
         assertEquals(label + "(encoder):encode", wanted, encoder.encode(toEncode));
     }
     private static void checkStringForHtmlStrictNone_test(String label, String fixed, String input, String... wantedMessages) {
-        List<String> gottenMessages = new ArrayList<String>();
+        List<String> gottenMessages = new ArrayList<>();
         assertEquals(label, fixed, UtilCodec.checkStringForHtmlStrictNone(label, input, gottenMessages, new Locale("test")));
         assertEquals(label, Arrays.asList(wantedMessages), gottenMessages);
     }

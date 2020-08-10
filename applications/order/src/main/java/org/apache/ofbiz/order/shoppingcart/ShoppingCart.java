@@ -4360,12 +4360,12 @@ public class ShoppingCart implements Iterable<ShoppingCartItem>, Serializable {
                 }
 
                 if (! dropShipItems.containsKey(supplierPartyId)) {
-                    dropShipItems.put(supplierPartyId, new HashMap<ShoppingCartItem, Map<Integer, BigDecimal>>());
+                    dropShipItems.put(supplierPartyId, new HashMap<>());
                 }
                 Map<ShoppingCartItem, Map<Integer, BigDecimal>> supplierCartItems = UtilGenerics.checkMap(dropShipItems.get(supplierPartyId));
 
                 if (! supplierCartItems.containsKey(cartItem)) {
-                    supplierCartItems.put(cartItem, new HashMap<Integer, BigDecimal>());
+                    supplierCartItems.put(cartItem, new HashMap<>());
                 }
                 Map<Integer, BigDecimal> cartItemGroupQuantities = UtilGenerics.checkMap(supplierCartItems.get(cartItem));
 

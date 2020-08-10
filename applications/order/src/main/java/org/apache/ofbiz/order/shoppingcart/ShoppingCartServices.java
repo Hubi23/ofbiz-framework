@@ -661,7 +661,7 @@ public class ShoppingCartServices {
                 cart.addProductPromoCode(productPromoCode, dispatcher);
             }
             for (GenericValue productPromoUse: orh.getProductPromoUse()) {
-                cart.addProductPromoUse(productPromoUse.getString("productPromoId"), productPromoUse.getString("productPromoCodeId"), productPromoUse.getBigDecimal("totalDiscountAmount"), productPromoUse.getBigDecimal("quantityLeftInActions"), new HashMap<ShoppingCartItem, BigDecimal>());
+                cart.addProductPromoUse(productPromoUse.getString("productPromoId"), productPromoUse.getString("productPromoCodeId"), productPromoUse.getBigDecimal("totalDiscountAmount"), productPromoUse.getBigDecimal("quantityLeftInActions"), new HashMap<>());
             }
         }
 

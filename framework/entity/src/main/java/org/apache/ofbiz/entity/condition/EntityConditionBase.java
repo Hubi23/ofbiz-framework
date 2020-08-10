@@ -47,7 +47,7 @@ public abstract class EntityConditionBase implements Serializable {
 
     public static final List<?> emptyList = Collections.emptyList();
     public static final Map<?,?> _emptyMap = Collections.emptyMap();
-    public static final Map<String, String> emptyAliases = Collections.unmodifiableMap(new HashMap<String, String>());
+    public static final Map<String, String> emptyAliases = Collections.unmodifiableMap(new HashMap<>());
 
     protected ModelField getField(ModelEntity modelEntity, String fieldName) {
         ModelField modelField = null;

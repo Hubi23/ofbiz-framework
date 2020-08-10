@@ -172,8 +172,8 @@ public class DatabaseUtil {
 
         // get ALL tables from this database
         TreeSet<String> tableNames = this.getTableNames(messages);
-        TreeSet<String> fkTableNames = tableNames == null ? null : new TreeSet<String>(tableNames);
-        TreeSet<String> indexTableNames = tableNames == null ? null : new TreeSet<String>(tableNames);
+        TreeSet<String> fkTableNames = tableNames == null ? null : new TreeSet<>(tableNames);
+        TreeSet<String> indexTableNames = tableNames == null ? null : new TreeSet<>(tableNames);
 
         if (tableNames == null) {
             String message = "Could not get table name information from the database, aborting.";
@@ -202,12 +202,12 @@ public class DatabaseUtil {
 
         timer.timerString("Before Individual Table/Column Check");
 
-        List<ModelEntity> modelEntityList = new ArrayList<ModelEntity>(modelEntities.values());
+        List<ModelEntity> modelEntityList = new ArrayList<>(modelEntities.values());
         // sort using compareTo method on ModelEntity
         Collections.sort(modelEntityList);
         int curEnt = 0;
         int totalEnt = modelEntityList.size();
-        List<ModelEntity> entitiesAdded = new LinkedList<ModelEntity>();
+        List<ModelEntity> entitiesAdded = new LinkedList<>();
         String schemaName;
         try {
             schemaName = getSchemaName(messages);
@@ -217,7 +217,7 @@ public class DatabaseUtil {
             Debug.logError(message, module);
             return;
         }
-        List<Future<CreateTableCallable>> tableFutures = new LinkedList<Future<CreateTableCallable>>();
+        List<Future<CreateTableCallable>> tableFutures = new LinkedList<>();
         for (ModelEntity entity: modelEntityList) {
             curEnt++;
 
@@ -253,7 +253,7 @@ public class DatabaseUtil {
                 tableNames.remove(tableName);
 
                 if (colInfo != null) {
-                    Map<String, ModelField> fieldColNames = new HashMap<String, ModelField>();
+                    Map<String, ModelField> fieldColNames = new HashMap<>();
                     Iterator<ModelField> fieldIter = entity.getFieldsIterator();
                     while (fieldIter.hasNext()) {
                         ModelField field = fieldIter.next();
@@ -427,7 +427,7 @@ public class DatabaseUtil {
         // for each newly added table, add fk indices
         if (datasourceInfo.getUseForeignKeyIndices()) {
             int totalFkIndices = 0;
-            List<Future<AbstractCountingCallable>> fkIndicesFutures = new LinkedList<Future<AbstractCountingCallable>>();
+            List<Future<AbstractCountingCallable>> fkIndicesFutures = new LinkedList<>();
             for (ModelEntity curEntity: entitiesAdded) {
                 if (curEntity.getRelationsOneSize() > 0) {
                     fkIndicesFutures.add(executor.submit(new AbstractCountingCallable(curEntity, modelEntities) {
@@ -456,7 +456,7 @@ public class DatabaseUtil {
         // for each newly added table, add declared indexes
         if (datasourceInfo.getUseIndices()) {
             int totalDis = 0;
-            List<Future<AbstractCountingCallable>> disFutures = new LinkedList<Future<AbstractCountingCallable>>();
+            List<Future<AbstractCountingCallable>> disFutures = new LinkedList<>();
             for (ModelEntity curEntity: entitiesAdded) {
                 if (curEntity.getIndexesSize() > 0) {
                     disFutures.add(executor.submit(new AbstractCountingCallable(curEntity,  modelEntities) {
@@ -724,12 +724,12 @@ public class DatabaseUtil {
         // go through each table and make a ModelEntity object, add to list
         // for each entity make corresponding ModelField objects
         // then print out XML for the entities/fields
-        List<ModelEntity> newEntList = new LinkedList<ModelEntity>();
+        List<ModelEntity> newEntList = new LinkedList<>();
 
         boolean isCaseSensitive = getIsCaseSensitive(messages);
 
         // iterate over the table names is alphabetical order
-        for (String tableName: new TreeSet<String>(colInfo.keySet())) {
+        for (String tableName: new TreeSet<>(colInfo.keySet())) {
             Map<String, ColumnCheckInfo> colMap = colInfo.get(tableName);
             ModelEntity newEntity = new ModelEntity(tableName, colMap, modelFieldTypeReader, isCaseSensitive);
             newEntList.add(newEntity);
@@ -781,7 +781,7 @@ public class DatabaseUtil {
         return dbData;
     }
 
-    private static final List<Detection> detections = new ArrayList<Detection>();
+    private static final List<Detection> detections = new ArrayList<>();
     private static final String goodFormatStr;
     private static final String badFormatStr;
 
@@ -926,7 +926,7 @@ public class DatabaseUtil {
         if (Debug.infoOn()) Debug.logInfo("Getting Table Info From Database", module);
 
         // get ALL tables from this database
-        TreeSet<String> tableNames = new TreeSet<String>();
+        TreeSet<String> tableNames = new TreeSet<>();
         ResultSet tableSet = null;
 
         String lookupSchemaName = null;
@@ -1033,7 +1033,7 @@ public class DatabaseUtil {
     private Map<String, Map<String, ColumnCheckInfo>> getColumnInfo(Set<String> tableNames, boolean getPks, Collection<String> messages, ExecutorService executor) {
         // if there are no tableNames, don't even try to get the columns
         if (tableNames.size() == 0) {
-            return new HashMap<String, Map<String, ColumnCheckInfo>>();
+            return new HashMap<>();
         }
 
         Connection connection = null;
@@ -1063,7 +1063,7 @@ public class DatabaseUtil {
 
             if (Debug.infoOn()) Debug.logInfo("Getting Column Info From Database", module);
 
-            Map<String, Map<String, ColumnCheckInfo>> colInfo = new HashMap<String, Map<String, ColumnCheckInfo>>();
+            Map<String, Map<String, ColumnCheckInfo>> colInfo = new HashMap<>();
             try {
                 String lookupSchemaName = getSchemaName(dbData);
                 boolean needsUpperCase = false;
@@ -1118,7 +1118,7 @@ public class DatabaseUtil {
 
                             Map<String, ColumnCheckInfo> tableColInfo = colInfo.get(ccInfo.tableName);
                             if (tableColInfo == null) {
-                                tableColInfo = new HashMap<String, ColumnCheckInfo>();
+                                tableColInfo = new HashMap<>();
                                 colInfo.put(ccInfo.tableName, tableColInfo);
                             }
                             tableColInfo.put(ccInfo.columnName, ccInfo);
@@ -1270,7 +1270,7 @@ public class DatabaseUtil {
 
         if (Debug.infoOn()) Debug.logInfo("Getting Foreign Key (Reference) Info From Database", module);
 
-        Map<String, Map<String, ReferenceCheckInfo>> refInfo = new HashMap<String, Map<String, ReferenceCheckInfo>>();
+        Map<String, Map<String, ReferenceCheckInfo>> refInfo = new HashMap<>();
 
         try {
             // ResultSet rsCols = dbData.getCrossReference(null, null, null, null, null, null);
@@ -1327,7 +1327,7 @@ public class DatabaseUtil {
 
                     Map<String, ReferenceCheckInfo> tableRefInfo = refInfo.get(rcInfo.fkTableName);
                     if (tableRefInfo == null) {
-                        tableRefInfo = new HashMap<String, ReferenceCheckInfo>();
+                        tableRefInfo = new HashMap<>();
                         refInfo.put(rcInfo.fkTableName, tableRefInfo);
                         if (Debug.verboseOn()) Debug.logVerbose("Adding new Map for table: " + rcInfo.fkTableName, module);
                     }
@@ -1404,7 +1404,7 @@ public class DatabaseUtil {
 
         if (Debug.infoOn()) Debug.logInfo("Getting Index Info From Database", module);
 
-        Map<String, Set<String>> indexInfo = new HashMap<String, Set<String>>();
+        Map<String, Set<String>> indexInfo = new HashMap<>();
         try {
             int totalIndices = 0;
             String lookupSchemaName = getSchemaName(dbData);
@@ -1449,7 +1449,7 @@ public class DatabaseUtil {
 
                         Set<String> tableIndexList = indexInfo.get(tableName);
                         if (tableIndexList == null) {
-                            tableIndexList = new TreeSet<String>();
+                            tableIndexList = new TreeSet<>();
                             indexInfo.put(tableName, tableIndexList);
                             if (Debug.verboseOn()) Debug.logVerbose("Adding new Map for table: " + tableName, module);
                         }
@@ -1539,7 +1539,7 @@ public class DatabaseUtil {
     private abstract class AbstractCountingCallable implements Callable<AbstractCountingCallable> {
         protected final ModelEntity entity;
         protected final Map<String, ModelEntity> modelEntities;
-        protected final List<String> messages = new LinkedList<String>();
+        protected final List<String> messages = new LinkedList<>();
         protected int count;
 
         protected AbstractCountingCallable(ModelEntity entity, Map<String, ModelEntity> modelEntities) {
@@ -1894,7 +1894,7 @@ public class DatabaseUtil {
             return;
         }
 
-        if (messages == null) messages = new ArrayList<String>();
+        if (messages == null) messages = new ArrayList<>();
 
         for (String fieldInfo: fieldsWrongSize) {
             String entityName = fieldInfo.substring(0, fieldInfo.indexOf('.'));
@@ -2194,7 +2194,7 @@ public class DatabaseUtil {
     /* ====================================================================== */
     /* ====================================================================== */
     public void createPrimaryKey(ModelEntity entity, boolean usePkConstraintNames, int constraintNameClipLength, List<String> messages) {
-        if (messages == null) messages = new ArrayList<String>();
+        if (messages == null) messages = new ArrayList<>();
         String err = createPrimaryKey(entity, usePkConstraintNames, constraintNameClipLength);
         if (UtilValidate.isNotEmpty(err)) {
             messages.add(err);
@@ -2253,7 +2253,7 @@ public class DatabaseUtil {
     }
 
     public void deletePrimaryKey(ModelEntity entity, boolean usePkConstraintNames, int constraintNameClipLength, List<String> messages) {
-        if (messages == null) messages = new ArrayList<String>();
+        if (messages == null) messages = new ArrayList<>();
         String err = deletePrimaryKey(entity, usePkConstraintNames, constraintNameClipLength);
         if (UtilValidate.isNotEmpty(err)) {
             messages.add(err);
@@ -2409,7 +2409,7 @@ public class DatabaseUtil {
     }
 
     public void deleteDeclaredIndices(ModelEntity entity, List<String> messages) {
-        if (messages == null) messages = new ArrayList<String>();
+        if (messages == null) messages = new ArrayList<>();
         String err = deleteDeclaredIndices(entity);
         if (UtilValidate.isNotEmpty(err)) {
             messages.add(err);
@@ -2576,7 +2576,7 @@ public class DatabaseUtil {
     }
 
     public void deleteForeignKeyIndices(ModelEntity entity, List<String> messages) {
-        if (messages == null) messages = new ArrayList<String>();
+        if (messages == null) messages = new ArrayList<>();
         String err = deleteForeignKeyIndices(entity, datasourceInfo.getConstraintNameClipLength());
         if (UtilValidate.isNotEmpty(err)) {
             messages.add(err);

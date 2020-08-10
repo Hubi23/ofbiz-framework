@@ -502,7 +502,7 @@ public class EntityQuery {
     }
 
     private EntityCondition makeDateCondition() {
-        List<EntityCondition> conditions = new ArrayList<EntityCondition>();
+        List<EntityCondition> conditions = new ArrayList<>();
         if (UtilValidate.isEmpty(this.filterByFieldNames)) {
             this.filterByDate(filterByDateMoment, "fromDate", "thruDate");
         }
@@ -524,7 +524,7 @@ public class EntityQuery {
         cache(false);
         try (EntityListIterator genericValueEli = queryIterator()) {
             if (this.distinct) {
-                Set<T> distinctSet = new LinkedHashSet<T>();
+                Set<T> distinctSet = new LinkedHashSet<>();
                 GenericValue value = null;
                 while ((value = genericValueEli.next()) != null) {
                     T fieldValue = UtilGenerics.<T>cast(value.get(fieldName));
@@ -532,10 +532,10 @@ public class EntityQuery {
                         distinctSet.add(fieldValue);
                     }
                 }
-                return new ArrayList<T>(distinctSet);
+                return new ArrayList<>(distinctSet);
             }
             else {
-                List<T> fieldList = new LinkedList<T>();
+                List<T> fieldList = new LinkedList<>();
                 GenericValue value = null;
                 while ((value = genericValueEli.next()) != null) {
                     T fieldValue = UtilGenerics.<T>cast(value.get(fieldName));

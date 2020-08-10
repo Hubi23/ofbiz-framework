@@ -60,7 +60,7 @@ public class ModelTestSuite {
     protected Delegator delegator;
     protected LocalDispatcher dispatcher;
 
-    protected List<Test> testList = new ArrayList<Test>();
+    protected List<Test> testList = new ArrayList<>();
 
     public ModelTestSuite(Element mainElement, String testCase) {
         this.suiteName = mainElement.getAttribute("suite-name");

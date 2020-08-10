@@ -2483,7 +2483,7 @@ public class PaymentGatewayServices {
                 // get the creditCard/address/email
                 String payToPartyId = null;
                 try {
-                    payToPartyId = getBillingInformation(orh, paymentPref, new HashMap<String, Object>());
+                    payToPartyId = getBillingInformation(orh, paymentPref, new HashMap<>());
                 } catch (GenericEntityException e) {
                     Debug.logError(e, "Problems getting billing information", module);
                     return ServiceUtil.returnError(UtilProperties.getMessage(resource, 
@@ -3084,7 +3084,7 @@ public class PaymentGatewayServices {
         }
 
         // prepare the order payment preference (facade)
-        GenericValue orderPaymentPref = delegator.makeValue("OrderPaymentPreference", new HashMap<String, Object>());
+        GenericValue orderPaymentPref = delegator.makeValue("OrderPaymentPreference", new HashMap<>());
         orderPaymentPref.set("orderPaymentPreferenceId", "_NA_");
         orderPaymentPref.set("orderId", "_NA_");
         orderPaymentPref.set("presentFlag", "N");

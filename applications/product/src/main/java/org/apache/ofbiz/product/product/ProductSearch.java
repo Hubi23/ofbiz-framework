@@ -647,7 +647,7 @@ public class ProductSearch {
             this.entityConditionList.add(topCond);
 
             if (Debug.infoOn()) {
-                Debug.logInfo("topCond=" + topCond.makeWhereString(null, new LinkedList<EntityConditionParam>(), EntityConfig.getDatasource(delegator.getEntityHelperName("Product"))), module);
+                Debug.logInfo("topCond=" + topCond.makeWhereString(null, new LinkedList<>(), EntityConfig.getDatasource(delegator.getEntityHelperName("Product"))), module);
             }
         }
 

@@ -109,7 +109,7 @@ public class WebToolsServices {
         GenericValue userLogin = (GenericValue) context.get("userLogin");
         LocalDispatcher dispatcher = dctx.getDispatcher();
         Locale locale = (Locale) context.get("locale");
-        List<String> messages = new LinkedList<String>();
+        List<String> messages = new LinkedList<>();
 
         String filename = (String)context.get("filename");
         String fmfilename = (String)context.get("fmfilename");
@@ -214,7 +214,7 @@ public class WebToolsServices {
         GenericValue userLogin = (GenericValue) context.get("userLogin");
         LocalDispatcher dispatcher = dctx.getDispatcher();
         Locale locale = (Locale) context.get("locale");
-        List<String> messages = new LinkedList<String>();
+        List<String> messages = new LinkedList<>();
 
         String path = (String) context.get("path");
         String onlyInserts = (String) context.get("onlyInserts");
@@ -240,7 +240,7 @@ public class WebToolsServices {
 
             if (baseDir.isDirectory() && baseDir.canRead()) {
                 File[] fileArray = baseDir.listFiles();
-                List<File> files = new LinkedList<File>();
+                List<File> files = new LinkedList<>();
                 for (File file: fileArray) {
                     if (file.getName().toUpperCase().endsWith("XML")) {
                         files.add(file);
@@ -250,11 +250,11 @@ public class WebToolsServices {
                 int passes=0;
                 int initialListSize = files.size();
                 int lastUnprocessedFilesCount = 0;
-                List<File> unprocessedFiles = new LinkedList<File>();
+                List<File> unprocessedFiles = new LinkedList<>();
                 while (files.size()>0 &&
                         files.size() != lastUnprocessedFilesCount) {
                     lastUnprocessedFilesCount = files.size();
-                    unprocessedFiles = new LinkedList<File>();
+                    unprocessedFiles = new LinkedList<>();
                     for (File f: files) {
                         Map<String, Object> parseEntityXmlFileArgs = UtilMisc.toMap("onlyInserts", onlyInserts,
                                 "createDummyFks", createDummyFks,
@@ -325,13 +325,13 @@ public class WebToolsServices {
         Integer txTimeoutInt = (Integer) context.get("txTimeout");
         int txTimeout = txTimeoutInt != null ? txTimeoutInt : -1;
 
-        List<Object> messages = new LinkedList<Object>();
+        List<Object> messages = new LinkedList<>();
 
         // parse the pass in list of readers to use
         List<String> readerNames = null;
         if (UtilValidate.isNotEmpty(readers) && !"none".equalsIgnoreCase(readers)) {
             if (!readers.contains(",")) {
-                readerNames = new LinkedList<String>();
+                readerNames = new LinkedList<>();
                 readerNames.add(readers);
             } else {
                 readerNames = StringUtil.split(readers, ",");
@@ -361,7 +361,7 @@ public class WebToolsServices {
 
         // need a list if it is empty
         if (urlList == null) {
-            urlList = new LinkedList<URL>();
+            urlList = new LinkedList<>();
         }
 
         // process the list of files
@@ -369,8 +369,8 @@ public class WebToolsServices {
         changedFormat.setMinimumIntegerDigits(5);
         changedFormat.setGroupingUsed(false);
 
-        List<Object> errorMessages = new LinkedList<Object>();
-        List<String> infoMessages = new LinkedList<String>();
+        List<Object> errorMessages = new LinkedList<>();
+        List<String> infoMessages = new LinkedList<>();
         int totalRowsChanged = 0;
         if (UtilValidate.isNotEmpty(urlList)) {
             messages.add("=-=-=-=-=-=-= Doing a data " + (checkDataOnly ? "check" : "load") + " with the following files:");
@@ -474,7 +474,7 @@ public class WebToolsServices {
             txTimeout = 7200;
         }
 
-        List<String> results = new LinkedList<String>();
+        List<String> results = new LinkedList<>();
 
         if (UtilValidate.isNotEmpty(outpath)) {
             File outdir = new File(outpath);
@@ -486,7 +486,7 @@ public class WebToolsServices {
                 try {
                     ModelReader reader = delegator.getModelReader();
                     Collection<String> ec = reader.getEntityNames();
-                    passedEntityNames = new TreeSet<String>(ec);
+                    passedEntityNames = new TreeSet<>(ec);
                 } catch (Exception exc) {
                     return ServiceUtil.returnError(UtilProperties.getMessage(resource, "EntityImportErrorRetrievingEntityNames", locale));
                 }
@@ -499,7 +499,7 @@ public class WebToolsServices {
                         results.add("["+fileNumber +"] [vvv] " + curEntityName + " skipping view entity");
                         continue;
                     }
-                    List<EntityCondition> conds = new LinkedList<EntityCondition>();
+                    List<EntityCondition> conds = new LinkedList<>();
                     if (UtilValidate.isNotEmpty(fromDate)) {
                         conds.add(EntityCondition.makeCondition("createdStamp", EntityOperator.GREATER_THAN_EQUAL_TO, fromDate));
                     }
@@ -612,9 +612,9 @@ public class WebToolsServices {
         Map<String, Object> resultMap = ServiceUtil.returnSuccess();
 
         ModelReader reader = delegator.getModelReader();
-        Map<String, TreeSet<String>> entitiesByPackage = new HashMap<String, TreeSet<String>>();
-        Set<String> packageNames = new TreeSet<String>();
-        Set<String> tableNames = new TreeSet<String>();
+        Map<String, TreeSet<String>> entitiesByPackage = new HashMap<>();
+        Set<String> packageNames = new TreeSet<>();
+        Set<String> tableNames = new TreeSet<>();
 
         //put the entityNames TreeSets in a HashMap by packageName
         try {
@@ -628,7 +628,7 @@ public class WebToolsServices {
                 }
                 TreeSet<String> entities = entitiesByPackage.get(ent.getPackageName());
                 if (entities == null) {
-                    entities = new TreeSet<String>();
+                    entities = new TreeSet<>();
                     entitiesByPackage.put(ent.getPackageName(), entities);
                     packageNames.add(ent.getPackageName());
                 }
@@ -639,14 +639,14 @@ public class WebToolsServices {
         }
 
         String search = (String) context.get("search");
-        List<Map<String, Object>> packagesList = new LinkedList<Map<String,Object>>();
+        List<Map<String, Object>> packagesList = new LinkedList<>();
         try {
             for (String pName : packageNames) {
-                Map<String, Object> packageMap = new HashMap<String, Object>();
+                Map<String, Object> packageMap = new HashMap<>();
                 TreeSet<String> entities = entitiesByPackage.get(pName);
-                List<Map<String, Object>> entitiesList = new LinkedList<Map<String,Object>>();
+                List<Map<String, Object>> entitiesList = new LinkedList<>();
                 for (String entityName: entities) {
-                    Map<String, Object> entityMap = new HashMap<String, Object>();
+                    Map<String, Object> entityMap = new HashMap<>();
                     String helperName = delegator.getEntityHelperName(entityName);
                     String groupName = delegator.getEntityGroupName(entityName);
                     if (search == null || entityName.toLowerCase().contains(search.toLowerCase())) {
@@ -672,9 +672,9 @@ public class WebToolsServices {
                         }
 
                         // fields list
-                        List<Map<String, Object>> javaNameList = new LinkedList<Map<String,Object>>();
+                        List<Map<String, Object>> javaNameList = new LinkedList<>();
                         for (Iterator<ModelField> f = entity.getFieldsIterator(); f.hasNext();) {
-                            Map<String, Object> javaNameMap = new HashMap<String, Object>();
+                            Map<String, Object> javaNameMap = new HashMap<>();
                             ModelField field = f.next();
                             ModelFieldType type = delegator.getEntityFieldType(entity, field.getType());
                             javaNameMap.put("isPk", field.getIsPk());
@@ -713,14 +713,14 @@ public class WebToolsServices {
                         }
 
                         // relations list
-                        List<Map<String, Object>> relationsList = new LinkedList<Map<String,Object>>();
+                        List<Map<String, Object>> relationsList = new LinkedList<>();
                         for (int r = 0; r < entity.getRelationsSize(); r++) {
-                            Map<String, Object> relationMap = new HashMap<String, Object>();
+                            Map<String, Object> relationMap = new HashMap<>();
                             ModelRelation relation = entity.getRelation(r);
-                            List<Map<String, Object>> keysList = new LinkedList<Map<String,Object>>();
+                            List<Map<String, Object>> keysList = new LinkedList<>();
                             int row = 1;
                             for (ModelKeyMap keyMap : relation.getKeyMaps()) {
-                                Map<String, Object> keysMap = new HashMap<String, Object>();
+                                Map<String, Object> keysMap = new HashMap<>();
                                 String fieldName = null;
                                 String relFieldName = null;
                                 if (keyMap.getFieldName().equals(keyMap.getRelFieldName())) {
@@ -746,16 +746,16 @@ public class WebToolsServices {
                         }
 
                         // index list
-                        List<Map<String, Object>> indexList = new LinkedList<Map<String,Object>>();
+                        List<Map<String, Object>> indexList = new LinkedList<>();
                         for (int r = 0; r < entity.getIndexesSize(); r++) {
-                            List<String> fieldNameList = new LinkedList<String>();
+                            List<String> fieldNameList = new LinkedList<>();
 
                             ModelIndex index = entity.getIndex(r);
                             for (ModelIndex.Field field : index.getFields()) {
                                 fieldNameList.add(field.getFieldName());
                             }
 
-                            Map<String, Object> indexMap = new HashMap<String, Object>();
+                            Map<String, Object> indexMap = new HashMap<>();
                             indexMap.put("name", index.getName());
                             indexMap.put("description", index.getDescription());
                             indexMap.put("fieldNameList", fieldNameList);
@@ -816,9 +816,9 @@ public class WebToolsServices {
                 return ServiceUtil.returnError(UtilProperties.getMessage(resource, "WebtoolsEomodelFullPathIsNotWriteable", UtilMisc.toMap("eomodeldFullPath", eomodeldFullPath), locale));
             }
 
-            Set<String> entityNames = new TreeSet<String>();
+            Set<String> entityNames = new TreeSet<>();
             if (UtilValidate.isNotEmpty(entityPackageNameOrig)) {
-                Set<String> entityPackageNameSet = new HashSet<String>();
+                Set<String> entityPackageNameSet = new HashSet<>();
                 entityPackageNameSet.addAll(StringUtil.split(entityPackageNameOrig, ","));
 
                 Debug.logInfo("Exporting with entityPackageNameSet: " + entityPackageNameSet, module);
@@ -846,12 +846,12 @@ public class WebToolsServices {
             }
 
             // write the index.eomodeld file
-            Map<String, Object> topLevelMap = new HashMap<String, Object>();
+            Map<String, Object> topLevelMap = new HashMap<>();
             topLevelMap.put("EOModelVersion", "\"2.1\"");
-            List<Map<String, Object>> entitiesMapList = new LinkedList<Map<String,Object>>();
+            List<Map<String, Object>> entitiesMapList = new LinkedList<>();
             topLevelMap.put("entities", entitiesMapList);
             for (String entityName: entityNames) {
-                Map<String, Object> entitiesMap = new HashMap<String, Object>();
+                Map<String, Object> entitiesMap = new HashMap<>();
                 entitiesMapList.add(entitiesMap);
                 entitiesMap.put("className", "EOGenericRecord");
                 entitiesMap.put("name", entityName);
