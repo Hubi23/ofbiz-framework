@@ -237,7 +237,7 @@ public final class MacroFormRenderer implements FormStringRenderer {
         sr.append(modelFormField.shouldBeRed(context) ? "true" : "false");
         if (ajaxEnabled) {
             String url = inPlaceEditor.getUrl(context);
-            StringBuffer extraParameterBuffer = new StringBuffer();
+            StringBuilder extraParameterBuffer = new StringBuilder();
             String extraParameter;
 
             Map<String, Object> fieldMap = inPlaceEditor.getFieldMap(context);
@@ -3007,7 +3007,7 @@ public final class MacroFormRenderer implements FormStringRenderer {
             Map<String, String> parameters = updateArea.getParameterMap(ctx);
             String targetUrl = updateArea.getAreaTarget(context);
             String ajaxParams;
-            StringBuffer ajaxParamsBuffer = new StringBuffer();
+            StringBuilder ajaxParamsBuffer = new StringBuilder();
             ajaxParamsBuffer.append(getAjaxParamsFromTarget(targetUrl));
             //add first parameters from updateArea parameters
             if (UtilValidate.isNotEmpty(parameters)) {

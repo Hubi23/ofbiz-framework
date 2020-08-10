@@ -693,7 +693,7 @@ public class DataResourceWorker  implements org.apache.ofbiz.widget.content.Data
 
                     // if use web analytics.
                     if (UtilValidate.isNotEmpty(webAnalytics)) {
-                        StringBuffer newTemplateText = new StringBuffer(templateText);
+                        StringBuilder newTemplateText = new StringBuilder(templateText);
                         String webAnalyticsCode = "<script type=\"application/javascript\">";
                         for (GenericValue webAnalytic : webAnalytics) {
                             StringWrapper wrapString = StringUtil.wrapString((String) webAnalytic.get("webAnalyticsCode"));

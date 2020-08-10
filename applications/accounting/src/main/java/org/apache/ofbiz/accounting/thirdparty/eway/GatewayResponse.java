@@ -203,7 +203,7 @@ public class GatewayResponse {
     
     @Override
     public String toString() {
-        StringBuffer buf = new StringBuffer();
+        StringBuilder buf = new StringBuilder();
         buf.append("<ewayResponse>").append("\n");
         buf.append("\t<ewayTrxnError>").append(txTrxnError).append("</ewayTrxnError>\n");
         buf.append("\t<ewayTrxnStatus>").append(txTrxnStatus).append("</ewayTrxnStatus>\n");

@@ -273,7 +273,7 @@ public class MimeMessageWrapper implements java.io.Serializable {
                 return null;
             }
         }
-        StringBuffer body = new StringBuffer();
+        StringBuilder body = new StringBuilder();
         for (int i = 0; i < getMainPartCount(); i++) {
             int subPartCount = getSubPartCount(i);
             String idx = Integer.toString(i);

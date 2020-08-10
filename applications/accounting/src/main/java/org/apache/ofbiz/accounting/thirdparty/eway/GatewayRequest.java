@@ -346,7 +346,7 @@ public class GatewayRequest {
 
         Integer totalInt = txTotalAmount.multiply(new BigDecimal(100)).intValue();
 
-        StringBuffer xml = new StringBuffer("<ewaygateway>");
+        StringBuilder xml = new StringBuilder("<ewaygateway>");
         xml.append(createNode("ewayCustomerID", txCustomerID));
         xml.append(createNode("ewayTotalAmount", "" + totalInt));
         xml.append(createNode("ewayCustomerInvoiceRef", txCustomerInvoiceRef));
