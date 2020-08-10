@@ -297,7 +297,7 @@ public final class EntityFinderUtil {
                 Condition condition = this.conditionList.get(0);
                 return condition.createCondition(context, modelEntity, modelFieldTypeReader);
             }
-            // REFACTOR to use stream(), map(), filter(), collect(), Collectors.toList()
+            // REFACTOR to use stream(), map(), filter(), collect(), Collectors.toCollection()
             List<EntityCondition> entityConditionList = new ArrayList<>(this.conditionList.size());
             for (Condition curCondition: this.conditionList) {
                 EntityCondition econd = curCondition.createCondition(context, modelEntity, modelFieldTypeReader);

@@ -212,7 +212,7 @@ public class EntityDataLoader {
 
     public static List<URL> getUrlByComponentList(String helperName, List<String> components) {
         Datasource datasourceInfo = EntityConfig.getDatasource(helperName);
-        // REFACTOR to use stream(), map(), filter(), collect(), Collectors.toList()
+        // REFACTOR to use stream(), map(), filter(), collect(), Collectors.toCollection()
         List<String> readerNames = new LinkedList<String>();
         for (ReadData readerInfo :  datasourceInfo.getReadDataList()) {
             String readerName = readerInfo.getReaderName();

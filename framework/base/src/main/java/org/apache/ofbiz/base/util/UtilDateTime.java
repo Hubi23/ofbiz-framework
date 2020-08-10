@@ -1051,7 +1051,7 @@ public final class UtilDateTime {
         private static final List<TimeZone> availableTimeZoneList = getTimeZones();
 
         private static List<TimeZone> getTimeZones() {
-            // REFACTOR to use stream(), map(), collect() and Collectors.toList() to create the list
+            // REFACTOR to use stream(), map(), collect() and Collectors.toCollection() to create the list
             ArrayList<TimeZone> availableTimeZoneList = new ArrayList<>();
             List<String> idList = null;
             String tzString = UtilProperties.getPropertyValue("general", "timeZones.available");

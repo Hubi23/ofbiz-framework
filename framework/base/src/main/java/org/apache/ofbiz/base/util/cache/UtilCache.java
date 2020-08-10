@@ -355,7 +355,7 @@ public class UtilCache<K, V> implements Serializable, EvictionListener<Object, C
     }
 
     public Collection<V> values() {
-        // REFACTOR to use stream(), map(), collect() and Collectors.toList()
+        // REFACTOR to use stream(), map(), collect() and Collectors.toCollection()
         List<V> valuesList = new LinkedList<>();
         for (CacheLine<V> line: memoryTable.values()) {
             valuesList.add(line.getValue());

@@ -180,7 +180,7 @@ public class ContainerConfig {
         }
 
         public List<Property> getPropertiesWithValue(String value) {
-            // REFACTOR to use stream(), filter() x 2, collect(), Collectors.toList()
+            // REFACTOR to use stream(), filter() x 2, collect(), Collectors.toCollection()
             List<Property> props = new LinkedList<>();
             if (UtilValidate.isNotEmpty(properties)) {
                 for (Property p: properties.values()) {

@@ -269,7 +269,7 @@ public class ModelViewEntity extends ModelEntity {
     }
 
     public List<ModelField> getGroupBysCopy(List<ModelField> selectFields) {
-        // REFACTOR by creating a Predicate<ModelField> that works for both if-clauses and then use stream(), filter(), collect(), Collectors.toList()
+        // REFACTOR by creating a Predicate<ModelField> that works for both if-clauses and then use stream(), filter(), collect(), Collectors.toCollection()
         List<ModelField> newList = new ArrayList<>(this.groupBys.size());
         if (UtilValidate.isEmpty(selectFields)) {
             newList.addAll(this.groupBys);
