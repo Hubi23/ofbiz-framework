@@ -1547,6 +1547,7 @@ public class CheckOutHelper {
     }
 
     public Map<String, BigDecimal> makeBillingAccountMap(List<GenericValue> paymentPrefs) {
+        // REFACTOR to use stream(), filter(), collect(), Collectors.toMap()
         Map<String, BigDecimal> accountMap = new HashMap<>();
         if (paymentPrefs != null) {
             for (GenericValue pp : paymentPrefs) {

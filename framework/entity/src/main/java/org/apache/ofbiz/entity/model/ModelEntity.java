@@ -481,6 +481,7 @@ public class ModelEntity implements Comparable<ModelEntity>, Serializable {
     }
 
     public boolean getHasFieldWithAuditLog() {
+        // REFACTOR to use stream(), anyMatch()
         for (ModelField mf : getFieldsUnmodifiable()) {
             if (mf.getEnableAuditLog()) {
                 return true;
@@ -529,6 +530,7 @@ public class ModelEntity implements Comparable<ModelEntity>, Serializable {
     }
 
     public boolean areFields(Collection<String> fieldNames) {
+        // REFACTOR to use stream(), allMatch()
         if (fieldNames == null) return false;
         for (String fieldName: fieldNames) {
             if (!isField(fieldName)) return false;
@@ -677,6 +679,7 @@ public class ModelEntity implements Comparable<ModelEntity>, Serializable {
     }
 
     private List<String> getFieldNamesFromFieldVector(List<ModelField> modelFields) {
+        // REFACTOR to use stream(), collect()
         List<String> nameList = new ArrayList<>(modelFields.size());
         for (ModelField field: modelFields) {
             nameList.add(field.getName());

@@ -3293,6 +3293,7 @@ public class InvoiceServices {
                 }
                 BigDecimal tobeApplied = BigDecimal.ZERO;
                 // item total amount - already applied (if any)
+                // REFACTOR to use stream() and map()/reduce() instead of Iterator
                 BigDecimal alreadyApplied = BigDecimal.ZERO;
                 if (UtilValidate.isNotEmpty(paymentApplications)) {
                     // application(s) found, add them all together

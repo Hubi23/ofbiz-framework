@@ -371,6 +371,7 @@ public final class EntityUtil {
     public static List<GenericValue> getRelated(String relationName, Map<String, ? extends Object> fields, List<GenericValue> values, boolean useCache) throws GenericEntityException {
         if (values == null) return null;
 
+        // REFACTOR to use stream(), filter(), collect(), Collectors.toList()
         List<GenericValue> result = new LinkedList<GenericValue>();
         for (GenericValue value: values) {
             result.addAll(value.getRelated(relationName, fields, null, useCache));

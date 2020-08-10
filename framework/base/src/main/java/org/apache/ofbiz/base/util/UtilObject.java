@@ -160,6 +160,8 @@ public final class UtilObject {
     }
 
     public static <A, R> R getObjectFromFactory(Class<? extends Factory<R, A>> factoryInterface, A obj) throws ClassNotFoundException {
+        // REFACTOR to generate stream from ServiceLoader (hint, use StreamSupport and spliterator()
+        // REFACTOR loop use map(), filter(), findFirst() and Optional.orElseThrow() to complete refactoring
         Iterator<? extends Factory<R, A>> it = ServiceLoader.load(factoryInterface).iterator();
         while (it.hasNext()) {
             Factory<R, A> factory = it.next();

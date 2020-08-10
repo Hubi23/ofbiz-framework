@@ -75,6 +75,8 @@ public final class EntityGroupUtil {
                 // we have different types of include applications: ESIA_INCLUDE, ESIA_EXCLUDE, ESIA_ALWAYS
                 // if we find an always we can break right there because this will always be include regardless of excludes, etc
                 // if we find an include or exclude we have to finish going through the rest of them just in case there is something that overrides it (ie an exclude for an include or an always for an exclude)
+
+                // REFACTOR to use stream(), filter() and anyMatch() (difficult)
                 boolean matchesInclude = false;
                 boolean matchesExclude = false;
                 boolean matchesAlways = false;

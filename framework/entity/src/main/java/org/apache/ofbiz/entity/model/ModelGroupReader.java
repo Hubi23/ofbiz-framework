@@ -216,6 +216,7 @@ public class ModelGroupReader implements Serializable {
      * @return A Set of entityName Strings
      */
     public Set<String> getEntityNamesByGroup(String delegatorBaseName, String groupName) {
+        // REFACTOR to use Collections.emptySet(), stream(), filter(), map(), collect()
         Map<String, String> gc = getGroupCache(delegatorBaseName);
         Set<String> enames = new HashSet<>();
 

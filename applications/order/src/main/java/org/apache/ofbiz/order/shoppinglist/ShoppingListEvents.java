@@ -610,6 +610,7 @@ public class ShoppingListEvents {
     private static String[] makeCartItemsArray(ShoppingCart cart) {
         int len = cart.size();
         String[] arr = new String[len];
+        // REFACTOR to use Arrays.setAll()
         for (int i = 0; i < len; i++) {
             arr[i] = Integer.toString(i);
         }

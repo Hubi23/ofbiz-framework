@@ -301,11 +301,13 @@ public class ModelReader implements Serializable {
                     }
                     if (!tempViewEntityList.isEmpty()) {
                         StringBuilder sb = new StringBuilder("View entities reference non-existant members:\n");
+                        // REFACTOR to use stream(), map(), collect()
                         Set<String> allViews = new HashSet<>();
                         for (ModelViewEntity curViewEntity : tempViewEntityList) {
                             allViews.add(curViewEntity.getEntityName());
                         }
                         for (ModelViewEntity curViewEntity : tempViewEntityList) {
+                            // REFACTOR two loops to use stream(), map(), filter() x 2, distinct() and forEach()
                             Set<String> perViewMissingEntities = new HashSet<>();
                             Iterator<ModelViewEntity.ModelMemberEntity> mmeIt = curViewEntity.getAllModelMemberEntities().iterator();
                             while (mmeIt.hasNext()) {
@@ -453,6 +455,7 @@ public class ModelReader implements Serializable {
      * consistent again.
      */
     public void rebuildResourceHandlerEntities() {
+        // REFACTOR to use collect(), Collectors.groupingBy() and Collectors.mapping()
         resourceHandlerEntities = new HashMap<>();
         Iterator<Map.Entry<String, ResourceHandler>> entityResourceIter = entityResourceHandlerMap.entrySet().iterator();
 
@@ -557,6 +560,8 @@ public class ModelReader implements Serializable {
     /** Get all entities, organized by package */
     public Map<String, TreeSet<String>> getEntitiesByPackage(Set<String> packageFilterSet, Set<String> entityFilterSet)
             throws GenericEntityException {
+        // REFACTOR to use stream(), filter() x 2, collect() with groupingBy() and mapping()
+        // REFACTOR wrap the GenericEntityException in your own unchecked exception and then unwrap it again before rethrowing it
         Map<String, TreeSet<String>> entitiesByPackage = new HashMap<>();
 
         // put the entityNames TreeSets in a HashMap by packageName

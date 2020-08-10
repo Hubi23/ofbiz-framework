@@ -49,6 +49,7 @@ public class DelegatorContainer implements Container {
         if (UtilValidate.isEmpty(preloadedDelegatorNames)) {
             return true;
         }
+        // REFACTOR to use stream(), map(), collect()
         List<Future<Delegator>> futures = new ArrayList<>();
         for (String preloadedDelegatorName: preloadedDelegatorNames) {
             futures.add(DelegatorFactory.getDelegatorFuture(preloadedDelegatorName));

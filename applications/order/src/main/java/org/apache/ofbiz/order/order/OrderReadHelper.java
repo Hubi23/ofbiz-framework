@@ -2500,6 +2500,7 @@ public class OrderReadHelper {
     }
 
     public static BigDecimal calcOrderPromoAdjustmentsBd(List<GenericValue> allOrderAdjustments) {
+        // REFACTOR to use stream(), map() and reduce().  Perhaps also Optional to avoid possible NullPointerExceptions
         BigDecimal promoAdjTotal = ZERO;
 
         List<GenericValue> promoAdjustments = EntityUtil.filterByAnd(allOrderAdjustments, UtilMisc.toMap("orderAdjustmentTypeId", "PROMOTION_ADJUSTMENT"));
@@ -3048,6 +3049,7 @@ public class OrderReadHelper {
     }
 
     public List<BigDecimal> getShippableSizes(String shipGrouSeqId) {
+        // REFACTOR to use Optional (for the null), map() on Optional, then stream(), map(), collect() and lastly orElseGet() on the Optional
         List<BigDecimal> shippableSizes = new ArrayList<>();
 
         List<GenericValue> validItems = getValidOrderItems(shipGrouSeqId);

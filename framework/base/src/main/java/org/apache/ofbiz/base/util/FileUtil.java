@@ -83,6 +83,7 @@ public final class FileUtil {
                 return true;
             }
 
+            // REFACTOR to use stream(), allMatch()
             boolean hasAllPathStrings = true;
             String fullPath = dir.getPath().replace('\\', '/');
             for (String pathString: stringsToFindInPath) {

@@ -2232,6 +2232,7 @@ public class ShoppingCart implements Iterable<ShoppingCartItem>, Serializable {
     }
 
     public void cleanUpShipGroups() {
+        // REFACTOR to use Collection.removeIf instead of loop
         Iterator<CartShipInfo> csi = this.shipInfo.iterator();
         while (csi.hasNext()) {
             CartShipInfo info = csi.next();

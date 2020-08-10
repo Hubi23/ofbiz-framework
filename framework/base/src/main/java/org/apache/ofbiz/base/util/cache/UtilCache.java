@@ -355,6 +355,7 @@ public class UtilCache<K, V> implements Serializable, EvictionListener<Object, C
     }
 
     public Collection<V> values() {
+        // REFACTOR to use stream(), map(), collect() and Collectors.toList()
         List<V> valuesList = new LinkedList<>();
         for (CacheLine<V> line: memoryTable.values()) {
             valuesList.add(line.getValue());
@@ -391,6 +392,7 @@ public class UtilCache<K, V> implements Serializable, EvictionListener<Object, C
     }
 
     public long getSizeInBytes() {
+        // REFACTOR to use stream(), map(), sum().  Added bonus: use only method references without writing new methods
         long totalSize = 0;
         for (CacheLine<V> line: memoryTable.values()) {
             totalSize += findSizeInBytes(line.getValue());

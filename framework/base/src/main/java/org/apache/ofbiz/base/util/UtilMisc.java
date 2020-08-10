@@ -589,6 +589,7 @@ public final class UtilMisc {
         private static final List<Locale> availableLocaleList = getAvailableLocaleList();
 
         private static List<Locale> getAvailableLocaleList() {
+            // REFACTOR this is an interesting one, as we can combine parts of these two if clauses once we've converted to stream()
             TreeMap<String, Locale> localeMap = new TreeMap<>();
             String localesString = UtilProperties.getPropertyValue("general", "locales.available");
             if (UtilValidate.isNotEmpty(localesString)) {

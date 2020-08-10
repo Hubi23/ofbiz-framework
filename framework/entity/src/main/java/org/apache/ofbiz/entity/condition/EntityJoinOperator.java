@@ -89,6 +89,7 @@ public class EntityJoinOperator extends EntityOperator<EntityCondition, EntityCo
     }
 
     public EntityCondition freeze(List<? extends EntityCondition> conditionList) {
+        // REFACTOR to use stream(), map(), collect(), Collectors.toList()
         List<EntityCondition> newList = new ArrayList<>(conditionList.size());
         for (EntityCondition condition: conditionList) {
             newList.add(condition.freeze());
@@ -106,6 +107,7 @@ public class EntityJoinOperator extends EntityOperator<EntityCondition, EntityCo
     }
 
     public boolean isEmpty(List<? extends EntityCondition> conditionList) {
+        // REFACTOR to use stream(), allMatch()
         for (EntityCondition condition: conditionList) {
             if (!condition.isEmpty()) {
                 return false;

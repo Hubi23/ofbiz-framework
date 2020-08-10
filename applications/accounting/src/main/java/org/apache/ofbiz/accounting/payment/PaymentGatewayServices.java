@@ -1125,6 +1125,7 @@ public class PaymentGatewayServices {
         String testOrderId = null;
         boolean allSameOrder = true;
         if (orderItemBillings != null) {
+            // REFACTOR to use stream(), map(), distinct() and count()
             Iterator<GenericValue> oii = orderItemBillings.iterator();
             while (oii.hasNext()) {
                 GenericValue oib = oii.next();

@@ -149,6 +149,7 @@ public class ContainerConfig {
             throw new ContainerException("Error reading the container config file: " + xmlUrl, e);
         }
         Element root = containerDocument.getDocumentElement();
+        // REFACTOR to use stream(), map(), collect()
         List<Configuration> result = new ArrayList<>();
         for (Element curElement: UtilXml.childElementList(root, "container")) {
             result.add(new Configuration(curElement));
@@ -179,6 +180,7 @@ public class ContainerConfig {
         }
 
         public List<Property> getPropertiesWithValue(String value) {
+            // REFACTOR to use stream(), filter() x 2, collect(), Collectors.toList()
             List<Property> props = new LinkedList<>();
             if (UtilValidate.isNotEmpty(properties)) {
                 for (Property p: properties.values()) {
