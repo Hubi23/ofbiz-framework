@@ -223,74 +223,101 @@ public class Record implements Serializable {
         String fieldType = field.type;
 
         // first the custom types that need to be parsed
-        if (fieldType.equals("CustomTimestamp")) {
-            // this custom type will take a string a parse according to date formatting
-            // string then put the result in a java.sql.Timestamp
-            // a common timestamp format for flat files is with no separators: yyyyMMddHHmmss
-            SimpleDateFormat sdf = new SimpleDateFormat(field.format);
-            java.util.Date tempDate = sdf.parse(value);
-            java.sql.Timestamp timestamp = new java.sql.Timestamp(tempDate.getTime());
+      switch (fieldType) {
+        case "CustomTimestamp": {
+          // this custom type will take a string a parse according to date formatting
+          // string then put the result in a java.sql.Timestamp
+          // a common timestamp format for flat files is with no separators: yyyyMMddHHmmss
+          SimpleDateFormat sdf = new SimpleDateFormat(field.format);
+          Date tempDate = sdf.parse(value);
+          java.sql.Timestamp timestamp = new java.sql.Timestamp(tempDate.getTime());
 
-            set(name, timestamp);
-        } else if (fieldType.equals("CustomDate")) {
-            // a common date only format for flat files is with no separators: yyyyMMdd or MMddyyyy
-            SimpleDateFormat sdf = new SimpleDateFormat(field.format);
-            java.util.Date tempDate = sdf.parse(value);
-            java.sql.Date date = new java.sql.Date(tempDate.getTime());
-
-            set(name, date);
-        } else if (fieldType.equals("CustomTime")) {
-            // a common time only format for flat files is with no separators: HHmmss
-            SimpleDateFormat sdf = new SimpleDateFormat(field.format);
-            java.util.Date tempDate = sdf.parse(value);
-            java.sql.Time time = new java.sql.Time(tempDate.getTime());
-
-            set(name, time);
-        } else if (fieldType.equals("FixedPointDouble")) {
-            // this custom type will parse a fixed point number according to the number
-            // of decimal places in the formatting string then place it in a Double
-            NumberFormat nf = NumberFormat.getNumberInstance();
-            Number tempNum = nf.parse(value);
-            double number = tempNum.doubleValue();
-            double decimalPlaces = Double.parseDouble(field.format);
-            double divisor = Math.pow(10.0, decimalPlaces);
-
-            number = number / divisor;
-            set(name, number);
-        } // standard types
-        else if (fieldType.equals("java.lang.String") || fieldType.equals("String")) {
-            if (field.format.equals("EncryptedString")) {
-                String hashType = LoginServices.getHashType();
-                set(name, HashCrypt.digestHash(hashType, value.getBytes(UtilIO.getUtf8())));
-            } else {
-                set(name, value);
-            }
-        } else if (fieldType.equals("NullTerminatedString")) {
-            int terminate = value.indexOf(0x0);
-            set(name, terminate > 0 ? value.substring(0, terminate) : value);
-        } else if (fieldType.equals("java.sql.Timestamp") || fieldType.equals("Timestamp")) {
-            set(name, java.sql.Timestamp.valueOf(value));
-        } else if (fieldType.equals("java.sql.Time") || fieldType.equals("Time")) {
-            set(name, java.sql.Time.valueOf(value));
-        } else if (fieldType.equals("java.sql.Date") || fieldType.equals("Date")) {
-            set(name, java.sql.Date.valueOf(value));
-        } else if (fieldType.equals("java.lang.Integer") || fieldType.equals("Integer")) {
-            set(name, Integer.valueOf(value));
-        } else if (fieldType.equals("java.lang.Long") || fieldType.equals("Long")) {
-            set(name, Long.valueOf(value));
-        } else if (fieldType.equals("java.lang.Float") || fieldType.equals("Float")) {
-            set(name, Float.valueOf(value));
-        } else if (fieldType.equals("java.lang.Double") || fieldType.equals("Double")) {
-            set(name, Double.valueOf(value));
-        } else if (fieldType.equals("LEShort")) {
-            set(name, readLEShort(value.getBytes(UtilIO.getUtf8())));
-        } else if (fieldType.equals("LEInteger")) {
-            set(name, readLEInt(value.getBytes(UtilIO.getUtf8())));
-        } else if (fieldType.equals("LELong")) {
-            set(name, readLELong(value.getBytes(UtilIO.getUtf8())));
-        } else {
-            throw new IllegalArgumentException("Field type " + fieldType + " not currently supported. Sorry.");
+          set(name, timestamp);
+          break;
         }
+        case "CustomDate": {
+          // a common date only format for flat files is with no separators: yyyyMMdd or MMddyyyy
+          SimpleDateFormat sdf = new SimpleDateFormat(field.format);
+          Date tempDate = sdf.parse(value);
+          java.sql.Date date = new java.sql.Date(tempDate.getTime());
+
+          set(name, date);
+          break;
+        }
+        case "CustomTime": {
+          // a common time only format for flat files is with no separators: HHmmss
+          SimpleDateFormat sdf = new SimpleDateFormat(field.format);
+          Date tempDate = sdf.parse(value);
+          java.sql.Time time = new java.sql.Time(tempDate.getTime());
+
+          set(name, time);
+          break;
+        }
+        case "FixedPointDouble":
+          // this custom type will parse a fixed point number according to the number
+          // of decimal places in the formatting string then place it in a Double
+          NumberFormat nf = NumberFormat.getNumberInstance();
+          Number tempNum = nf.parse(value);
+          double number = tempNum.doubleValue();
+          double decimalPlaces = Double.parseDouble(field.format);
+          double divisor = Math.pow(10.0, decimalPlaces);
+
+          number = number / divisor;
+          set(name, number);
+          break;
+        case "java.lang.String":
+        case "String":
+          if (field.format.equals("EncryptedString")) {
+            String hashType = LoginServices.getHashType();
+            set(name, HashCrypt.digestHash(hashType, value.getBytes(UtilIO.getUtf8())));
+          } else {
+            set(name, value);
+          }
+          break;
+        case "NullTerminatedString":
+          int terminate = value.indexOf(0x0);
+          set(name, terminate > 0 ? value.substring(0, terminate) : value);
+          break;
+        case "java.sql.Timestamp":
+        case "Timestamp":
+          set(name, java.sql.Timestamp.valueOf(value));
+          break;
+        case "java.sql.Time":
+        case "Time":
+          set(name, java.sql.Time.valueOf(value));
+          break;
+        case "java.sql.Date":
+        case "Date":
+          set(name, java.sql.Date.valueOf(value));
+          break;
+        case "java.lang.Integer":
+        case "Integer":
+          set(name, Integer.valueOf(value));
+          break;
+        case "java.lang.Long":
+        case "Long":
+          set(name, Long.valueOf(value));
+          break;
+        case "java.lang.Float":
+        case "Float":
+          set(name, Float.valueOf(value));
+          break;
+        case "java.lang.Double":
+        case "Double":
+          set(name, Double.valueOf(value));
+          break;
+        case "LEShort":
+          set(name, readLEShort(value.getBytes(UtilIO.getUtf8())));
+          break;
+        case "LEInteger":
+          set(name, readLEInt(value.getBytes(UtilIO.getUtf8())));
+          break;
+        case "LELong":
+          set(name, readLELong(value.getBytes(UtilIO.getUtf8())));
+          break;
+        default:
+          throw new IllegalArgumentException("Field type " + fieldType + " not currently supported. Sorry.");
+      }
     }
 
     public String getFixedString(String name) {
@@ -313,53 +340,76 @@ public class Record implements Serializable {
         String str = null;
 
         // first the custom types that need to be parsed
-        if (fieldType.equals("CustomTimestamp")) {
-            // a common timestamp format for flat files is with no separators: yyyyMMddHHmmss
-            SimpleDateFormat sdf = new SimpleDateFormat(field.format);
-            java.sql.Timestamp timestamp = (java.sql.Timestamp) value;
+      switch (fieldType) {
+        case "CustomTimestamp": {
+          // a common timestamp format for flat files is with no separators: yyyyMMddHHmmss
+          SimpleDateFormat sdf = new SimpleDateFormat(field.format);
+          java.sql.Timestamp timestamp = (java.sql.Timestamp) value;
 
-            str = sdf.format(new Date(timestamp.getTime()));
-        } else if (fieldType.equals("CustomDate")) {
-            // a common date only format for flat files is with no separators: yyyyMMdd or MMddyyyy
-            SimpleDateFormat sdf = new SimpleDateFormat(field.format);
-            java.sql.Date date = (java.sql.Date) value;
-
-            str = sdf.format(new Date(date.getTime()));
-        } else if (fieldType.equals("CustomTime")) {
-            // a common time only format for flat files is with no separators: HHmmss
-            SimpleDateFormat sdf = new SimpleDateFormat(field.format);
-            java.sql.Time time = (java.sql.Time) value;
-
-            str = sdf.format(new Date(time.getTime()));
-        } else if (fieldType.equals("FixedPointDouble")) {
-            // this custom type will parse a fixed point number according to the number
-            // of decimal places in the formatting string then place it in a Double
-            double decimalPlaces = Double.parseDouble(field.format);
-            double multiplier = Math.pow(10.0, decimalPlaces);
-            double dnum = multiplier * (Double) value;
-            long number = Math.round(dnum);
-
-            str = padFrontZeros(Long.toString(number), field.length);
-        } // standard types
-        else if (fieldType.equals("java.lang.String") || fieldType.equals("String")) {
-            str = value.toString();
-        } else if (fieldType.equals("java.sql.Timestamp") || fieldType.equals("Timestamp")) {
-            str = value.toString();
-        } else if (fieldType.equals("java.sql.Time") || fieldType.equals("Time")) {
-            str = value.toString();
-        } else if (fieldType.equals("java.sql.Date") || fieldType.equals("Date")) {
-            str = value.toString();
-        } else if (fieldType.equals("java.lang.Integer") || fieldType.equals("Integer")) {
-            str = padFrontZeros(value.toString(), field.length);
-        } else if (fieldType.equals("java.lang.Long") || fieldType.equals("Long")) {
-            str = padFrontZeros(value.toString(), field.length);
-        } else if (fieldType.equals("java.lang.Float") || fieldType.equals("Float")) {
-            str = padFrontZeros(value.toString(), field.length);
-        } else if (fieldType.equals("java.lang.Double") || fieldType.equals("Double")) {
-            str = padFrontZeros(value.toString(), field.length);
-        } else {
-            throw new IllegalArgumentException("Field type " + fieldType + " not currently supported. Sorry.");
+          str = sdf.format(new Date(timestamp.getTime()));
+          break;
         }
+        case "CustomDate": {
+          // a common date only format for flat files is with no separators: yyyyMMdd or MMddyyyy
+          SimpleDateFormat sdf = new SimpleDateFormat(field.format);
+          java.sql.Date date = (java.sql.Date) value;
+
+          str = sdf.format(new Date(date.getTime()));
+          break;
+        }
+        case "CustomTime": {
+          // a common time only format for flat files is with no separators: HHmmss
+          SimpleDateFormat sdf = new SimpleDateFormat(field.format);
+          java.sql.Time time = (java.sql.Time) value;
+
+          str = sdf.format(new Date(time.getTime()));
+          break;
+        }
+        case "FixedPointDouble":
+          // this custom type will parse a fixed point number according to the number
+          // of decimal places in the formatting string then place it in a Double
+          double decimalPlaces = Double.parseDouble(field.format);
+          double multiplier = Math.pow(10.0, decimalPlaces);
+          double dnum = multiplier * (Double) value;
+          long number = Math.round(dnum);
+
+          str = padFrontZeros(Long.toString(number), field.length);
+          break;
+        case "java.lang.String":
+        case "String":
+          str = value.toString();
+          break;
+        case "java.sql.Timestamp":
+        case "Timestamp":
+          str = value.toString();
+          break;
+        case "java.sql.Time":
+        case "Time":
+          str = value.toString();
+          break;
+        case "java.sql.Date":
+        case "Date":
+          str = value.toString();
+          break;
+        case "java.lang.Integer":
+        case "Integer":
+          str = padFrontZeros(value.toString(), field.length);
+          break;
+        case "java.lang.Long":
+        case "Long":
+          str = padFrontZeros(value.toString(), field.length);
+          break;
+        case "java.lang.Float":
+        case "Float":
+          str = padFrontZeros(value.toString(), field.length);
+          break;
+        case "java.lang.Double":
+        case "Double":
+          str = padFrontZeros(value.toString(), field.length);
+          break;
+        default:
+          throw new IllegalArgumentException("Field type " + fieldType + " not currently supported. Sorry.");
+      }
 
         if (str != null && field.length > 0 && str.length() < field.length) {
             // pad the end with spaces

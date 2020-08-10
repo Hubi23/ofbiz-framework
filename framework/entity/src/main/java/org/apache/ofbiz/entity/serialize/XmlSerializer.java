@@ -297,85 +297,105 @@ public class XmlSerializer {
 
         if (tagName.startsWith("std-")) {
             // - Standard Objects -
-            if ("std-String".equals(tagName)) {
-                return element.getAttribute("value");
-            } else if ("std-Integer".equals(tagName)) {
-                String valStr = element.getAttribute("value");
-                return Integer.valueOf(valStr);
-            } else if ("std-Long".equals(tagName)) {
-                String valStr = element.getAttribute("value");
-                return Long.valueOf(valStr);
-            } else if ("std-Float".equals(tagName)) {
-                String valStr = element.getAttribute("value");
-                return Float.valueOf(valStr);
-            } else if ("std-Double".equals(tagName)) {
-                String valStr = element.getAttribute("value");
-                return Double.valueOf(valStr);
-            } else if ("std-BigDecimal".equals(tagName)) {
-                String valStr = element.getAttribute("value");
-                return new BigDecimal(valStr);
-            } else if ("std-Boolean".equals(tagName)) {
-                String valStr = element.getAttribute("value");
-                return Boolean.valueOf(valStr);
-            } else if ("std-Locale".equals(tagName)) {
-                String valStr = element.getAttribute("value");
-                return UtilMisc.parseLocale(valStr);
-            } else if ("std-Date".equals(tagName)) {
-                String valStr = element.getAttribute("value");
-                DateFormat formatter = getDateFormat();
-                java.util.Date value = null;
-
-                try {
-                    synchronized (formatter) {
-                        value = formatter.parse(valStr);
-                    }
-                } catch (ParseException e) {
-                    throw new SerializeException("Could not parse date String: " + valStr, e);
+            switch (tagName) {
+                case "std-String":
+                    return element.getAttribute("value");
+                case "std-Integer": {
+                    String valStr = element.getAttribute("value");
+                    return Integer.valueOf(valStr);
                 }
-                return value;
+                case "std-Long": {
+                    String valStr = element.getAttribute("value");
+                    return Long.valueOf(valStr);
+                }
+                case "std-Float": {
+                    String valStr = element.getAttribute("value");
+                    return Float.valueOf(valStr);
+                }
+                case "std-Double": {
+                    String valStr = element.getAttribute("value");
+                    return Double.valueOf(valStr);
+                }
+                case "std-BigDecimal": {
+                    String valStr = element.getAttribute("value");
+                    return new BigDecimal(valStr);
+                }
+                case "std-Boolean": {
+                    String valStr = element.getAttribute("value");
+                    return Boolean.valueOf(valStr);
+                }
+                case "std-Locale": {
+                    String valStr = element.getAttribute("value");
+                    return UtilMisc.parseLocale(valStr);
+                }
+                case "std-Date": {
+                    String valStr = element.getAttribute("value");
+                    DateFormat formatter = getDateFormat();
+                    java.util.Date value = null;
+
+                    try {
+                        synchronized (formatter) {
+                            value = formatter.parse(valStr);
+                        }
+                    } catch (ParseException e) {
+                        throw new SerializeException("Could not parse date String: " + valStr, e);
+                    }
+                    return value;
+                }
             }
         } else if (tagName.startsWith("sql-")) {
             // - SQL Objects -
-            if ("sql-Timestamp".equals(tagName)) {
-                String valStr = element.getAttribute("value");
-                /*
-                 * sql-Timestamp is defined as xsd:dateTime in ModelService.getTypes(),
-                 * so try to parse the value as xsd:dateTime first.
-                 * Fallback is java.sql.Timestamp because it has been this way all the time.
-                 */
-                try {
-                    Calendar cal = DatatypeConverter.parseDate(valStr);
-                    return new java.sql.Timestamp(cal.getTimeInMillis());
+            switch (tagName) {
+                case "sql-Timestamp": {
+                    String valStr = element.getAttribute("value");
+                    /*
+                     * sql-Timestamp is defined as xsd:dateTime in ModelService.getTypes(),
+                     * so try to parse the value as xsd:dateTime first.
+                     * Fallback is java.sql.Timestamp because it has been this way all the time.
+                     */
+                    try {
+                        Calendar cal = DatatypeConverter.parseDate(valStr);
+                        return new java.sql.Timestamp(cal.getTimeInMillis());
+                    } catch (Exception e) {
+                        Debug.logWarning("sql-Timestamp does not conform to XML Schema definition, try java.sql.Timestamp format", module);
+                        return java.sql.Timestamp.valueOf(valStr);
+                    }
                 }
-                catch (Exception e) {
-                    Debug.logWarning("sql-Timestamp does not conform to XML Schema definition, try java.sql.Timestamp format", module);
-                    return java.sql.Timestamp.valueOf(valStr);
+                case "sql-Date": {
+                    String valStr = element.getAttribute("value");
+                    return java.sql.Date.valueOf(valStr);
                 }
-            } else if ("sql-Date".equals(tagName)) {
-                String valStr = element.getAttribute("value");
-                return java.sql.Date.valueOf(valStr);
-            } else if ("sql-Time".equals(tagName)) {
-                String valStr = element.getAttribute("value");
-                return java.sql.Time.valueOf(valStr);
+                case "sql-Time": {
+                    String valStr = element.getAttribute("value");
+                    return java.sql.Time.valueOf(valStr);
+                }
             }
         } else if (tagName.startsWith("col-")) {
             // - Collections -
             Collection<Object> value = null;
 
-            if ("col-ArrayList".equals(tagName)) {
-                value = new ArrayList<>();
-            } else if ("col-LinkedList".equals(tagName)) {
-                value = new LinkedList<>();
-            } else if ("col-Stack".equals(tagName)) {
-                value = new Stack<>();
-            } else if ("col-Vector".equals(tagName)) {
-                value = new Vector<>();
-            } else if ("col-TreeSet".equals(tagName)) {
-                value = new TreeSet<>();
-            } else if ("col-HashSet".equals(tagName)) {
-                value = new HashSet<>();
-            } else if ("col-Collection".equals(tagName)) {
-                value = new LinkedList<>();
+            switch (tagName) {
+                case "col-ArrayList":
+                    value = new ArrayList<>();
+                    break;
+                case "col-LinkedList":
+                    value = new LinkedList<>();
+                    break;
+                case "col-Stack":
+                    value = new Stack<>();
+                    break;
+                case "col-Vector":
+                    value = new Vector<>();
+                    break;
+                case "col-TreeSet":
+                    value = new TreeSet<>();
+                    break;
+                case "col-HashSet":
+                    value = new HashSet<>();
+                    break;
+                case "col-Collection":
+                    value = new LinkedList<>();
+                    break;
             }
 
             if (value == null) {
@@ -394,18 +414,25 @@ public class XmlSerializer {
             // - Maps -
             Map<Object, Object> value = null;
 
-            if ("map-HashMap".equals(tagName)) {
-                value = new HashMap<>();
-            } else if ("map-Properties".equals(tagName)) {
-                value = new Properties();
-            } else if ("map-Hashtable".equals(tagName)) {
-                value = new Hashtable<>();
-            } else if ("map-WeakHashMap".equals(tagName)) {
-                value = new WeakHashMap<>();
-            } else if ("map-TreeMap".equals(tagName)) {
-                value = new TreeMap<>();
-            } else if ("map-Map".equals(tagName)) {
-                value = new HashMap<>();
+            switch (tagName) {
+                case "map-HashMap":
+                    value = new HashMap<>();
+                    break;
+                case "map-Properties":
+                    value = new Properties();
+                    break;
+                case "map-Hashtable":
+                    value = new Hashtable<>();
+                    break;
+                case "map-WeakHashMap":
+                    value = new WeakHashMap<>();
+                    break;
+                case "map-TreeMap":
+                    value = new TreeMap<>();
+                    break;
+                case "map-Map":
+                    value = new HashMap<>();
+                    break;
             }
 
             if (value == null) {

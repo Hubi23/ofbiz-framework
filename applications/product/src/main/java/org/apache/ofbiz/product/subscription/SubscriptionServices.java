@@ -343,17 +343,23 @@ public class SubscriptionServices {
                         endDateSubscription.setTime(subscription.getTimestamp("thruDate"));
 
                         if (gracePeriodOnExpiry != null && gracePeriodOnExpiryUomId != null) {
-                            if ("TF_day".equals(gracePeriodOnExpiryUomId)) {
-                                field = Calendar.DAY_OF_YEAR;
-                            } else if ("TF_wk".equals(gracePeriodOnExpiryUomId)) {
-                                field = Calendar.WEEK_OF_YEAR;
-                            } else if ("TF_mon".equals(gracePeriodOnExpiryUomId)) {
-                                field = Calendar.MONTH;
-                            } else if ("TF_yr".equals(gracePeriodOnExpiryUomId)) {
-                                field = Calendar.YEAR;
-                            } else {
-                                Debug.logWarning("Don't know anything about gracePeriodOnExpiryUomId [" + gracePeriodOnExpiryUomId + "], defaulting to month", module);
-                            }
+                          switch (gracePeriodOnExpiryUomId) {
+                            case "TF_day":
+                              field = Calendar.DAY_OF_YEAR;
+                              break;
+                            case "TF_wk":
+                              field = Calendar.WEEK_OF_YEAR;
+                              break;
+                            case "TF_mon":
+                              field = Calendar.MONTH;
+                              break;
+                            case "TF_yr":
+                              field = Calendar.YEAR;
+                              break;
+                            default:
+                              Debug.logWarning("Don't know anything about gracePeriodOnExpiryUomId [" + gracePeriodOnExpiryUomId + "], defaulting to month", module);
+                              break;
+                          }
                             endDateSubscription.add(field, Integer.parseInt(gracePeriodOnExpiry));
                         }
                         if ((currentDate.after(endDateSubscription) || currentDate.equals(endDateSubscription)) && serviceNameOnExpiry != null) {

@@ -536,21 +536,22 @@ public final class UelUtil {
             return obj;
         }
         if (createObjectType != null) {
-            if ("string".equals(createObjectType)) {
-                return "";
-            } else if ("null".equals(createObjectType)) {
-                return null;
-            } else if ("boolean".equals(createObjectType)) {
-                return Boolean.FALSE;
-            } else if ("integer".equals(createObjectType)) {
-                return 0;
-            } else if ("long".equals(createObjectType)) {
-                return 0L;
-            } else if ("double".equals(createObjectType)) {
-                return (double) 0;
-            } else if ("bigDecimal".equals(createObjectType)) {
-                return BigDecimal.ZERO;
-            }
+          switch (createObjectType) {
+            case "string":
+              return "";
+            case "null":
+              return null;
+            case "boolean":
+              return Boolean.FALSE;
+            case "integer":
+              return 0;
+            case "long":
+              return 0L;
+            case "double":
+              return (double) 0;
+            case "bigDecimal":
+              return BigDecimal.ZERO;
+          }
         }
         return null;
     }

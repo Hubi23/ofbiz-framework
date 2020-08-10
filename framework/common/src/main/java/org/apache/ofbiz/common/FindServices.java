@@ -331,40 +331,53 @@ public class FindServices {
         TimeZone timeZone = (TimeZone) context.get("timeZone");
         EntityComparisonOperator<?, ?> fieldOp = null;
         if (operation != null) {
-            if (operation.equals("contains")) {
-                fieldOp = EntityOperator.LIKE;
-                fieldValue = "%" + fieldValue + "%";
-            } else if ("not-contains".equals(operation) || "notContains".equals(operation)) {
-                fieldOp = EntityOperator.NOT_LIKE;
-                fieldValue = "%" + fieldValue + "%";
-            } else if (operation.equals("empty")) {
-                return EntityCondition.makeCondition(fieldName, EntityOperator.EQUALS, null);
-            } else if (operation.equals("like")) {
-                fieldOp = EntityOperator.LIKE;
-                fieldValue = fieldValue + "%";
-            } else if ("not-like".equals(operation) || "notLike".equals(operation)) {
-                fieldOp = EntityOperator.NOT_LIKE;
-                fieldValue = fieldValue + "%";
-            } else if ("opLessThan".equals(operation)) {
-                fieldOp = EntityOperator.LESS_THAN;
-            } else if ("upToDay".equals(operation)) {
-                fieldOp = EntityOperator.LESS_THAN;
-            } else if ("upThruDay".equals(operation)) {
-                fieldOp = EntityOperator.LESS_THAN_EQUAL_TO;
-            } else if (operation.equals("greaterThanFromDayStart")) {
-                String timeStampString = (String) fieldValue;
-                Object startValue = modelField.getModelEntity().convertFieldValue(modelField, dayStart(timeStampString, 0, timeZone, locale), delegator, context);
-                return EntityCondition.makeCondition(fieldName, EntityOperator.GREATER_THAN_EQUAL_TO, startValue);
-            } else if (operation.equals("sameDay")) {
-                String timeStampString = (String) fieldValue;
-                Object startValue = modelField.getModelEntity().convertFieldValue(modelField, dayStart(timeStampString, 0, timeZone, locale), delegator, context);
-                EntityCondition startCond = EntityCondition.makeCondition(fieldName, EntityOperator.GREATER_THAN_EQUAL_TO, startValue);
-                Object endValue = modelField.getModelEntity().convertFieldValue(modelField, dayStart(timeStampString, 1, timeZone, locale), delegator, context);
-                EntityCondition endCond = EntityCondition.makeCondition(fieldName, EntityOperator.LESS_THAN, endValue);
-                return EntityCondition.makeCondition(startCond, endCond);
-            } else {
-                fieldOp = entityOperators.get(operation);
+          switch (operation) {
+            case "contains":
+              fieldOp = EntityOperator.LIKE;
+              fieldValue = "%" + fieldValue + "%";
+              break;
+            case "not-contains":
+            case "notContains":
+              fieldOp = EntityOperator.NOT_LIKE;
+              fieldValue = "%" + fieldValue + "%";
+              break;
+            case "empty":
+              return EntityCondition.makeCondition(fieldName, EntityOperator.EQUALS, null);
+            case "like":
+              fieldOp = EntityOperator.LIKE;
+              fieldValue = fieldValue + "%";
+              break;
+            case "not-like":
+            case "notLike":
+              fieldOp = EntityOperator.NOT_LIKE;
+              fieldValue = fieldValue + "%";
+              break;
+            case "opLessThan":
+              fieldOp = EntityOperator.LESS_THAN;
+              break;
+            case "upToDay":
+              fieldOp = EntityOperator.LESS_THAN;
+              break;
+            case "upThruDay":
+              fieldOp = EntityOperator.LESS_THAN_EQUAL_TO;
+              break;
+            case "greaterThanFromDayStart": {
+              String timeStampString = (String) fieldValue;
+              Object startValue = modelField.getModelEntity().convertFieldValue(modelField, dayStart(timeStampString, 0, timeZone, locale), delegator, context);
+              return EntityCondition.makeCondition(fieldName, EntityOperator.GREATER_THAN_EQUAL_TO, startValue);
             }
+            case "sameDay": {
+              String timeStampString = (String) fieldValue;
+              Object startValue = modelField.getModelEntity().convertFieldValue(modelField, dayStart(timeStampString, 0, timeZone, locale), delegator, context);
+              EntityCondition startCond = EntityCondition.makeCondition(fieldName, EntityOperator.GREATER_THAN_EQUAL_TO, startValue);
+              Object endValue = modelField.getModelEntity().convertFieldValue(modelField, dayStart(timeStampString, 1, timeZone, locale), delegator, context);
+              EntityCondition endCond = EntityCondition.makeCondition(fieldName, EntityOperator.LESS_THAN, endValue);
+              return EntityCondition.makeCondition(startCond, endCond);
+            }
+            default:
+              fieldOp = entityOperators.get(operation);
+              break;
+          }
         } else {
             if (UtilValidate.isNotEmpty(UtilGenerics.toList(fieldValue))) {
                 fieldOp = EntityOperator.IN;

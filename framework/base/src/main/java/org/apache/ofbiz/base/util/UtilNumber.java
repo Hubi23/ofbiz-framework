@@ -272,23 +272,24 @@ public final class UtilNumber {
             return null;
         }
         value = value.trim();
-        if ("ROUND_HALF_UP".equals(value)) {
-            return RoundingMode.HALF_UP;
-        } else if ("ROUND_HALF_DOWN".equals(value)) {
-            return RoundingMode.HALF_DOWN;
-        } else if ("ROUND_HALF_EVEN".equals(value)) {
-            return RoundingMode.HALF_EVEN;
-        } else if ("ROUND_UP".equals(value)) {
-            return RoundingMode.UP;
-        } else if ("ROUND_DOWN".equals(value)) {
-            return RoundingMode.DOWN;
-        } else if ("ROUND_CEILING".equals(value)) {
-            return RoundingMode.CEILING;
-        } else if ("ROUND_FLOOR".equals(value)) {
-            return RoundingMode.FLOOR;
-        } else if ("ROUND_UNNECCESSARY".equals(value)) {
-            return RoundingMode.UNNECESSARY;
-        }
+      switch (value) {
+        case "ROUND_HALF_UP":
+          return RoundingMode.HALF_UP;
+        case "ROUND_HALF_DOWN":
+          return RoundingMode.HALF_DOWN;
+        case "ROUND_HALF_EVEN":
+          return RoundingMode.HALF_EVEN;
+        case "ROUND_UP":
+          return RoundingMode.UP;
+        case "ROUND_DOWN":
+          return RoundingMode.DOWN;
+        case "ROUND_CEILING":
+          return RoundingMode.CEILING;
+        case "ROUND_FLOOR":
+          return RoundingMode.FLOOR;
+        case "ROUND_UNNECCESSARY":
+          return RoundingMode.UNNECESSARY;
+      }
         return null;
     }
 

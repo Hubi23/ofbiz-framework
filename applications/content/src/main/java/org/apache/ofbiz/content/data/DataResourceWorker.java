@@ -686,137 +686,142 @@ public class DataResourceWorker  implements org.apache.ofbiz.widget.content.Data
             templateContext.put("mimeTypeId", targetMimeTypeId);
 
             // FTL template
-            if ("FTL".equals(dataTemplateTypeId)) {
-                try {
+            switch (dataTemplateTypeId) {
+                case "FTL":
+                    try {
+                        // get the template data for rendering
+                        String templateText = getDataResourceText(dataResource, targetMimeTypeId, locale, templateContext, delegator, cache);
+
+                        // if use web analytics.
+                        if (UtilValidate.isNotEmpty(webAnalytics)) {
+                            StringBuilder newTemplateText = new StringBuilder(templateText);
+                            String webAnalyticsCode = "<script type=\"application/javascript\">";
+                            for (GenericValue webAnalytic : webAnalytics) {
+                                StringWrapper wrapString = StringUtil.wrapString((String) webAnalytic.get("webAnalyticsCode"));
+                                webAnalyticsCode += wrapString.toString();
+                            }
+                            webAnalyticsCode += "</script>";
+                            newTemplateText.insert(templateText.lastIndexOf("</head>"), webAnalyticsCode);
+                            templateText = newTemplateText.toString();
+                        }
+
+                        // render the FTL template
+                        boolean useTemplateCache = cache && !UtilProperties.getPropertyAsBoolean("content", "disable.ftl.template.cache", false);
+                        //Do not use dataResource.lastUpdatedStamp for dataResource template caching as it may use ftl file or electronicText
+                        // If dataResource using ftl file use nowTimestamp to avoid freemarker caching
+                        Timestamp lastUpdatedStamp = UtilDateTime.nowTimestamp();
+                        //If dataResource is type of ELECTRONIC_TEXT then only use the lastUpdatedStamp of electronicText entity for freemarker caching
+                        if ("ELECTRONIC_TEXT".equals(dataResource.getString("dataResourceTypeId"))) {
+                            GenericValue electronicText = dataResource.getRelatedOne("ElectronicText", true);
+                            if (electronicText != null) {
+                                lastUpdatedStamp = electronicText.getTimestamp("lastUpdatedStamp");
+                            }
+                        }
+
+                        FreeMarkerWorker.renderTemplateFromString("delegator:" + delegator.getDelegatorName() + ":DataResource:" + dataResourceId, templateText, templateContext, out, lastUpdatedStamp.getTime(), useTemplateCache);
+                    } catch (TemplateException e) {
+                        throw new GeneralException("Error rendering FTL template", e);
+                    }
+
+                    break;
+                case "XSLT":
+                    File targetFileLocation = new File(System.getProperty("ofbiz.home") + "/runtime/tempfiles/docbook.css");
+                    String defaultVisualThemeId = EntityUtilProperties.getPropertyValue("general", "VISUAL_THEME", delegator);
+                    visualTheme = ThemeFactory.getVisualThemeFromId(defaultVisualThemeId);
+                    modelTheme = visualTheme.getModelTheme();
+                    String docbookStylesheet = modelTheme.getProperty("VT_DOCBOOKSTYLESHEET").toString();
+                    File sourceFileLocation = new File(System.getProperty("ofbiz.home") + "/themes" + docbookStylesheet.substring(1, docbookStylesheet.length() - 1));
+                    UtilMisc.copyFile(sourceFileLocation, targetFileLocation);
                     // get the template data for rendering
-                    String templateText = getDataResourceText(dataResource, targetMimeTypeId, locale, templateContext, delegator, cache);
+                    String templateLocation = DataResourceWorker.getContentFile(dataResource.getString("dataResourceTypeId"), dataResource.getString("objectInfo"), (String) templateContext.get("contextRoot")).toString();
+                    // render the XSLT template and file
+                    String outDoc = null;
+                    try {
+                        outDoc = XslTransform.renderTemplate(templateLocation, (String) templateContext.get("docFile"));
+                    } catch (TransformerException c) {
+                        Debug.logError("XSL TransformerException: " + c.getMessage(), module);
+                    }
+                    out.append(outDoc);
 
-                    // if use web analytics.
-                    if (UtilValidate.isNotEmpty(webAnalytics)) {
-                        StringBuilder newTemplateText = new StringBuilder(templateText);
-                        String webAnalyticsCode = "<script type=\"application/javascript\">";
-                        for (GenericValue webAnalytic : webAnalytics) {
-                            StringWrapper wrapString = StringUtil.wrapString((String) webAnalytic.get("webAnalyticsCode"));
-                            webAnalyticsCode += wrapString.toString();
+                    // Screen Widget template
+                    break;
+                case "SCREEN_COMBINED":
+                    try {
+                        MapStack<String> context = MapStack.create(templateContext);
+                        context.put("locale", locale);
+                        // prepare the map for preRenderedContent
+                        String textData = (String) context.get("textData");
+                        if (UtilValidate.isNotEmpty(textData)) {
+                            Map<String, Object> prc = new HashMap<>();
+                            String mapKey = (String) context.get("mapKey");
+                            if (mapKey != null) {
+                                prc.put(mapKey, mapKey);
+                            }
+                            prc.put("body", textData); // used for default screen defs
+                            context.put("preRenderedContent", prc);
                         }
-                        webAnalyticsCode += "</script>";
-                        newTemplateText.insert(templateText.lastIndexOf("</head>"), webAnalyticsCode);
-                        templateText = newTemplateText.toString();
-                    }
-
-                    // render the FTL template
-                    boolean useTemplateCache = cache && !UtilProperties.getPropertyAsBoolean("content", "disable.ftl.template.cache", false);
-                    //Do not use dataResource.lastUpdatedStamp for dataResource template caching as it may use ftl file or electronicText
-                    // If dataResource using ftl file use nowTimestamp to avoid freemarker caching
-                    Timestamp lastUpdatedStamp = UtilDateTime.nowTimestamp();
-                    //If dataResource is type of ELECTRONIC_TEXT then only use the lastUpdatedStamp of electronicText entity for freemarker caching
-                    if ("ELECTRONIC_TEXT".equals(dataResource.getString("dataResourceTypeId"))) {
-                        GenericValue electronicText = dataResource.getRelatedOne("ElectronicText", true);
-                        if (electronicText != null) {
-                            lastUpdatedStamp = electronicText.getTimestamp("lastUpdatedStamp");
+                        // get the screen renderer; or create a new one
+                        ScreenRenderer screens = (ScreenRenderer) context.get("screens");
+                        if (screens == null) {
+                            // TODO: replace "screen" to support dynamic rendering of different output
+                            ScreenStringRenderer screenStringRenderer = new MacroScreenRenderer(modelTheme.getType("screen"), modelTheme.getScreenRendererLocation("screen"));
+                            screens = new ScreenRenderer(out, context, screenStringRenderer);
+                            screens.getContext().put("screens", screens);
                         }
-                    }
-
-                    FreeMarkerWorker.renderTemplateFromString("delegator:" + delegator.getDelegatorName() + ":DataResource:" + dataResourceId, templateText, templateContext, out, lastUpdatedStamp.getTime(), useTemplateCache);
-                } catch (TemplateException e) {
-                    throw new GeneralException("Error rendering FTL template", e);
-                }
-
-            } else if ("XSLT".equals(dataTemplateTypeId)) {
-                File targetFileLocation = new File(System.getProperty("ofbiz.home")+"/runtime/tempfiles/docbook.css");
-                String defaultVisualThemeId = EntityUtilProperties.getPropertyValue("general", "VISUAL_THEME", delegator);
-                visualTheme = ThemeFactory.getVisualThemeFromId(defaultVisualThemeId);
-                modelTheme = visualTheme.getModelTheme();
-                String docbookStylesheet = modelTheme.getProperty("VT_DOCBOOKSTYLESHEET").toString();
-                File sourceFileLocation = new File(System.getProperty("ofbiz.home") + "/themes" + docbookStylesheet.substring(1, docbookStylesheet.length() - 1));
-                UtilMisc.copyFile(sourceFileLocation,targetFileLocation);
-                // get the template data for rendering
-                String templateLocation = DataResourceWorker.getContentFile(dataResource.getString("dataResourceTypeId"), dataResource.getString("objectInfo"), (String) templateContext.get("contextRoot")).toString();
-                // render the XSLT template and file
-                String outDoc = null;
-                try {
-                    outDoc = XslTransform.renderTemplate(templateLocation, (String) templateContext.get("docFile"));
-                } catch (TransformerException c) {
-                    Debug.logError("XSL TransformerException: " + c.getMessage(), module);
-                }
-                out.append(outDoc);
-
-            // Screen Widget template
-            } else if ("SCREEN_COMBINED".equals(dataTemplateTypeId)) {
-                try {
-                    MapStack<String> context = MapStack.create(templateContext);
-                    context.put("locale", locale);
-                    // prepare the map for preRenderedContent
-                    String textData = (String) context.get("textData");
-                    if (UtilValidate.isNotEmpty(textData)) {
-                        Map<String, Object> prc = new HashMap<>();
-                        String mapKey = (String) context.get("mapKey");
-                        if (mapKey != null) {
-                            prc.put(mapKey, mapKey);
+                        // render the screen
+                        ModelScreen modelScreen = null;
+                        ScreenStringRenderer renderer = screens.getScreenStringRenderer();
+                        String combinedName = dataResource.getString("objectInfo");
+                        if ("URL_RESOURCE".equals(dataResource.getString("dataResourceTypeId")) && UtilValidate.isNotEmpty(combinedName) && combinedName.startsWith("component://")) {
+                            modelScreen = ScreenFactory.getScreenFromLocation(combinedName);
+                        } else { // stored in  a single file, long or short text
+                            Document screenXml = UtilXml.readXmlDocument(getDataResourceText(dataResource, targetMimeTypeId, locale, templateContext, delegator, cache), true, true);
+                            Map<String, ModelScreen> modelScreenMap = ScreenFactory.readScreenDocument(screenXml, "DataResourceId: " + dataResource.getString("dataResourceId"));
+                            if (UtilValidate.isNotEmpty(modelScreenMap)) {
+                                Map.Entry<String, ModelScreen> entry = modelScreenMap.entrySet().iterator().next(); // get first entry, only one screen allowed per file
+                                modelScreen = entry.getValue();
+                            }
                         }
-                        prc.put("body", textData); // used for default screen defs
-                        context.put("preRenderedContent", prc);
-                    }
-                    // get the screen renderer; or create a new one
-                    ScreenRenderer screens = (ScreenRenderer) context.get("screens");
-                    if (screens == null) {
-                     // TODO: replace "screen" to support dynamic rendering of different output
-                        ScreenStringRenderer screenStringRenderer = new MacroScreenRenderer(modelTheme.getType("screen"), modelTheme.getScreenRendererLocation("screen"));
-                        screens = new ScreenRenderer(out, context, screenStringRenderer);
-                        screens.getContext().put("screens", screens);
-                    }
-                    // render the screen
-                    ModelScreen modelScreen = null;
-                    ScreenStringRenderer renderer = screens.getScreenStringRenderer();
-                    String combinedName = dataResource.getString("objectInfo");
-                    if ("URL_RESOURCE".equals(dataResource.getString("dataResourceTypeId")) && UtilValidate.isNotEmpty(combinedName) && combinedName.startsWith("component://")) {
-                        modelScreen = ScreenFactory.getScreenFromLocation(combinedName);
-                    } else { // stored in  a single file, long or short text
-                        Document screenXml = UtilXml.readXmlDocument(getDataResourceText(dataResource, targetMimeTypeId, locale, templateContext, delegator, cache), true, true);
-                        Map<String, ModelScreen> modelScreenMap = ScreenFactory.readScreenDocument(screenXml, "DataResourceId: " + dataResource.getString("dataResourceId"));
-                        if (UtilValidate.isNotEmpty(modelScreenMap)) {
-                            Map.Entry<String, ModelScreen> entry = modelScreenMap.entrySet().iterator().next(); // get first entry, only one screen allowed per file
-                            modelScreen = entry.getValue();
+                        if (UtilValidate.isNotEmpty(modelScreen)) {
+                            modelScreen.renderScreenString(out, context, renderer);
+                        } else {
+                            throw new GeneralException("The dataResource file [" + dataResourceId + "] could not be found");
                         }
+                    } catch (SAXException | ParserConfigurationException e) {
+                        throw new GeneralException("Error rendering Screen template", e);
+                    } catch (TemplateException e) {
+                        throw new GeneralException("Error creating Screen renderer", e);
                     }
-                    if (UtilValidate.isNotEmpty(modelScreen)) {
-                        modelScreen.renderScreenString(out, context, renderer);
-                    } else {
-                        throw new GeneralException("The dataResource file [" + dataResourceId + "] could not be found");
-                    }
-                } catch (SAXException | ParserConfigurationException e) {
-                    throw new GeneralException("Error rendering Screen template", e);
-                } catch (TemplateException e) {
-                    throw new GeneralException("Error creating Screen renderer", e);
-                }
-            } else if ("FORM_COMBINED".equals(dataTemplateTypeId)){
-                try {
-                    Map<String, Object> context = UtilGenerics.checkMap(templateContext.get("globalContext"));
-                    context.put("locale", locale);
-                    context.put("simpleEncoder", UtilCodec.getEncoder(modelTheme.getEncoder("screen")));
-                    HttpServletRequest request = (HttpServletRequest) context.get("request");
-                    HttpServletResponse response = (HttpServletResponse) context.get("response");
-                    ModelForm modelForm = null;
-                    ModelReader entityModelReader = delegator.getModelReader();
-                    String formText = getDataResourceText(dataResource, targetMimeTypeId, locale, templateContext, delegator, cache);
-                    Document formXml = UtilXml.readXmlDocument(formText, true, true);
-                    Map<String, ModelForm> modelFormMap = FormFactory.readFormDocument(formXml, entityModelReader, dispatcher.getDispatchContext(), null);
+                    break;
+                case "FORM_COMBINED":
+                    try {
+                        Map<String, Object> context = UtilGenerics.checkMap(templateContext.get("globalContext"));
+                        context.put("locale", locale);
+                        context.put("simpleEncoder", UtilCodec.getEncoder(modelTheme.getEncoder("screen")));
+                        HttpServletRequest request = (HttpServletRequest) context.get("request");
+                        HttpServletResponse response = (HttpServletResponse) context.get("response");
+                        ModelForm modelForm = null;
+                        ModelReader entityModelReader = delegator.getModelReader();
+                        String formText = getDataResourceText(dataResource, targetMimeTypeId, locale, templateContext, delegator, cache);
+                        Document formXml = UtilXml.readXmlDocument(formText, true, true);
+                        Map<String, ModelForm> modelFormMap = FormFactory.readFormDocument(formXml, entityModelReader, dispatcher.getDispatchContext(), null);
 
-                    if (UtilValidate.isNotEmpty(modelFormMap)) {
-                        Map.Entry<String, ModelForm> entry = modelFormMap.entrySet().iterator().next(); // get first entry, only one form allowed per file
-                        modelForm = entry.getValue();
+                        if (UtilValidate.isNotEmpty(modelFormMap)) {
+                            Map.Entry<String, ModelForm> entry = modelFormMap.entrySet().iterator().next(); // get first entry, only one form allowed per file
+                            modelForm = entry.getValue();
+                        }
+                        String formrenderer = modelTheme.getFormRendererLocation("screen");
+                        MacroFormRenderer renderer = new MacroFormRenderer(formrenderer, request, response);
+                        FormRenderer formRenderer = new FormRenderer(modelForm, renderer);
+                        formRenderer.render(out, context);
+                    } catch (TemplateException e) {
+                        throw new GeneralException("Error creating Screen renderer", e);
+                    } catch (Exception e) {
+                        throw new GeneralException("Error rendering Screen template", e);
                     }
-                    String formrenderer = modelTheme.getFormRendererLocation("screen");
-                    MacroFormRenderer renderer = new MacroFormRenderer(formrenderer, request, response);
-                    FormRenderer formRenderer = new FormRenderer(modelForm, renderer);
-                    formRenderer.render(out, context);
-                } catch (TemplateException e) {
-                    throw new GeneralException("Error creating Screen renderer", e);
-                } catch (Exception e) {
-                    throw new GeneralException("Error rendering Screen template", e);
-                }
-            } else {
-                throw new GeneralException("The dataTemplateTypeId [" + dataTemplateTypeId + "] is not yet supported");
+                    break;
+                default:
+                    throw new GeneralException("The dataTemplateTypeId [" + dataTemplateTypeId + "] is not yet supported");
             }
         }
     }
@@ -1069,28 +1074,33 @@ public class DataResourceWorker  implements org.apache.ofbiz.widget.content.Data
             byte[] bytes = new byte[0];
             GenericValue valObj;
 
-            if ("IMAGE_OBJECT".equals(dataResourceTypeId)) {
-                valObj = EntityQuery.use(delegator).from("ImageDataResource").where("dataResourceId", dataResourceId).cache(cache).queryOne();
-                if (valObj != null) {
-                    bytes = valObj.getBytes("imageData");
-                }
-            } else if ("VIDEO_OBJECT".equals(dataResourceTypeId)) {
-                valObj = EntityQuery.use(delegator).from("VideoDataResource").where("dataResourceId", dataResourceId).cache(cache).queryOne();
-                if (valObj != null) {
-                    bytes = valObj.getBytes("videoData");
-                }
-            } else if ("AUDIO_OBJECT".equals(dataResourceTypeId)) {
-                valObj = EntityQuery.use(delegator).from("AudioDataResource").where("dataResourceId", dataResourceId).cache(cache).queryOne();
-                if (valObj != null) {
-                    bytes = valObj.getBytes("audioData");
-                }
-            } else if ("OTHER_OBJECT".equals(dataResourceTypeId)) {
-                valObj = EntityQuery.use(delegator).from("OtherDataResource").where("dataResourceId", dataResourceId).cache(cache).queryOne();
-                if (valObj != null) {
-                    bytes = valObj.getBytes("dataResourceContent");
-                }
-            } else {
-                throw new GeneralException("Unsupported OBJECT type [" + dataResourceTypeId + "]; cannot stream");
+            switch (dataResourceTypeId) {
+                case "IMAGE_OBJECT":
+                    valObj = EntityQuery.use(delegator).from("ImageDataResource").where("dataResourceId", dataResourceId).cache(cache).queryOne();
+                    if (valObj != null) {
+                        bytes = valObj.getBytes("imageData");
+                    }
+                    break;
+                case "VIDEO_OBJECT":
+                    valObj = EntityQuery.use(delegator).from("VideoDataResource").where("dataResourceId", dataResourceId).cache(cache).queryOne();
+                    if (valObj != null) {
+                        bytes = valObj.getBytes("videoData");
+                    }
+                    break;
+                case "AUDIO_OBJECT":
+                    valObj = EntityQuery.use(delegator).from("AudioDataResource").where("dataResourceId", dataResourceId).cache(cache).queryOne();
+                    if (valObj != null) {
+                        bytes = valObj.getBytes("audioData");
+                    }
+                    break;
+                case "OTHER_OBJECT":
+                    valObj = EntityQuery.use(delegator).from("OtherDataResource").where("dataResourceId", dataResourceId).cache(cache).queryOne();
+                    if (valObj != null) {
+                        bytes = valObj.getBytes("dataResourceContent");
+                    }
+                    break;
+                default:
+                    throw new GeneralException("Unsupported OBJECT type [" + dataResourceTypeId + "]; cannot stream");
             }
 
             return UtilMisc.toMap("stream", new ByteArrayInputStream(bytes), "length", (long) bytes.length);

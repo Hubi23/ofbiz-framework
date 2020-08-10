@@ -252,13 +252,17 @@ public class OutputServices {
             baos.close();
 
             fileName += UtilDateTime.nowAsString();
-            if ("application/pdf".equals(contentType)) {
-                fileName += ".pdf";
-            } else if ("application/postscript".equals(contentType)) {
-                fileName += ".ps";
-            } else if ("text/plain".equals(contentType)) {
-                fileName += ".txt";
-            }
+          switch (contentType) {
+            case "application/pdf":
+              fileName += ".pdf";
+              break;
+            case "application/postscript":
+              fileName += ".ps";
+              break;
+            case "text/plain":
+              fileName += ".txt";
+              break;
+          }
             if (UtilValidate.isEmpty(filePath)) {
                 filePath = EntityUtilProperties.getPropertyValue("content", "content.output.path", "/output", delegator);
             }

@@ -747,14 +747,19 @@ public class PayflowPro {
             result.put("authResult", Boolean.FALSE);
 
             // now check certain special conditions and report back through the generic params
-            if ("12".equals(respCode)) {
-                result.put("resultDeclined", Boolean.TRUE);
-            } else if ("50".equals(respCode)) {
-                result.put("resultNsf", Boolean.TRUE);
-            } else if ("23".equals(respCode)) {
-                result.put("resultBadCardNumber", Boolean.TRUE);
-            } else if ("24".equals(respCode)) {
-                result.put("resultBadExpire", Boolean.TRUE);
+            switch (respCode) {
+                case "12":
+                    result.put("resultDeclined", Boolean.TRUE);
+                    break;
+                case "50":
+                    result.put("resultNsf", Boolean.TRUE);
+                    break;
+                case "23":
+                    result.put("resultBadCardNumber", Boolean.TRUE);
+                    break;
+                case "24":
+                    result.put("resultBadExpire", Boolean.TRUE);
+                    break;
             }
         }
         result.put("cvCode", cvvCode);

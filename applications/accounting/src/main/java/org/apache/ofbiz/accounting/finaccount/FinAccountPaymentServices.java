@@ -205,16 +205,20 @@ public class FinAccountPaymentServices {
                 if ("FNACT_NEGPENDREPL".equals(statusId) || "FNACT_MANFROZEN".equals(statusId) || "FNACT_CANCELLED"
                         .equals(statusId)) {
                     Map<String, Object> result = ServiceUtil.returnSuccess();
-                    if ("FNACT_NEGPENDREPL".equals(statusId)) {
-                        result.put("authMessage", UtilProperties.getMessage(resourceError,
-                                "AccountingFinAccountNegative", locale));
-                    } else if ("FNACT_MANFROZEN".equals(statusId)) {
-                        result.put("authMessage", UtilProperties.getMessage(resourceError,
-                                "AccountingFinAccountFrozen", locale));
-                    } else if ("FNACT_CANCELLED".equals(statusId)) {
-                        result.put("authMessage", UtilProperties.getMessage(resourceError,
-                                "AccountingFinAccountCancelled", locale));
-                    }
+                  switch (statusId) {
+                    case "FNACT_NEGPENDREPL":
+                      result.put("authMessage", UtilProperties.getMessage(resourceError,
+                          "AccountingFinAccountNegative", locale));
+                      break;
+                    case "FNACT_MANFROZEN":
+                      result.put("authMessage", UtilProperties.getMessage(resourceError,
+                          "AccountingFinAccountFrozen", locale));
+                      break;
+                    case "FNACT_CANCELLED":
+                      result.put("authMessage", UtilProperties.getMessage(resourceError,
+                          "AccountingFinAccountCancelled", locale));
+                      break;
+                  }
                     result.put("authResult", Boolean.FALSE);
                     result.put("processAmount", amount);
                     result.put("authFlag", "0");

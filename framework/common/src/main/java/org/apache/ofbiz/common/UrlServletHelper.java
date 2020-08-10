@@ -107,14 +107,19 @@ public final class UrlServletHelper {
                 String name = queryStringToken.substring(0, equalIndex - 1);
                 String value = queryStringToken.substring(equalIndex + 1, queryStringToken.length() - 1);
 
-                if ("viewIndex".equals(name)) {
-                    viewIndex = value;
-                } else if ("viewSize".equals(name)) {
-                    viewSize = value;
-                } else if ("viewSort".equals(name)) {
-                    viewSort = value;
-                } else if ("searchString".equals(name)) {
-                    searchString = value;
+                switch (name) {
+                    case "viewIndex":
+                        viewIndex = value;
+                        break;
+                    case "viewSize":
+                        viewSize = value;
+                        break;
+                    case "viewSort":
+                        viewSort = value;
+                        break;
+                    case "searchString":
+                        searchString = value;
+                        break;
                 }
             }
         }

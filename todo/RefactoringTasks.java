@@ -29,7 +29,7 @@ public class RefactoringTasks {
         // REFACTO use diamond operator <> with generics where possible (Explicit type can be replaced with <>)
         // REFACTO merge identical 'catch' branches in 'try' statement
         // REFACTO use 'try with resource' instead of the old 'try finally' code (check carefully that each refactoring is correct)
-        // REFACTOR 'if' replaceble with 'switch'
+        // REFACTO 'if' replaceble with 'switch'
     }
 
     public static void java8Required() {
