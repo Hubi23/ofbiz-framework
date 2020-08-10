@@ -1,0 +1,19 @@
+(Some of these steps take a bit of time and we all want to be ready for the class and not waste time downloading and indexing)
+
+1. Download and install JDK 11 (although JDK 8 also works)
+(We recommend Azul Zulu https://www.azul.com/downloads/zulu-community/?version=java-11-lts&package=jdk)
+
+2. Download and install latest IntelliJ IDEA Community Edition
+https://www.jetbrains.com/idea/download
+
+3. Get the sources for the practical exercises. We recommend that you fork our repository https://github.com/kabutz/ofbiz-framework and then checkout the refactorj8 branch.  Create a branch off the refactorj8 branch for your exercises.
+
+4. In the ofbiz-framework directory call "gradlew cleanAll loadAll" and then once that is done, "gradlew ofbiz"
+https://localhost:8443/ordermgr
+https://localhost:8443/accounting
+https://localhost:8443/webtools
+You can log in with the user *admin* and password *ofbiz*.
+
+5. Open IntelliJ IDEA Community Edition and set it to use your JDK 8 and open the ofbiz-framework directory as your project. It will take a bit of time to index all the files.
+
+6. In IntelliJ, go to Analyze -> Inspect Code. Select "Whole project" and 
