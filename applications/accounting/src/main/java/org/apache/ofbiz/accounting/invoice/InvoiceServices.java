@@ -3293,17 +3293,20 @@ public class InvoiceServices {
                 }
                 BigDecimal tobeApplied = BigDecimal.ZERO;
                 // item total amount - already applied (if any)
-                // REFACTOR to use stream() and map()/reduce() instead of Iterator
-                BigDecimal alreadyApplied = BigDecimal.ZERO;
+                // REFACTO to use stream() and map()/reduce() instead of Iterator
+                BigDecimal alreadyApplied;
                 if (UtilValidate.isNotEmpty(paymentApplications)) {
                     // application(s) found, add them all together
-                  for (GenericValue application : paymentApplications) {
-                    paymentApplication = application;
-                    alreadyApplied = alreadyApplied.add(paymentApplication.getBigDecimal("amountApplied").setScale(DECIMALS, ROUNDING));
-                  }
+                    GenericValue[] tempPaymentApplication = { paymentApplication };
+                    alreadyApplied = paymentApplications.stream()
+                        .peek(application -> tempPaymentApplication[0] = application)
+                        .map(application -> application.getBigDecimal("amountApplied").setScale(DECIMALS, ROUNDING))
+                        .reduce(BigDecimal.ZERO, BigDecimal::add);
+                    paymentApplication = tempPaymentApplication[0];
                     tobeApplied = itemTotal.subtract(alreadyApplied).setScale(DECIMALS,ROUNDING);
                 } else {
                     // no application connected yet
+                    alreadyApplied = BigDecimal.ZERO;
                     tobeApplied = itemTotal;
                 }
                 if (debug) {
