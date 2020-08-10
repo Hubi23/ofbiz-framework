@@ -245,43 +245,37 @@ public final class SSLUtil {
     public static HostnameVerifier getHostnameVerifier(int level) {
         switch (level) {
             case HOSTCERT_MIN_CHECK:
-                return new HostnameVerifier() {
-                    public boolean verify(String hostname, SSLSession session) {
-                        javax.security.cert.X509Certificate[] peerCerts;
+                return (hostname, session) -> {
+                    javax.security.cert.X509Certificate[] peerCerts;
+                    try {
+                        peerCerts = session.getPeerCertificateChain();
+                    } catch (SSLPeerUnverifiedException e) {
+                        // cert not verified
+                        Debug.logWarning(e.getMessage(), module);
+                        return false;
+                    }
+                    for (javax.security.cert.X509Certificate peerCert: peerCerts) {
+                        Principal x500s = peerCert.getSubjectDN();
+                        Map<String, String> subjectMap = KeyStoreUtil.getX500Map(x500s);
+
+                        if (Debug.infoOn()) {
+                            Debug.logInfo(peerCert.getSerialNumber().toString(16) + " :: " + subjectMap.get("CN"), module);
+                        }
+
                         try {
-                            peerCerts = session.getPeerCertificateChain();
-                        } catch (SSLPeerUnverifiedException e) {
-                            // cert not verified
-                            Debug.logWarning(e.getMessage(), module);
+                            peerCert.checkValidity();
+                        } catch (RuntimeException e) {
+                            throw e;
+                        } catch (Exception e) {
+                            // certificate not valid
+                            Debug.logWarning("Certificate is not valid!", module);
                             return false;
                         }
-                        for (javax.security.cert.X509Certificate peerCert: peerCerts) {
-                            Principal x500s = peerCert.getSubjectDN();
-                            Map<String, String> subjectMap = KeyStoreUtil.getX500Map(x500s);
-
-                            if (Debug.infoOn()) {
-                                Debug.logInfo(peerCert.getSerialNumber().toString(16) + " :: " + subjectMap.get("CN"), module);
-                            }
-
-                            try {
-                                peerCert.checkValidity();
-                            } catch (RuntimeException e) {
-                                throw e;
-                            } catch (Exception e) {
-                                // certificate not valid
-                                Debug.logWarning("Certificate is not valid!", module);
-                                return false;
-                            }
-                        }
-                        return true;
                     }
+                    return true;
                 };
             case HOSTCERT_NO_CHECK:
-                return new HostnameVerifier() {
-                    public boolean verify(String hostname, SSLSession session) {
-                        return true;
-                    }
-                };
+                return (hostname, session) -> true;
             default:
                 return null;
         }
