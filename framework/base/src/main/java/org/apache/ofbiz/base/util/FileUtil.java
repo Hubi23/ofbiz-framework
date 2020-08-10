@@ -83,15 +83,9 @@ public final class FileUtil {
                 return true;
             }
 
-            // REFACTOR to use stream(), allMatch()
-            boolean hasAllPathStrings = true;
+            // REFACTO to use stream(), allMatch()
             String fullPath = dir.getPath().replace('\\', '/');
-            for (String pathString: stringsToFindInPath) {
-                if (!fullPath.contains(pathString)) {
-                    hasAllPathStrings = false;
-                    break;
-                }
-            }
+            boolean hasAllPathStrings = stringsToFindInPath.stream().allMatch(pathString -> fullPath.contains(pathString));
 
             if (hasAllPathStrings && name.endsWith("." + fileExtension)) {
                 if (stringsToFindInFile.size() == 0) {
