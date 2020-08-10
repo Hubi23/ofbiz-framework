@@ -1632,9 +1632,7 @@ public class OrderReturnServices {
                     GenericValue invoice = billing.getRelatedOne("Invoice", false);
 
                     // put the invoice in the map if it doesn't already exist (a very loopy way of doing group by invoiceId without creating a view)
-                    if (returnInvoices.get(invoice.getString("invoiceId")) == null) {
-                        returnInvoices.put(invoice.getString("invoiceId"), invoice);
-                    }
+                    returnInvoices.putIfAbsent(invoice.getString("invoiceId"), invoice);
                 }
             }
 
