@@ -148,21 +148,19 @@ public final class UtilPlist {
         writer.println("<array>");
 
         indentLevel++;
-        Iterator<Object> propertyValueIter = propertyValueList.iterator();
-        while (propertyValueIter.hasNext()) {
-            Object propertyValue = propertyValueIter.next();
-            if (propertyValue instanceof Map<?, ?>) {
-                Map<String, Object> propertyMap = checkMap(propertyValue);
-                writePlistPropertyMapXml(propertyMap, indentLevel, writer);
-            } else {
-                for (int i = 0; i < indentLevel; i++) {
-                    writer.print(indentFourString);
-                }
-                writer.print("<string>");
-                writer.print(propertyValue);
-                writer.println("</string>");
-            }
+      for (Object propertyValue : propertyValueList) {
+        if (propertyValue instanceof Map<?, ?>) {
+          Map<String, Object> propertyMap = checkMap(propertyValue);
+          writePlistPropertyMapXml(propertyMap, indentLevel, writer);
+        } else {
+          for (int i = 0; i < indentLevel; i++) {
+            writer.print(indentFourString);
+          }
+          writer.print("<string>");
+          writer.print(propertyValue);
+          writer.println("</string>");
         }
+      }
         indentLevel--;
 
         for (int i = 0; i < indentLevel; i++) {

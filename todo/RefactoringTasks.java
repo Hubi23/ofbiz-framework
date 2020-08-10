@@ -22,7 +22,7 @@ public class RefactoringTasks {
     public static void java5Optional() {
         // REFACTO Replace 'indexOf()' with 'contains()' in String
         // REFACTO 'for' loop replaceable with 'foreach'
-        // REFACTOR 'while' loop replaceable with 'foreach'
+        // REFACTO 'while' loop replaceable with 'foreach'
     }
 
     public static void java7Required() {

@@ -383,9 +383,7 @@ public class LabelReferences {
         if (UtilValidate.isNotEmpty(serviceName) && (!("hidden".equals(defaultFieldType)))) {
             ModelService modelService = dispatchContext.getModelService(serviceName);
             List<ModelParam> modelParams = modelService.getInModelParamList();
-            Iterator<ModelParam> modelParamIter = modelParams.iterator();
-            while (modelParamIter.hasNext()) {
-                ModelParam modelParam = modelParamIter.next();
+            for (ModelParam modelParam : modelParams) {
                 // skip auto params that the service engine populates...
                 if ("userLogin".equals(modelParam.name) || "locale".equals(modelParam.name) || "timeZone".equals(modelParam.name)) {
                     continue;

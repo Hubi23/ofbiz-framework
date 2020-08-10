@@ -187,30 +187,28 @@ public class FormRenderer {
         } else {
             startFieldGroupId = startFieldGroup.getId();
         }
-        Iterator<FieldGroupBase> iter = modelForm.getFieldGroupList().iterator();
-        while (iter.hasNext()) {
-            FieldGroupBase obj = iter.next();
-            if (obj instanceof ModelForm.Banner) {
-                if (firstFound) {
-                    inbetweenList.add(obj);
-                }
-            } else {
-                FieldGroup fieldGroup = (FieldGroup) obj;
-                String fieldGroupId = fieldGroup.getId();
-                if (!firstFound) {
-                    if (fieldGroupId.equals(startFieldGroupId)) {
-                        firstFound = true;
-                        continue;
-                    }
-                }
-                if (firstFound) {
-                    if (fieldGroupId.equals(endFieldGroupId)) {
-                        break;
-                    }
-                    inbetweenList.add(fieldGroup);
-                }
+      for (FieldGroupBase obj : modelForm.getFieldGroupList()) {
+        if (obj instanceof ModelForm.Banner) {
+          if (firstFound) {
+            inbetweenList.add(obj);
+          }
+        } else {
+          FieldGroup fieldGroup = (FieldGroup) obj;
+          String fieldGroupId = fieldGroup.getId();
+          if (!firstFound) {
+            if (fieldGroupId.equals(startFieldGroupId)) {
+              firstFound = true;
+              continue;
             }
+          }
+          if (firstFound) {
+            if (fieldGroupId.equals(endFieldGroupId)) {
+              break;
+            }
+            inbetweenList.add(fieldGroup);
+          }
         }
+      }
         return inbetweenList;
     }
 
@@ -593,22 +591,20 @@ public class FormRenderer {
                 // do all of the hidden fields...
                 this.renderHiddenIgnoredFields(writer, localContext, formStringRenderer, hiddenIgnoredFieldList);
 
-                Iterator<ModelFormField> innerFormFieldIter = innerFormFields.iterator();
-                while (innerFormFieldIter.hasNext()) {
-                    ModelFormField modelFormField = innerFormFieldIter.next();
-                    if (modelForm.getSeparateColumns() || modelFormField.getSeparateColumn()) {
-                        formStringRenderer.renderFormatItemRowCellOpen(writer, localContext, modelForm, modelFormField, 1);
-                    }
-                    // render field widget
-                    if ((!"list".equals(modelForm.getType()) && !"multi".equals(modelForm.getType()))
-                            || modelFormField.shouldUse(localContext)) {
-                        modelFormField.renderFieldString(writer, localContext, formStringRenderer);
-                    }
-
-                    if (modelForm.getSeparateColumns() || modelFormField.getSeparateColumn()) {
-                        formStringRenderer.renderFormatItemRowCellClose(writer, localContext, modelForm, modelFormField);
-                    }
+              for (ModelFormField modelFormField : innerFormFields) {
+                if (modelForm.getSeparateColumns() || modelFormField.getSeparateColumn()) {
+                  formStringRenderer.renderFormatItemRowCellOpen(writer, localContext, modelForm, modelFormField, 1);
                 }
+                // render field widget
+                if ((!"list".equals(modelForm.getType()) && !"multi".equals(modelForm.getType()))
+                    || modelFormField.shouldUse(localContext)) {
+                  modelFormField.renderFieldString(writer, localContext, formStringRenderer);
+                }
+
+                if (modelForm.getSeparateColumns() || modelFormField.getSeparateColumn()) {
+                  formStringRenderer.renderFormatItemRowCellClose(writer, localContext, modelForm, modelFormField);
+                }
+              }
 
                 if (formPerItem) {
                     formStringRenderer.renderFormClose(writer, localContext, modelForm);
@@ -829,30 +825,28 @@ public class FormRenderer {
                         innerDisplayHyperlinkFieldsBegin.add(modelFormField);
                         currentPosition = modelFormField.getPosition();
                     }
-                    Iterator<ModelFormField> innerFormFieldIter = fieldListByPosition.iterator();
-                    while (innerFormFieldIter.hasNext()) {
-                        ModelFormField modelFormField = innerFormFieldIter.next();
-                        FieldInfo fieldInfo = modelFormField.getFieldInfo();
+                  for (ModelFormField modelFormField : fieldListByPosition) {
+                    FieldInfo fieldInfo = modelFormField.getFieldInfo();
 
-                        // don't do any header for hidden or ignored fields
-                        if (fieldInfo.getFieldType() == FieldInfo.HIDDEN
-                                || fieldInfo.getFieldType() == FieldInfo.IGNORED) {
-                            continue;
-                        }
-
-                        // skip all of the display/hyperlink fields
-                        if (!FieldInfo.isInputFieldType(fieldInfo.getFieldType())) {
-                            continue;
-                        }
-
-                        // if this is a list or multi form don't skip here because we don't want to skip the table cell, will skip the actual field later
-                        if (!"list".equals(modelForm.getType()) && !"multi".equals(modelForm.getType())
-                                && !modelFormField.shouldUse(localContext)) {
-                            continue;
-                        }
-                        innerFormFields.add(modelFormField);
-                        currentPosition = modelFormField.getPosition();
+                    // don't do any header for hidden or ignored fields
+                    if (fieldInfo.getFieldType() == FieldInfo.HIDDEN
+                        || fieldInfo.getFieldType() == FieldInfo.IGNORED) {
+                      continue;
                     }
+
+                    // skip all of the display/hyperlink fields
+                    if (!FieldInfo.isInputFieldType(fieldInfo.getFieldType())) {
+                      continue;
+                    }
+
+                    // if this is a list or multi form don't skip here because we don't want to skip the table cell, will skip the actual field later
+                    if (!"list".equals(modelForm.getType()) && !"multi".equals(modelForm.getType())
+                        && !modelFormField.shouldUse(localContext)) {
+                      continue;
+                    }
+                    innerFormFields.add(modelFormField);
+                    currentPosition = modelFormField.getPosition();
+                  }
                     while (innerDisplayHyperlinkFieldIter.hasNext()) {
                         ModelFormField modelFormField = innerDisplayHyperlinkFieldIter.next();
                         FieldInfo fieldInfo = modelFormField.getFieldInfo();

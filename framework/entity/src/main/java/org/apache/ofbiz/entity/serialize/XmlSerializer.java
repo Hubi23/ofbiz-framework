@@ -197,11 +197,10 @@ public class XmlSerializer {
 
             Collection<?> value = UtilGenerics.cast(object);
             Element element = document.createElement(elementName);
-            Iterator<?> iter = value.iterator();
 
-            while (iter.hasNext()) {
-                element.appendChild(serializeSingle(iter.next(), document));
-            }
+          for (Object o : value) {
+            element.appendChild(serializeSingle(o, document));
+          }
             return element;
         } else if (object instanceof GenericPK) {
             // Do GenericEntity objects as a special case, use std XML import/export routines

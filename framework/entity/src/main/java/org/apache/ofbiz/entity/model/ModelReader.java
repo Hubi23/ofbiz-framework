@@ -309,19 +309,17 @@ public class ModelReader implements Serializable {
                         for (ModelViewEntity curViewEntity : tempViewEntityList) {
                             // REFACTOR two loops to use stream(), map(), filter() x 2, distinct() and forEach()
                             Set<String> perViewMissingEntities = new HashSet<>();
-                            Iterator<ModelViewEntity.ModelMemberEntity> mmeIt = curViewEntity.getAllModelMemberEntities().iterator();
-                            while (mmeIt.hasNext()) {
-                                ModelViewEntity.ModelMemberEntity mme = mmeIt.next();
-                                String memberEntityName = mme.getEntityName();
-                                if (!entityCache.containsKey(memberEntityName)) {
-                                    // this member is not a real entity
-                                    // check to see if it is a view
-                                    if (!allViews.contains(memberEntityName)) {
-                                        // not a view, it's a real missing entity
-                                        perViewMissingEntities.add(memberEntityName);
-                                    }
-                                }
+                          for (ModelViewEntity.ModelMemberEntity mme : curViewEntity.getAllModelMemberEntities()) {
+                            String memberEntityName = mme.getEntityName();
+                            if (!entityCache.containsKey(memberEntityName)) {
+                              // this member is not a real entity
+                              // check to see if it is a view
+                              if (!allViews.contains(memberEntityName)) {
+                                // not a view, it's a real missing entity
+                                perViewMissingEntities.add(memberEntityName);
+                              }
                             }
+                          }
                             for (String perViewMissingEntity : perViewMissingEntities) {
                                 sb.append("\t[").append(curViewEntity.getEntityName()).append("] missing member entity [").append(perViewMissingEntity).append("]\n");
                             }
@@ -457,19 +455,17 @@ public class ModelReader implements Serializable {
     public void rebuildResourceHandlerEntities() {
         // REFACTOR to use collect(), Collectors.groupingBy() and Collectors.mapping()
         resourceHandlerEntities = new HashMap<>();
-        Iterator<Map.Entry<String, ResourceHandler>> entityResourceIter = entityResourceHandlerMap.entrySet().iterator();
 
-        while (entityResourceIter.hasNext()) {
-            Map.Entry<String, ResourceHandler> entry = entityResourceIter.next();
-            // add entityName to appropriate resourceHandlerEntities collection
-            Collection<String> resourceHandlerEntityNames = resourceHandlerEntities.get(entry.getValue());
+      for (Map.Entry<String, ResourceHandler> entry : entityResourceHandlerMap.entrySet()) {
+        // add entityName to appropriate resourceHandlerEntities collection
+        Collection<String> resourceHandlerEntityNames = resourceHandlerEntities.get(entry.getValue());
 
-            if (resourceHandlerEntityNames == null) {
-                resourceHandlerEntityNames = new LinkedList<>();
-                resourceHandlerEntities.put(entry.getValue(), resourceHandlerEntityNames);
-            }
-            resourceHandlerEntityNames.add(entry.getKey());
+        if (resourceHandlerEntityNames == null) {
+          resourceHandlerEntityNames = new LinkedList<>();
+          resourceHandlerEntities.put(entry.getValue(), resourceHandlerEntityNames);
         }
+        resourceHandlerEntityNames.add(entry.getKey());
+      }
     }
 
     public Iterator<ResourceHandler> getResourceHandlerEntitiesKeyIterator() {
@@ -565,39 +561,37 @@ public class ModelReader implements Serializable {
         Map<String, TreeSet<String>> entitiesByPackage = new HashMap<>();
 
         // put the entityNames TreeSets in a HashMap by packageName
-        Iterator<String> ecIter = this.getEntityNames().iterator();
-        while (ecIter.hasNext()) {
-            String entityName = ecIter.next();
-            ModelEntity entity = this.getModelEntity(entityName);
-            String packageName = entity.getPackageName();
+      for (String entityName : this.getEntityNames()) {
+        ModelEntity entity = this.getModelEntity(entityName);
+        String packageName = entity.getPackageName();
 
-            if (UtilValidate.isNotEmpty(packageFilterSet)) {
-                // does it match any of these?
-                boolean foundMatch = false;
-                for (String packageFilter : packageFilterSet) {
-                    if (packageName.contains(packageFilter)) {
-                        foundMatch = true;
-                    }
-                }
-                if (!foundMatch) {
-                    // Debug.logInfo("Not including entity " + entityName + " becuase it is not in
-                    // the package set: " + packageFilterSet, module);
-                    continue;
-                }
+        if (UtilValidate.isNotEmpty(packageFilterSet)) {
+          // does it match any of these?
+          boolean foundMatch = false;
+          for (String packageFilter : packageFilterSet) {
+            if (packageName.contains(packageFilter)) {
+              foundMatch = true;
             }
-            if (UtilValidate.isNotEmpty(entityFilterSet) && !entityFilterSet.contains(entityName)) {
-                // Debug.logInfo("Not including entity " + entityName + " because it is not in
-                // the entity set: " + entityFilterSet, module);
-                continue;
-            }
-
-            TreeSet<String> entities = entitiesByPackage.get(entity.getPackageName());
-            if (entities == null) {
-                entities = new TreeSet<>();
-                entitiesByPackage.put(entity.getPackageName(), entities);
-            }
-            entities.add(entityName);
+          }
+          if (!foundMatch) {
+            // Debug.logInfo("Not including entity " + entityName + " becuase it is not in
+            // the package set: " + packageFilterSet, module);
+            continue;
+          }
         }
+        if (UtilValidate.isNotEmpty(entityFilterSet) && !entityFilterSet.contains(entityName)) {
+          // Debug.logInfo("Not including entity " + entityName + " because it is not in
+          // the entity set: " + entityFilterSet, module);
+          continue;
+        }
+
+        TreeSet<String> entities = entitiesByPackage.get(entity.getPackageName());
+        if (entities == null) {
+          entities = new TreeSet<>();
+          entitiesByPackage.put(entity.getPackageName(), entities);
+        }
+        entities.add(entityName);
+      }
 
         return entitiesByPackage;
     }

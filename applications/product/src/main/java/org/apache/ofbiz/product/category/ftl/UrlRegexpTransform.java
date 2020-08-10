@@ -250,22 +250,20 @@ public class UrlRegexpTransform implements TemplateTransformModel {
         boolean foundMatch = false;
         Integer responseCodeInt = null;
         if (SeoConfigUtil.checkUseUrlRegexp() && SeoConfigUtil.getSeoPatterns() != null && SeoConfigUtil.getForwardReplacements() != null) {
-            Iterator<String> keys = SeoConfigUtil.getSeoPatterns().keySet().iterator();
-            while (keys.hasNext()) {
-                String key = keys.next();
-                Pattern pattern = SeoConfigUtil.getSeoPatterns().get(key);
-                String replacement = SeoConfigUtil.getForwardReplacements().get(key);
-                if (matcher.matches(uri, pattern)) {
-                    for (int i = 1; i < matcher.getMatch().groups(); i++) {
-                        replacement = replacement.replaceAll("\\$" + i, matcher.getMatch().group(i));
-                    }
-                    // break if found any matcher
-                    uri = replacement;
-                    responseCodeInt = SeoConfigUtil.getForwardResponseCodes().get(key);
-                    foundMatch = true;
-                    break;
-                }
+          for (String key : SeoConfigUtil.getSeoPatterns().keySet()) {
+            Pattern pattern = SeoConfigUtil.getSeoPatterns().get(key);
+            String replacement = SeoConfigUtil.getForwardReplacements().get(key);
+            if (matcher.matches(uri, pattern)) {
+              for (int i = 1; i < matcher.getMatch().groups(); i++) {
+                replacement = replacement.replaceAll("\\$" + i, matcher.getMatch().group(i));
+              }
+              // break if found any matcher
+              uri = replacement;
+              responseCodeInt = SeoConfigUtil.getForwardResponseCodes().get(key);
+              foundMatch = true;
+              break;
             }
+          }
         }
         if (foundMatch) {
             if (responseCodeInt == null) {

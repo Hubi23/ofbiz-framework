@@ -80,9 +80,7 @@ public final class EntityGroupUtil {
                 boolean matchesInclude = false;
                 boolean matchesExclude = false;
                 boolean matchesAlways = false;
-                Iterator<GenericValue> entitySyncIncludeIter = entityGroupEntryValues.iterator();
-                while (entitySyncIncludeIter.hasNext()) {
-                    GenericValue entitySyncInclude = entitySyncIncludeIter.next();
+                for (GenericValue entitySyncInclude : entityGroupEntryValues) {
                     String entityOrPackage = entitySyncInclude.getString("entityOrPackage");
                     boolean matches = false;
                     if (entityName.equals(entityOrPackage)) {

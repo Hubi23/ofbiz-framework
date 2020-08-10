@@ -3297,11 +3297,10 @@ public class InvoiceServices {
                 BigDecimal alreadyApplied = BigDecimal.ZERO;
                 if (UtilValidate.isNotEmpty(paymentApplications)) {
                     // application(s) found, add them all together
-                    Iterator<GenericValue> p = paymentApplications.iterator();
-                    while (p.hasNext()) {
-                        paymentApplication = p.next();
-                        alreadyApplied = alreadyApplied.add(paymentApplication.getBigDecimal("amountApplied").setScale(DECIMALS,ROUNDING));
-                    }
+                  for (GenericValue application : paymentApplications) {
+                    paymentApplication = application;
+                    alreadyApplied = alreadyApplied.add(paymentApplication.getBigDecimal("amountApplied").setScale(DECIMALS, ROUNDING));
+                  }
                     tobeApplied = itemTotal.subtract(alreadyApplied).setScale(DECIMALS,ROUNDING);
                 } else {
                     // no application connected yet

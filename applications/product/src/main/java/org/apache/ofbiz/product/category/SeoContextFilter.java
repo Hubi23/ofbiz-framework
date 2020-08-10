@@ -241,9 +241,7 @@ public class SeoContextFilter implements Filter {
         Integer responseCodeInt = null;
 
         if (SeoConfigUtil.checkUseUrlRegexp() && SeoConfigUtil.getSeoPatterns() != null && SeoConfigUtil.getForwardReplacements() != null) {
-            Iterator<String> keys = SeoConfigUtil.getSeoPatterns().keySet().iterator();
-            while (keys.hasNext()) {
-                String key = keys.next();
+            for (String key : SeoConfigUtil.getSeoPatterns().keySet()) {
                 Pattern pattern = SeoConfigUtil.getSeoPatterns().get(key);
                 String replacement = SeoConfigUtil.getForwardReplacements().get(key);
                 if (matcher.matches(uri, pattern)) {

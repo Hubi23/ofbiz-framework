@@ -2268,10 +2268,8 @@ public class ShoppingCart implements Iterable<ShoppingCartItem>, Serializable {
     int result=0;
     for (int i = 0; i <(shipGroupIndex + 1); i++) {
        CartShipInfo csi = this.getShipInfo(i);
-       Iterator<ShoppingCartItem> it = csi.shipItemInfo.keySet().iterator();
-        while (it.hasNext()) {
-            ShoppingCartItem item2 = it.next();
-            if (item.equals(item2) ) {
+        for (ShoppingCartItem item2 : csi.shipItemInfo.keySet()) {
+            if (item.equals(item2)) {
                 result = i;
             }
         }
@@ -2764,9 +2762,7 @@ public class ShoppingCart implements Iterable<ShoppingCartItem>, Serializable {
         List<GenericValue> cartAdjustments = this.getAdjustments();
         List<GenericValue> tempAdjustmentsList = new LinkedList<>();
         if (cartAdjustments != null) {
-            Iterator<GenericValue> cartAdjustmentIter = cartAdjustments.iterator();
-            while (cartAdjustmentIter.hasNext()) {
-                GenericValue checkOrderAdjustment = cartAdjustmentIter.next();
+            for (GenericValue checkOrderAdjustment : cartAdjustments) {
                 if (UtilValidate.isEmpty(checkOrderAdjustment.getString("shipGroupSeqId")) || DataModelConstants.SEQ_ID_NA.equals(checkOrderAdjustment.getString("shipGroupSeqId"))) {
                     tempAdjustmentsList.add(checkOrderAdjustment);
                 }

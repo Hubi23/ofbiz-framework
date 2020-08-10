@@ -209,9 +209,7 @@ OUTER:
         msg = msg == null ? "" : msg + ' ';
         assertNotNull(msg + "expected a value", got);
         Set<T> wantedSet = new HashSet<>(wanted);
-        Iterator<?> rightIt = ((Set<?>) got).iterator();
-        while (rightIt.hasNext()) {
-            Object right = rightIt.next();
+        for (Object right : (Set<?>) got) {
             if (wantedSet.contains(right)) {
                 wantedSet.remove(right);
             } else {

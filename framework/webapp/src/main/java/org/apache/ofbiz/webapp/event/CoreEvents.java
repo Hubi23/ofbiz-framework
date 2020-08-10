@@ -173,10 +173,7 @@ public class CoreEvents {
 
         // make the context valid; using the makeValid method from ModelService
         Map<String, Object> serviceContext = new HashMap<String, Object>();
-        Iterator<String> ci = modelService.getInParamNames().iterator();
-        while (ci.hasNext()) {
-            String name = ci.next();
-
+        for (String name : modelService.getInParamNames()) {
             // don't include userLogin, that's taken care of below
             if ("userLogin".equals(name)) continue;
             // don't include locale, that is also taken care of below

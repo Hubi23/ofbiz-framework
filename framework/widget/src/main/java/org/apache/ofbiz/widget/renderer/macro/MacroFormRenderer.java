@@ -1456,9 +1456,7 @@ public final class MacroFormRenderer implements FormStringRenderer {
 
     public void renderMultiFormClose(Appendable writer, Map<String, Object> context, ModelForm modelForm) throws IOException {
         //FIXME copy from HtmlFormRenderer.java (except for the closing form tag itself, that is now converted)
-        Iterator<ModelFormField> submitFields = modelForm.getMultiSubmitFields().iterator();
-        while (submitFields.hasNext()) {
-            ModelFormField submitField = submitFields.next();
+        for (ModelFormField submitField : modelForm.getMultiSubmitFields()) {
             if (submitField != null && submitField.shouldUse(context)) {
                 // Threw this in that as a hack to keep the submit button from expanding the first field
                 // Needs a more rugged solution

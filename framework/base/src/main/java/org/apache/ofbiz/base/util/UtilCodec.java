@@ -317,9 +317,7 @@ public class UtilCodec {
             clean = true;
 
             // try each codec and keep track of which ones work
-            Iterator<Codec> i = codecs.iterator();
-            while (i.hasNext()) {
-                Codec codec = i.next();
+            for (Codec codec : codecs) {
                 String old = working;
                 working = codec.decode(working);
                 if (!old.equals(working)) {

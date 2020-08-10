@@ -854,9 +854,7 @@ public class PaymentGatewayServices {
                 Debug.logError(e, "Unable to get Payment records from OrderPaymentPreference : " + paymentPref, module);
             }
             if (paymentList != null) {
-                Iterator<GenericValue> pi = paymentList.iterator();
-                while (pi.hasNext()) {
-                    GenericValue pay = pi.next();
+                for (GenericValue pay : paymentList) {
                     try {
                         Map<String, Object> cancelResults = dispatcher.runSync("setPaymentStatus", UtilMisc.toMap("userLogin", userLogin, "paymentId", pay.get("paymentId"), "statusId", "PMNT_CANCELLED"));
                         if (ServiceUtil.isError(cancelResults)) {
@@ -1030,11 +1028,10 @@ public class PaymentGatewayServices {
         // create the internal messages
         List<String> messages = UtilGenerics.cast(context.get("internalRespMsgs"));
         if (UtilValidate.isNotEmpty(messages)) {
-            Iterator<String> i = messages.iterator();
-            while (i.hasNext()) {
+            for (String s : messages) {
                 GenericValue respMsg = delegator.makeValue("PaymentGatewayRespMsg");
                 String respMsgId = delegator.getNextSeqId("PaymentGatewayRespMsg");
-                String message = i.next();
+                String message = s;
                 respMsg.set("paymentGatewayRespMsgId", respMsgId);
                 respMsg.set("paymentGatewayResponseId", responseId);
                 respMsg.set("pgrMessage", message);
@@ -1058,9 +1055,7 @@ public class PaymentGatewayServices {
                 Debug.logError(e, "Unable to get Payment records from OrderPaymentPreference : " + paymentPref, module);
             }
             if (paymentList != null) {
-                Iterator<GenericValue> pi = paymentList.iterator();
-                while (pi.hasNext()) {
-                    GenericValue pay = pi.next();
+                for (GenericValue pay : paymentList) {
                     try {
                         Map<String, Object> cancelResults = dispatcher.runSync("setPaymentStatus", UtilMisc.toMap("userLogin", userLogin, "paymentId", pay.get("paymentId"), "statusId", "PMNT_CANCELLED"));
                         if (ServiceUtil.isError(cancelResults)) {
@@ -1126,9 +1121,7 @@ public class PaymentGatewayServices {
         boolean allSameOrder = true;
         if (orderItemBillings != null) {
             // REFACTOR to use stream(), map(), distinct() and count()
-            Iterator<GenericValue> oii = orderItemBillings.iterator();
-            while (oii.hasNext()) {
-                GenericValue oib = oii.next();
+            for (GenericValue oib : orderItemBillings) {
                 String orderId = oib.getString("orderId");
                 if (testOrderId == null) {
                     testOrderId = orderId;
@@ -1234,10 +1227,7 @@ public class PaymentGatewayServices {
         }
         // Process billing accounts payments
         if (UtilValidate.isNotEmpty(paymentPrefsBa)) {
-            Iterator<GenericValue> paymentsBa = paymentPrefsBa.iterator();
-            while (paymentsBa.hasNext()) {
-                GenericValue paymentPref = paymentsBa.next();
-
+            for (GenericValue paymentPref : paymentPrefsBa) {
                 BigDecimal authAmount = paymentPref.getBigDecimal("maxAmount");
                 if (authAmount == null) {
                     authAmount = ZERO;
@@ -1261,10 +1251,10 @@ public class PaymentGatewayServices {
                     Map<String, Object> captureResult = null;
                     try {
                         captureResult = dispatcher.runSync("captureBillingAccountPayments", UtilMisc.<String, Object>toMap("invoiceId", invoiceId,
-                                                                                                          "billingAccountId", billingAccountId,
-                                                                                                          "captureAmount", amountThisCapture,
-                                                                                                          "orderId", orderId,
-                                                                                                          "userLogin", userLogin));
+                            "billingAccountId", billingAccountId,
+                            "captureAmount", amountThisCapture,
+                            "orderId", orderId,
+                            "userLogin", userLogin));
                         if (ServiceUtil.isError(captureResult)) {
                             return ServiceUtil.returnError(ServiceUtil.getErrorMessage(captureResult));
                         }
@@ -1289,7 +1279,7 @@ public class PaymentGatewayServices {
                         captureResult.put("orderPaymentPreference", paymentPref);
                         if (context.get("captureRefNum") == null) {
                             captureResult.put("captureRefNum", ""); // FIXME: this is an hack to avoid a service validation error for processCaptureResult (captureRefNum is mandatory, but it is not used for billing accounts)
-                        }                                                
+                        }
 
                         // process the capture's results
                         try {
@@ -1299,8 +1289,8 @@ public class PaymentGatewayServices {
                             processResult(dctx, captureResult, userLogin, paymentPref, locale);
                         } catch (GeneralException e) {
                             Debug.logError(e, "Trouble processing the result; captureResult: " + captureResult, module);
-                            return ServiceUtil.returnError(UtilProperties.getMessage(resourceOrder, 
-                                    "AccountingPaymentCannotBeCaptured", locale) + " " + captureResult);
+                            return ServiceUtil.returnError(UtilProperties.getMessage(resourceOrder,
+                                "AccountingPaymentCannotBeCaptured", locale) + " " + captureResult);
                         }
 
                         // create any splits which are needed
@@ -1618,13 +1608,12 @@ public class PaymentGatewayServices {
                     .where("billingAccountId", billingAccountId, "invoiceId", null)
                     .orderBy("-amountApplied").queryList();
             if (UtilValidate.isNotEmpty(paymentApplications)) {
-                Iterator<GenericValue> paymentApplicationsIt = paymentApplications.iterator();
-                while (paymentApplicationsIt.hasNext()) {
+                for (GenericValue application : paymentApplications) {
                     if (capturedAmount.compareTo(captureAmount) >= 0) {
                         // we have captured all the amount required
                         break;
                     }
-                    GenericValue paymentApplication = paymentApplicationsIt.next();
+                    GenericValue paymentApplication = application;
                     GenericValue payment = paymentApplication.getRelatedOne("Payment", false);
                     if (payment.getString("paymentPreferenceId") != null) {
                         // if the payment is reserved for a specific OrderPaymentPreference,
@@ -1989,11 +1978,10 @@ public class PaymentGatewayServices {
             List<GenericValue> messageEntities = new LinkedList<>();
             List<String> messages = UtilGenerics.cast(context.get("internalRespMsgs"));
             if (UtilValidate.isNotEmpty(messages)) {
-                Iterator<String> i = messages.iterator();
-                while (i.hasNext()) {
+                for (String s : messages) {
                     GenericValue respMsg = delegator.makeValue("PaymentGatewayRespMsg");
                     String respMsgId = delegator.getNextSeqId("PaymentGatewayRespMsg");
-                    String message = i.next();
+                    String message = s;
                     respMsg.set("paymentGatewayRespMsgId", respMsgId);
                     respMsg.set("paymentGatewayResponseId", responseId);
                     respMsg.set("pgrMessage", message);
@@ -2302,11 +2290,10 @@ public class PaymentGatewayServices {
             // create the internal messages
             List<String> messages = UtilGenerics.cast(context.get("internalRespMsgs"));
             if (UtilValidate.isNotEmpty(messages)) {
-                Iterator<String> i = messages.iterator();
-                while (i.hasNext()) {
+                for (String s : messages) {
                     GenericValue respMsg = delegator.makeValue("PaymentGatewayRespMsg");
                     String respMsgId = delegator.getNextSeqId("PaymentGatewayRespMsg");
-                    String message = i.next();
+                    String message = s;
                     respMsg.set("paymentGatewayRespMsgId", respMsgId);
                     respMsg.set("paymentGatewayResponseId", responseId);
                     respMsg.set("pgrMessage", message);
@@ -2602,11 +2589,10 @@ public class PaymentGatewayServices {
         // create the internal messages
         List<String> messages = UtilGenerics.cast(context.get("internalRespMsgs"));
         if (UtilValidate.isNotEmpty(messages)) {
-            Iterator<String> i = messages.iterator();
-            while (i.hasNext()) {
+            for (String s : messages) {
                 GenericValue respMsg = delegator.makeValue("PaymentGatewayRespMsg");
                 String respMsgId = delegator.getNextSeqId("PaymentGatewayRespMsg");
-                String message = i.next();
+                String message = s;
                 respMsg.set("paymentGatewayRespMsgId", respMsgId);
                 respMsg.set("paymentGatewayResponseId", responseId);
                 respMsg.set("pgrMessage", message);

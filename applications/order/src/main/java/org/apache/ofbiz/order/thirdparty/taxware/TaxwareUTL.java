@@ -78,14 +78,12 @@ public class TaxwareUTL {
             throw new TaxwareException("Cannot re-process records.");
         processed = true;
 
-        Iterator i = records.iterator();
+      for (Object record : records) {
+        Record rec = (Record) record;
 
-        while (i.hasNext()) {
-            Record rec = (Record) i.next();
-
-            rec = makeItemData(rec);
-            outItem.addRecord(rec);
-        }
+        rec = makeItemData(rec);
+        outItem.addRecord(rec);
+      }
 
         // create a shipping item
         if (shippingAmount > 0) {

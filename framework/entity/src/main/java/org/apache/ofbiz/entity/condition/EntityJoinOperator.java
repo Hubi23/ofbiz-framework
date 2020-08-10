@@ -57,22 +57,20 @@ public class EntityJoinOperator extends EntityOperator<EntityCondition, EntityCo
     public void addSqlValue(StringBuilder sql, ModelEntity modelEntity, List<EntityConditionParam> entityConditionParams, List<? extends EntityCondition> conditionList, Datasource datasourceInfo) {
         if (UtilValidate.isNotEmpty(conditionList)) {
             boolean hadSomething = false;
-            Iterator<? extends EntityCondition> conditionIter = conditionList.iterator();
-            while (conditionIter.hasNext()) {
-                EntityCondition condition = conditionIter.next();
-                if (condition.isEmpty()) {
-                    continue;
-                }
-                if (hadSomething) {
-                    sql.append(' ');
-                    sql.append(getCode());
-                    sql.append(' ');
-                } else {
-                    hadSomething = true;
-                    sql.append('(');
-                }
-                sql.append(condition.makeWhereString(modelEntity, entityConditionParams, datasourceInfo));
+          for (EntityCondition condition : conditionList) {
+            if (condition.isEmpty()) {
+              continue;
             }
+            if (hadSomething) {
+              sql.append(' ');
+              sql.append(getCode());
+              sql.append(' ');
+            } else {
+              hadSomething = true;
+              sql.append('(');
+            }
+            sql.append(condition.makeWhereString(modelEntity, entityConditionParams, datasourceInfo));
+          }
             if (hadSomething) {
                 sql.append(')');
             }

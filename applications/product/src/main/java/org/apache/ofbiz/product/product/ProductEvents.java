@@ -665,49 +665,48 @@ public class ProductEvents {
         Set<String> descriptionsForThisType = new HashSet<>();
         List<GenericValue> productFeatureAndApplList = EntityQuery.use(delegator).from("ProductFeatureAndAppl").where("productId", productId, "productFeatureApplTypeId", productFeatureApplTypeId, "productFeatureTypeId", productFeatureTypeId).filterByDate().queryList();
         if (productFeatureAndApplList.size() > 0) {
-            Iterator<GenericValue> productFeatureAndApplIter = productFeatureAndApplList.iterator();
-            while (productFeatureAndApplIter.hasNext()) {
-                productFeatureAndAppl = productFeatureAndApplIter.next();
-                GenericValue productFeatureAppl = delegator.makeValidValue("ProductFeatureAppl", productFeatureAndAppl);
+          for (GenericValue genericValue : productFeatureAndApplList) {
+            productFeatureAndAppl = genericValue;
+            GenericValue productFeatureAppl = delegator.makeValidValue("ProductFeatureAppl", productFeatureAndAppl);
 
-                // remove productFeatureAppl IFF: productFeatureAppl != null && (description is empty/null || description is different than existing)
-                if (productFeatureAppl != null && (description == null || !description.equals(productFeatureAndAppl.getString("description")))) {
-                    // if descriptionsToRemove is not null, only remove if description is in that set
-                    if (descriptionsToRemove == null || descriptionsToRemove.contains(productFeatureAndAppl.getString("description"))) {
-                        // okay, almost there: before removing it if this is a virtual product check to make SURE this feature's description doesn't exist on any of the variants; wouldn't want to remove something we should have kept around...
-                        if ("Y".equals(product.getString("isVirtual"))) {
-                            boolean foundFeatureOnVariant = false;
-                            // get/check all the variants
-                            List<GenericValue> variantAssocs = product.getRelated("MainProductAssoc", UtilMisc.toMap("productAssocTypeId", "PRODUCT_VARIANT"), null, false);
-                            variantAssocs = EntityUtil.filterByDate(variantAssocs);
-                            List<GenericValue> variants = EntityUtil.getRelated("AssocProduct", null, variantAssocs, false);
-                            Iterator<GenericValue> variantIter = variants.iterator();
-                            while (!foundFeatureOnVariant && variantIter.hasNext()) {
-                                GenericValue variant = variantIter.next();
-                                // get the selectable features for the variant
-                                List<GenericValue> variantProductFeatureAndAppls = variant.getRelated("ProductFeatureAndAppl", UtilMisc.toMap("productFeatureTypeId", productFeatureTypeId, "productFeatureApplTypeId", "STANDARD_FEATURE", "description", description), null, false);
-                                if (variantProductFeatureAndAppls.size() > 0) {
-                                    foundFeatureOnVariant = true;
-                                }
-                            }
-
-                            if (foundFeatureOnVariant) {
-                                // don't remove this one!
-                                continue;
-                            }
-                        }
-
-                        if (descriptionsRemoved != null) {
-                            descriptionsRemoved.add(productFeatureAndAppl.getString("description"));
-                        }
-                        productFeatureAppl.remove();
-                        continue;
+            // remove productFeatureAppl IFF: productFeatureAppl != null && (description is empty/null || description is different than existing)
+            if (productFeatureAppl != null && (description == null || !description.equals(productFeatureAndAppl.getString("description")))) {
+              // if descriptionsToRemove is not null, only remove if description is in that set
+              if (descriptionsToRemove == null || descriptionsToRemove.contains(productFeatureAndAppl.getString("description"))) {
+                // okay, almost there: before removing it if this is a virtual product check to make SURE this feature's description doesn't exist on any of the variants; wouldn't want to remove something we should have kept around...
+                if ("Y".equals(product.getString("isVirtual"))) {
+                  boolean foundFeatureOnVariant = false;
+                  // get/check all the variants
+                  List<GenericValue> variantAssocs = product.getRelated("MainProductAssoc", UtilMisc.toMap("productAssocTypeId", "PRODUCT_VARIANT"), null, false);
+                  variantAssocs = EntityUtil.filterByDate(variantAssocs);
+                  List<GenericValue> variants = EntityUtil.getRelated("AssocProduct", null, variantAssocs, false);
+                  Iterator<GenericValue> variantIter = variants.iterator();
+                  while (!foundFeatureOnVariant && variantIter.hasNext()) {
+                    GenericValue variant = variantIter.next();
+                    // get the selectable features for the variant
+                    List<GenericValue> variantProductFeatureAndAppls = variant.getRelated("ProductFeatureAndAppl", UtilMisc.toMap("productFeatureTypeId", productFeatureTypeId, "productFeatureApplTypeId", "STANDARD_FEATURE", "description", description), null, false);
+                    if (variantProductFeatureAndAppls.size() > 0) {
+                      foundFeatureOnVariant = true;
                     }
+                  }
+
+                  if (foundFeatureOnVariant) {
+                    // don't remove this one!
+                    continue;
+                  }
                 }
 
-                // we got here, is still a valid description associated with this product
-                descriptionsForThisType.add(productFeatureAndAppl.getString("description"));
+                if (descriptionsRemoved != null) {
+                  descriptionsRemoved.add(productFeatureAndAppl.getString("description"));
+                }
+                productFeatureAppl.remove();
+                continue;
+              }
             }
+
+            // we got here, is still a valid description associated with this product
+            descriptionsForThisType.add(productFeatureAndAppl.getString("description"));
+          }
         }
 
         if (description != null && (productFeatureAndAppl == null || !descriptionsForThisType.contains(description))) {

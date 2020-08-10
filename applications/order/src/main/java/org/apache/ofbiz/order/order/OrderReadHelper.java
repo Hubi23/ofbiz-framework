@@ -2502,9 +2502,7 @@ public class OrderReadHelper {
         List<GenericValue> promoAdjustments = EntityUtil.filterByAnd(allOrderAdjustments, UtilMisc.toMap("orderAdjustmentTypeId", "PROMOTION_ADJUSTMENT"));
 
         if (UtilValidate.isNotEmpty(promoAdjustments)) {
-            Iterator<GenericValue> promoAdjIter = promoAdjustments.iterator();
-            while (promoAdjIter.hasNext()) {
-                GenericValue promoAdjustment = promoAdjIter.next();
+            for (GenericValue promoAdjustment : promoAdjustments) {
                 if (promoAdjustment != null) {
                     BigDecimal amount = promoAdjustment.getBigDecimal("amount").setScale(taxCalcScale, taxRounding);
                     promoAdjTotal = promoAdjTotal.add(amount);
@@ -3050,9 +3048,7 @@ public class OrderReadHelper {
 
         List<GenericValue> validItems = getValidOrderItems(shipGrouSeqId);
         if (validItems != null) {
-            Iterator<GenericValue> i = validItems.iterator();
-            while (i.hasNext()) {
-                GenericValue item = i.next();
+            for (GenericValue item : validItems) {
                 shippableSizes.add(this.getItemSize(item));
             }
         }
