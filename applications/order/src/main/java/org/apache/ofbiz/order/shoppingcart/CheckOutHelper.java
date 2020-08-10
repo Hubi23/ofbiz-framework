@@ -28,6 +28,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.stream.*;
 
 import org.apache.ofbiz.base.util.Debug;
 import org.apache.ofbiz.base.util.GeneralException;
@@ -1547,16 +1548,14 @@ public class CheckOutHelper {
     }
 
     public Map<String, BigDecimal> makeBillingAccountMap(List<GenericValue> paymentPrefs) {
-        // REFACTOR to use stream(), filter(), collect(), Collectors.toMap()
-        Map<String, BigDecimal> accountMap = new HashMap<>();
-        if (paymentPrefs != null) {
-            for (GenericValue pp : paymentPrefs) {
-                if (pp.get("billingAccountId") != null) {
-                    accountMap.put(pp.getString("billingAccountId"), pp.getBigDecimal("maxAmount"));
-                }
-            }
-        }
-        return accountMap;
+        // REFACTO to use stream(), filter(), collect(), Collectors.toMap()
+        if (paymentPrefs == null) return new HashMap<>();
+        return paymentPrefs.stream()
+                .filter(pp -> pp.get("billingAccountId") != null)
+                .collect(Collectors.toMap(
+                    pp -> pp.getString("billingAccountId"),
+                    pp -> pp.getBigDecimal("maxAmount"),
+                    (a, b) -> b));
     }
 
     public Map<String, Object> validatePaymentMethods() {
