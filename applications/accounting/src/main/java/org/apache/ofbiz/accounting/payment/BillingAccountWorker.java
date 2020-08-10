@@ -96,7 +96,7 @@ public class BillingAccountWorker {
                     billingAccountList.add(billingAccount);
                 }
             }
-            Collections.sort(billingAccountList, new BillingAccountComparator());
+            billingAccountList.sort(new BillingAccountComparator());
         }
         return billingAccountList;
     }

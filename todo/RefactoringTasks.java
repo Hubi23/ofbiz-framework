@@ -35,7 +35,7 @@ public class RefactoringTasks {
     public static void java8Required() {
         // Part 1
         // REFACTO replace anonymous inner classes with lambdas or method references
-        // REFACTOR use List.sort() instead of Collections.sort
+        // REFACTO use List.sort() instead of Collections.sort
         // REFACTOR Loop can be replaced with Collection.removeIf()
         // REFACTOR Replace with single Map method (we won't be replacing computeIfAbsent() as it is dangerous - contention and possible livelocks)
 

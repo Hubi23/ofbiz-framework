@@ -4206,7 +4206,7 @@ public class ShoppingCart implements Iterable<ShoppingCartItem>, Serializable {
 
     public List<ShoppingCartItem> getLineListOrderedByBasePrice(boolean ascending) {
         List<ShoppingCartItem> result = new ArrayList<>(this.cartLines);
-        Collections.sort(result, new BasePriceOrderComparator(ascending));
+        result.sort(new BasePriceOrderComparator(ascending));
         return result;
     }
 
