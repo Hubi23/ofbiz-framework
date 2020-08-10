@@ -14,8 +14,8 @@ public class RefactoringTasks {
     }
 
     public static void java5Required() {
-        // REFACTOR Remove all "Unnecessary boxing"
-        // REFACTOR Remove all "Unnecessary unboxing"
+        // REFACTO Remove all "Unnecessary boxing"
+        // REFACTO Remove all "Unnecessary unboxing"
         // REFACTOR Change StringBuffer to StringBuilder where possible
     }
 
