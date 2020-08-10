@@ -184,16 +184,13 @@ public class ServiceXaWrapper extends GenericXaResource {
         final boolean persist = commitAsyncPersist;
         final boolean async = commitAsync;
 
-        Thread thread = new Thread() {
-            @Override
-            public void run() {
-                try {
-                    runService(service, context, persist, (async ? MODE_ASYNC : MODE_SYNC), TYPE_COMMIT);
-                } catch (XAException e) {
-                    Debug.logError(e, module);
-                }
+        Thread thread = new Thread(() -> {
+            try {
+                runService(service, context, persist, (async ? MODE_ASYNC : MODE_SYNC), TYPE_COMMIT);
+            } catch (XAException e) {
+                Debug.logError(e, module);
             }
-        };
+        });
         thread.start();
 
         this.xid = null;
@@ -219,16 +216,13 @@ public class ServiceXaWrapper extends GenericXaResource {
         final boolean persist = rollbackAsyncPersist;
         final boolean async = rollbackAsync;
 
-        Thread thread = new Thread() {
-            @Override
-            public void run() {
-                try {
-                    runService(service, context, persist, (async ? MODE_ASYNC : MODE_SYNC), TYPE_ROLLBACK);
-                } catch (XAException e) {
-                    Debug.logError(e, module);
-                }
+        Thread thread = new Thread(() -> {
+            try {
+                runService(service, context, persist, (async ? MODE_ASYNC : MODE_SYNC), TYPE_ROLLBACK);
+            } catch (XAException e) {
+                Debug.logError(e, module);
             }
-        };
+        });
         thread.start();
 
         this.xid = null;
