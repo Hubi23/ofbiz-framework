@@ -21,6 +21,7 @@ package org.apache.ofbiz.base.util.collections;
 import java.util.Collection;
 import java.util.Map;
 import java.util.Set;
+import java.util.function.*;
 import java.util.stream.Collectors;
 
 // Adapter which allows viewing a multi-value map as a single-value map.
@@ -97,7 +98,7 @@ public class MultivaluedMapContextAdapter<K, V> implements Map<K, V> {
     @Override
     public Set<Entry<K, V>> entrySet() {
         return adaptee.keySet().stream()
-                .collect(Collectors.toMap(k -> k, this::get))
+                .collect(Collectors.toMap(Function.identity(), this::get))
                 .entrySet();
     }
 }
