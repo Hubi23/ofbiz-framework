@@ -19,38 +19,19 @@
 
 package org.apache.ofbiz.entity.util;
 
-import java.io.Serializable;
-import java.sql.Timestamp;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-import java.util.Set;
-import java.util.stream.Stream;
+import org.apache.ofbiz.base.util.*;
+import org.apache.ofbiz.base.util.collections.*;
+import org.apache.ofbiz.entity.*;
+import org.apache.ofbiz.entity.condition.*;
+import org.apache.ofbiz.entity.model.*;
 
-import org.apache.ofbiz.base.util.Debug;
-import org.apache.ofbiz.base.util.UtilDateTime;
-import org.apache.ofbiz.base.util.UtilGenerics;
-import org.apache.ofbiz.base.util.UtilMisc;
-import org.apache.ofbiz.base.util.UtilProperties;
-import org.apache.ofbiz.base.util.UtilValidate;
-import org.apache.ofbiz.base.util.collections.PagedList;
-import org.apache.ofbiz.entity.Delegator;
-import org.apache.ofbiz.entity.GenericEntity;
-import org.apache.ofbiz.entity.GenericEntityException;
-import org.apache.ofbiz.entity.GenericValue;
-import org.apache.ofbiz.entity.condition.EntityCondition;
-import org.apache.ofbiz.entity.condition.EntityDateFilterCondition;
-import org.apache.ofbiz.entity.condition.OrderByList;
-import org.apache.ofbiz.entity.model.ModelField;
+import java.io.*;
+import java.sql.*;
+import java.util.*;
+import java.util.function.*;
+import java.util.stream.*;
 
-import static java.util.stream.Collectors.toList;
+import static java.util.stream.Collectors.*;
 
 /**
  * Helper methods when dealing with Entities, especially ones that follow certain conventions
@@ -302,9 +283,9 @@ public final class EntityUtil {
                 .filter(value -> exprs.stream().anyMatch(condition -> condition.entityMatches(value)))
                 .collect(toList());
     }
-    
+
     /**
-     *returns the values in the order specified after with localized value 
+     *returns the values in the order specified after with localized value
      *
      *@param values List of GenericValues
      *@param orderBy The fields of the named entity to order the query by;
@@ -371,12 +352,33 @@ public final class EntityUtil {
     public static List<GenericValue> getRelated(String relationName, Map<String, ? extends Object> fields, List<GenericValue> values, boolean useCache) throws GenericEntityException {
         if (values == null) return null;
 
-        // REFACTOR to use stream(), flatMap(), checked exceptions, Collectors.toCollection()
-        List<GenericValue> result = new LinkedList<>();
-        for (GenericValue value: values) {
-            result.addAll(value.getRelated(relationName, fields, null, useCache));
+        // REFACTO to use stream(), flatMap(), checked exceptions, Collectors.toCollection()
+        class UncheckedException extends RuntimeException {
+            private final GenericEntityException cause;
+
+            public UncheckedException(GenericEntityException ex) {
+                super(ex);
+                this.cause = ex;
+            }
+
+            public Throwable fillInStackTrace() {
+                return null;
+            }
         }
-        return result;
+
+        try {
+            return values.stream()
+                .flatMap(value -> {
+                    try {
+                        return value.getRelated(relationName, fields, null, useCache).stream();
+                    } catch(GenericEntityException ex) {
+                        throw new UncheckedException(ex);
+                    }
+                })
+                .collect(Collectors.toCollection(LinkedList::new));
+        } catch (UncheckedException e) {
+            throw e.cause;
+        }
     }
 
     public static <T extends GenericEntity> List<T> filterByCondition(List<T> values, EntityCondition condition) {
@@ -518,7 +520,7 @@ public final class EntityUtil {
 
     /**
      * @param iter EntityListIterator
-     * @param viewIndex 
+     * @param viewIndex
      * @param viewSize
      * @return PagedList object with a subset of data items from EntityListIterator based on viewIndex and viewSize
      * @throws GenericEntityException
