@@ -18,41 +18,17 @@
  *******************************************************************************/
 package org.apache.ofbiz.order.order;
 
-import java.math.BigDecimal;
-import java.math.RoundingMode;
-import java.sql.Timestamp;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.LinkedHashSet;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-import java.util.Set;
+import org.apache.ofbiz.base.util.*;
+import org.apache.ofbiz.common.*;
+import org.apache.ofbiz.entity.*;
+import org.apache.ofbiz.entity.condition.*;
+import org.apache.ofbiz.entity.util.*;
+import org.apache.ofbiz.product.product.*;
+import org.apache.ofbiz.security.*;
 
-import org.apache.ofbiz.base.util.Debug;
-import org.apache.ofbiz.base.util.UtilDateTime;
-import org.apache.ofbiz.base.util.UtilFormatOut;
-import org.apache.ofbiz.base.util.UtilMisc;
-import org.apache.ofbiz.base.util.UtilNumber;
-import org.apache.ofbiz.base.util.UtilValidate;
-import org.apache.ofbiz.common.DataModelConstants;
-import org.apache.ofbiz.entity.Delegator;
-import org.apache.ofbiz.entity.GenericEntity;
-import org.apache.ofbiz.entity.GenericEntityException;
-import org.apache.ofbiz.entity.GenericValue;
-import org.apache.ofbiz.entity.condition.EntityCondition;
-import org.apache.ofbiz.entity.condition.EntityConditionList;
-import org.apache.ofbiz.entity.condition.EntityExpr;
-import org.apache.ofbiz.entity.condition.EntityOperator;
-import org.apache.ofbiz.entity.util.EntityQuery;
-import org.apache.ofbiz.entity.util.EntityUtil;
-import org.apache.ofbiz.product.product.ProductWorker;
-import org.apache.ofbiz.security.Security;
+import java.math.*;
+import java.sql.*;
+import java.util.*;
 
 /**
  * Utility class for easily extracting important information from orders
@@ -2491,20 +2467,16 @@ public class OrderReadHelper {
     }
 
     public static BigDecimal calcOrderPromoAdjustmentsBd(List<GenericValue> allOrderAdjustments) {
-        // REFACTOR to use stream(), map() and reduce().
-        BigDecimal promoAdjTotal = ZERO;
-
+        // REFACTO to use stream(), map() and reduce().
         List<GenericValue> promoAdjustments = EntityUtil.filterByAnd(allOrderAdjustments, UtilMisc.toMap("orderAdjustmentTypeId", "PROMOTION_ADJUSTMENT"));
 
-        if (UtilValidate.isNotEmpty(promoAdjustments)) {
-            for (GenericValue promoAdjustment : promoAdjustments) {
-                if (promoAdjustment != null) {
-                    BigDecimal amount = promoAdjustment.getBigDecimal("amount").setScale(taxCalcScale, taxRounding);
-                    promoAdjTotal = promoAdjTotal.add(amount);
-                }
-            }
-        }
-        return promoAdjTotal.setScale(scale, rounding);
+        if (UtilValidate.isEmpty(promoAdjustments)) return BigDecimal.ZERO;
+        return promoAdjustments.stream()
+            .filter(Objects::nonNull)
+            .map(promoAdjustment -> promoAdjustment.getBigDecimal("amount"))
+            .map(amount -> amount.setScale(taxCalcScale, taxRounding))
+            .reduce(BigDecimal.ZERO, BigDecimal::add)
+            .setScale(scale, rounding);
     }
 
     public static BigDecimal getWorkEffortRentalLength(GenericValue workEffort) {
