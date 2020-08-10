@@ -390,7 +390,7 @@ public final class ProductPromoWorker {
     }
 
     private static boolean hasOrderTotalCondition(GenericValue productPromo, Delegator delegator) throws GenericEntityException {
-        // REFACTOR to stream(), map(), anyMatch
+        // REFACTOR to stream(), anyMatch
         boolean hasOtCond = false;
         List<GenericValue> productPromoConds = EntityQuery.use(delegator).from("ProductPromoCond")
                 .where("productPromoId", productPromo.get("productPromoId"))
