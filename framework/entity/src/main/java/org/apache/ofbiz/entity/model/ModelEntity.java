@@ -679,7 +679,7 @@ public class ModelEntity implements Comparable<ModelEntity>, Serializable {
     }
 
     private List<String> getFieldNamesFromFieldVector(List<ModelField> modelFields) {
-        // REFACTOR to use stream(), collect()
+        // REFACTOR to use stream(), map(), collect()
         List<String> nameList = new ArrayList<>(modelFields.size());
         for (ModelField field: modelFields) {
             nameList.add(field.getName());
