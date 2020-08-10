@@ -1822,12 +1822,7 @@ public class OrderReadHelper {
             String orderItemSeqId = returnedItem.getString("orderItemSeqId");
             BigDecimal returnedQuantity = returnedItem.getBigDecimal("returnQuantity");
             if (orderItemSeqId != null && returnedQuantity != null) {
-                BigDecimal existingQuantity =  itemReturnedQuantities.get(orderItemSeqId);
-                if (existingQuantity == null) {
-                    itemReturnedQuantities.put(orderItemSeqId, returnedQuantity);
-                } else {
-                    itemReturnedQuantities.put(orderItemSeqId, returnedQuantity.add(existingQuantity));
-                }
+                itemReturnedQuantities.merge(orderItemSeqId, returnedQuantity, BigDecimal::add);
             }
         }
 

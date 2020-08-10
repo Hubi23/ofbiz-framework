@@ -1430,12 +1430,7 @@ public class ShoppingCartItem implements java.io.Serializable {
             BigDecimal quantityUsed = entry.getValue();
             if (productPromoId.equals(productPromoCondActionPK.getString("productPromoId")) && productPromoRuleId.equals(productPromoCondActionPK.getString("productPromoRuleId"))) {
                 entryIter.remove();
-                BigDecimal existingValue = this.quantityUsedPerPromoFailed.get(productPromoCondActionPK);
-                if (existingValue == null) {
-                    this.quantityUsedPerPromoFailed.put(productPromoCondActionPK, quantityUsed);
-                } else {
-                    this.quantityUsedPerPromoFailed.put(productPromoCondActionPK, quantityUsed.add(existingValue));
-                }
+                this.quantityUsedPerPromoFailed.merge(productPromoCondActionPK, quantityUsed, BigDecimal::add);
                 this.promoQuantityUsed = this.promoQuantityUsed.subtract(quantityUsed);
             }
         }
@@ -1449,12 +1444,7 @@ public class ShoppingCartItem implements java.io.Serializable {
             BigDecimal quantityUsed = entry.getValue();
             if (productPromoId.equals(productPromoCondActionPK.getString("productPromoId")) && productPromoRuleId.equals(productPromoCondActionPK.getString("productPromoRuleId"))) {
                 entryIter.remove();
-                BigDecimal existingValue = this.quantityUsedPerPromoActual.get(productPromoCondActionPK);
-                if (existingValue == null) {
-                    this.quantityUsedPerPromoActual.put(productPromoCondActionPK, quantityUsed);
-                } else {
-                    this.quantityUsedPerPromoActual.put(productPromoCondActionPK, quantityUsed.add(existingValue));
-                }
+                this.quantityUsedPerPromoActual.merge(productPromoCondActionPK, quantityUsed, BigDecimal::add);
             }
         }
     }
