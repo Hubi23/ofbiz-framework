@@ -2500,7 +2500,7 @@ public class OrderReadHelper {
     }
 
     public static BigDecimal calcOrderPromoAdjustmentsBd(List<GenericValue> allOrderAdjustments) {
-        // REFACTOR to use stream(), map() and reduce().  Perhaps also Optional to avoid possible NullPointerExceptions
+        // REFACTOR to use stream(), map() and reduce().
         BigDecimal promoAdjTotal = ZERO;
 
         List<GenericValue> promoAdjustments = EntityUtil.filterByAnd(allOrderAdjustments, UtilMisc.toMap("orderAdjustmentTypeId", "PROMOTION_ADJUSTMENT"));
