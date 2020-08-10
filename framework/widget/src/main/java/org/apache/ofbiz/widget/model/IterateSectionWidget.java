@@ -230,7 +230,7 @@ public class IterateSectionWidget extends ModelScreenWidget {
 
     public boolean getPaginate(Map<String, Object> context) {
         if (!this.paginate.isEmpty() && UtilValidate.isNotEmpty(this.paginate.expandString(context))) {
-            return Boolean.valueOf(this.paginate.expandString(context));
+            return Boolean.parseBoolean(this.paginate.expandString(context));
         }
         return true;
     }

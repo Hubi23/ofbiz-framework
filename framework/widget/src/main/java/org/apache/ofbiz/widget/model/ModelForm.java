@@ -1103,7 +1103,7 @@ public abstract class ModelForm extends ModelWidget {
     public boolean getPaginate(Map<String, Object> context) {
         String paginate = this.paginate.expandString(context);
         if (!paginate.isEmpty()) {
-            return Boolean.valueOf(paginate);
+            return Boolean.parseBoolean(paginate);
         }
         return true;
     }

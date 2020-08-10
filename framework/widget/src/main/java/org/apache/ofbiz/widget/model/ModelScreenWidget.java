@@ -630,7 +630,7 @@ public abstract class ModelScreenWidget extends ModelWidget {
             String screenletId = this.getId(context) + "_collapsed";
             Map<String, ? extends Object> userPreferences = UtilGenerics.checkMap(context.get("userPreferences"));
             if (userPreferences != null && userPreferences.containsKey(screenletId)) {
-                return Boolean.valueOf((String) userPreferences.get(screenletId));
+                return Boolean.parseBoolean((String) userPreferences.get(screenletId));
             }
 
             return "true".equals(this.initiallyCollapsed.expand(context));

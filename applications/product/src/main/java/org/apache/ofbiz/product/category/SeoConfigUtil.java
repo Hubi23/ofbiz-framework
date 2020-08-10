@@ -188,7 +188,7 @@ public final class SeoConfigUtil {
                             jSessionIdAnonEnabled = true;
                         }
                     } else {
-                        jSessionIdAnonEnabled = Boolean.valueOf(DEFAULT_ANONYMOUS_VALUE);
+                        jSessionIdAnonEnabled = Boolean.parseBoolean(DEFAULT_ANONYMOUS_VALUE);
                     }
                     Debug.logInfo("  " + ELEMENT_ANONYMOUS + ": " + jSessionIdAnonEnabled, module);
                     
@@ -220,7 +220,7 @@ public final class SeoConfigUtil {
                             }
                         }
                     } else {
-                        jSessionIdUserEnabled = Boolean.valueOf(DEFAULT_USER_VALUE);
+                        jSessionIdUserEnabled = Boolean.parseBoolean(DEFAULT_USER_VALUE);
                     }
                     Debug.logInfo("  " + ELEMENT_USER + ": " + jSessionIdUserEnabled, module);
                 }
