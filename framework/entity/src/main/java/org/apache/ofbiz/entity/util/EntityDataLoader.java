@@ -18,39 +18,19 @@
  *******************************************************************************/
 package org.apache.ofbiz.entity.util;
 
-import java.io.File;
-import java.io.IOException;
-import java.net.URL;
-import java.util.Collections;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Locale;
-import java.util.StringTokenizer;
+import org.apache.ofbiz.base.component.*;
+import org.apache.ofbiz.base.config.*;
+import org.apache.ofbiz.base.util.*;
+import org.apache.ofbiz.entity.*;
+import org.apache.ofbiz.entity.config.model.*;
+import org.apache.ofbiz.entity.model.*;
+import org.w3c.dom.*;
+import org.xml.sax.*;
 
-import org.apache.ofbiz.base.component.ComponentConfig;
-import org.apache.ofbiz.base.config.GenericConfigException;
-import org.apache.ofbiz.base.config.MainResourceHandler;
-import org.apache.ofbiz.base.config.ResourceHandler;
-import org.apache.ofbiz.base.util.Debug;
-import org.apache.ofbiz.base.util.UtilDateTime;
-import org.apache.ofbiz.base.util.UtilProperties;
-import org.apache.ofbiz.base.util.UtilValidate;
-import org.apache.ofbiz.entity.Delegator;
-import org.apache.ofbiz.entity.GenericEntityConfException;
-import org.apache.ofbiz.entity.GenericEntityException;
-import org.apache.ofbiz.entity.GenericValue;
-import org.apache.ofbiz.entity.config.model.Datasource;
-import org.apache.ofbiz.entity.config.model.EntityConfig;
-import org.apache.ofbiz.entity.config.model.EntityDataReader;
-import org.apache.ofbiz.entity.config.model.ReadData;
-import org.apache.ofbiz.entity.config.model.Resource;
-import org.apache.ofbiz.entity.config.model.SqlLoadPath;
-import org.apache.ofbiz.entity.model.ModelEntity;
-import org.apache.ofbiz.entity.model.ModelReader;
-import org.apache.ofbiz.entity.model.ModelUtil;
-import org.apache.ofbiz.entity.model.ModelViewEntity;
-import org.w3c.dom.Element;
-import org.xml.sax.SAXException;
+import java.io.*;
+import java.net.*;
+import java.util.*;
+import java.util.stream.*;
 
 /**
  * Some utility routines for loading seed data.
@@ -212,17 +192,12 @@ public class EntityDataLoader {
 
     public static List<URL> getUrlByComponentList(String helperName, List<String> components) {
         Datasource datasourceInfo = EntityConfig.getDatasource(helperName);
-        // REFACTOR to use stream(), map(), filter(), collect(), Collectors.toCollection()
-        List<String> readerNames = new LinkedList<>();
-        for (ReadData readerInfo :  datasourceInfo.getReadDataList()) {
-            String readerName = readerInfo.getReaderName();
+        // REFACTO to use stream(), map(), filter(), collect(), Collectors.toCollection()
+        List<String> readerNames = datasourceInfo.getReadDataList().stream()
+            .map(ReadData::getReaderName)
             // ignore the "tenant" reader if the multitenant property is "N"
-            if ("tenant".equals(readerName) && "N".equals(UtilProperties.getPropertyValue("general", "multitenant"))) {
-                continue;
-            }
-
-            readerNames.add(readerName);
-        }
+            .filter(readerName -> !("tenant".equals(readerName) && "N".equals(UtilProperties.getPropertyValue("general", "multitenant"))))
+            .collect(Collectors.toCollection(LinkedList::new));
         return getUrlByComponentList(helperName, components, readerNames);
     }
 

@@ -21,15 +21,8 @@ package org.apache.ofbiz.entity.finder;
 import static org.apache.ofbiz.base.util.UtilGenerics.cast;
 
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
+import java.util.stream.*;
 
 import org.apache.ofbiz.base.util.Debug;
 import org.apache.ofbiz.base.util.ObjectType;
@@ -297,14 +290,11 @@ public final class EntityFinderUtil {
                 Condition condition = this.conditionList.get(0);
                 return condition.createCondition(context, modelEntity, modelFieldTypeReader);
             }
-            // REFACTOR to use stream(), map(), filter(), collect(), Collectors.toCollection()
-            List<EntityCondition> entityConditionList = new ArrayList<>(this.conditionList.size());
-            for (Condition curCondition: this.conditionList) {
-                EntityCondition econd = curCondition.createCondition(context, modelEntity, modelFieldTypeReader);
-                if (econd != null) {
-                    entityConditionList.add(econd);
-                }
-            }
+            // REFACTO to use stream(), map(), filter(), collect(), Collectors.toCollection()
+            List<EntityCondition> entityConditionList = conditionList.stream()
+                .map(curCondition -> curCondition.createCondition(context, modelEntity, modelFieldTypeReader))
+                .filter(Objects::nonNull)
+                .collect(Collectors.toList());
             return EntityCondition.makeCondition(entityConditionList, UtilGenerics.<EntityJoinOperator>cast(operator));
         }
     }

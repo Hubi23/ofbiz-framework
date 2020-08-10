@@ -18,25 +18,15 @@
  *******************************************************************************/
 package org.apache.ofbiz.base.container;
 
-import java.io.IOException;
-import java.net.URL;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.LinkedHashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
+import org.apache.ofbiz.base.util.*;
+import org.w3c.dom.*;
+import org.xml.sax.*;
+
+import javax.xml.parsers.*;
+import java.io.*;
+import java.net.*;
+import java.util.*;
 import java.util.stream.*;
-
-import javax.xml.parsers.ParserConfigurationException;
-
-import org.apache.ofbiz.base.util.StringUtil;
-import org.apache.ofbiz.base.util.UtilURL;
-import org.apache.ofbiz.base.util.UtilValidate;
-import org.apache.ofbiz.base.util.UtilXml;
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-import org.xml.sax.SAXException;
 
 /**
  * ContainerConfig - Container configuration for ofbiz.xml
@@ -179,16 +169,13 @@ public class ContainerConfig {
         }
 
         public List<Property> getPropertiesWithValue(String value) {
-            // REFACTOR to use stream(), filter() x 2, collect(), Collectors.toCollection()
-            List<Property> props = new LinkedList<>();
-            if (UtilValidate.isNotEmpty(properties)) {
-                for (Property p: properties.values()) {
-                    if (p != null && value.equals(p.value)) {
-                        props.add(p);
-                    }
-                }
-            }
-            return props;
+            // REFACTO to use stream(), filter() x 2, collect(), Collectors.toCollection()
+            if (UtilValidate.isEmpty(properties))
+                return new LinkedList<>();
+            return properties.values().stream()
+                .filter(Objects::nonNull)
+                .filter(p -> value.equals(p.value))
+                .collect(Collectors.toCollection(LinkedList::new));
         }
 
         public static class Property {
