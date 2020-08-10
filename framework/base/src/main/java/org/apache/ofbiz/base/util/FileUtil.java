@@ -284,13 +284,13 @@ public final class FileUtil {
         }
 
         // Process each filtered entry
-        for (int i = 0; i < files.length; i++) {
+        for (File file : files) {
             // recurse if the entry is a directory
-            if (files[i].isDirectory() && includeSubfolders && !files[i].getName().startsWith(".")) {
-                searchFiles(fileList, files[i], filter, true);
+            if (file.isDirectory() && includeSubfolders && !file.getName().startsWith(".")) {
+                searchFiles(fileList, file, filter, true);
             } else {
                 // add the filtered file to the list
-                fileList.add(files[i]);
+                fileList.add(file);
             }
         }
     }

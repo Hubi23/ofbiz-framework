@@ -205,8 +205,7 @@ public final class SeoConfigUtil {
                         if (exceptions != null) {
                             Debug.logInfo("  " + ELEMENT_EXCEPTIONS + ": ", module);
                             List<? extends Element> exceptionUrlPatterns = UtilXml.childElementList(exceptions, ELEMENT_URLPATTERN);
-                            for (int i = 0; i < exceptionUrlPatterns.size(); i++) {
-                                Element element = exceptionUrlPatterns.get(i);
+                            for (Element element : exceptionUrlPatterns) {
                                 String urlpattern = element.getTextContent();
                                 if (UtilValidate.isNotEmpty(urlpattern)) {
                                     try {

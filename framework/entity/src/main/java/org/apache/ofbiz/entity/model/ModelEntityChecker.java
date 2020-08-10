@@ -48,9 +48,9 @@ public class ModelEntityChecker {
         if (Debug.infoOn()) {
             Debug.logInfo("[initReservedWords] array length = " + rwArray.length, module);
         }
-        for (int i = 0; i < rwArray.length; i++) {
-            reservedWords.add(rwArray[i]);
-        }
+      for (String s : rwArray) {
+        reservedWords.add(s);
+      }
 
         Map<String, Set<String>> packages = new HashMap<>();
         Set<String> packageNames = new TreeSet<>();

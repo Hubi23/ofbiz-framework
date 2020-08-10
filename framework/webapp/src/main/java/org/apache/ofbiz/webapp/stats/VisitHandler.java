@@ -228,9 +228,9 @@ public class VisitHandler {
                             Cookie[] cookies = request.getCookies();
                             if (Debug.verboseOn()) Debug.logVerbose("Cookies:" + cookies, module);
                             if (cookies != null) {
-                                for (int i = 0; i < cookies.length; i++) {
-                                    if (cookies[i].getName().equals(visitorCookieName)) {
-                                        cookieVisitorId = cookies[i].getValue();
+                                for (Cookie cookie : cookies) {
+                                    if (cookie.getName().equals(visitorCookieName)) {
+                                        cookieVisitorId = cookie.getValue();
                                         break;
                                     }
                                 }

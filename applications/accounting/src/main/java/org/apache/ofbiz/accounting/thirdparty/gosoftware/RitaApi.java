@@ -185,19 +185,19 @@ public class RitaApi {
             }
 
             String[] lines = resp.split("\n");
-            for (int i = 0; i < lines.length; i++) {
-                Debug.logInfo(lines[i], module);
-                if (!".".equals(lines[i].trim())) {
-                    String[] lineSplit = lines[i].trim().split(" ", 2);
-                    if (lineSplit != null && lineSplit.length == 2) {
-                        docMap.put(lineSplit[0], lineSplit[1]);
-                    } else {
-                        Debug.logWarning("Line split error - " + lines[i], module);
-                    }
-                } else {
-                    break;
-                }
+          for (String line : lines) {
+            Debug.logInfo(line, module);
+            if (!".".equals(line.trim())) {
+              String[] lineSplit = line.trim().split(" ", 2);
+              if (lineSplit != null && lineSplit.length == 2) {
+                docMap.put(lineSplit[0], lineSplit[1]);
+              } else {
+                Debug.logWarning("Line split error - " + line, module);
+              }
+            } else {
+              break;
             }
+          }
             RitaApi out = new RitaApi(docMap);
             return out;
         }

@@ -705,12 +705,11 @@ public class ProductionRunServices {
                         .where("workEffortIdTo", productionRunId, 
                                 "workEffortAssocTypeId", "WORK_EFF_PRECEDENCY")
                         .filterByDate().queryList();
-                for (int i = 0; i < mandatoryWorkEfforts.size(); i++) {
-                    GenericValue mandatoryWorkEffortAssoc = mandatoryWorkEfforts.get(i);
+                for (GenericValue mandatoryWorkEffortAssoc : mandatoryWorkEfforts) {
                     GenericValue mandatoryWorkEffort = mandatoryWorkEffortAssoc.getRelatedOne("FromWorkEffort", false);
                     if (!("PRUN_COMPLETED".equals(mandatoryWorkEffort.getString("currentStatusId")) ||
-                         "PRUN_RUNNING".equals(mandatoryWorkEffort.getString("currentStatusId")) ||
-                         "PRUN_CLOSED".equals(mandatoryWorkEffort.getString("currentStatusId")))) {
+                        "PRUN_RUNNING".equals(mandatoryWorkEffort.getString("currentStatusId")) ||
+                        "PRUN_CLOSED".equals(mandatoryWorkEffort.getString("currentStatusId")))) {
                         return ServiceUtil.returnError(UtilProperties.getMessage(resource, "ManufacturingProductionRunStatusNotChangedMandatoryProductionRunNotCompleted", locale));
                     }
                 }
@@ -828,8 +827,8 @@ public class ProductionRunServices {
         GenericValue oneTask = null;
         boolean allTaskCompleted = true;
         boolean allPrecTaskCompletedOrRunning = true;
-        for (int i = 0; i < tasks.size(); i++) {
-            oneTask = tasks.get(i);
+        for (GenericValue task : tasks) {
+            oneTask = task;
             if (oneTask.getString("workEffortId").equals(taskId)) {
                 theTask = oneTask;
             } else {
@@ -1026,25 +1025,24 @@ public class ProductionRunServices {
                     List<GenericValue> productCostComponentCalcs = EntityQuery.use(delegator).from("ProductCostComponentCalc")
                             .where("productId", productionRun.getProductProduced().get("productId"))
                             .orderBy("sequenceNum").queryList();
-                    for (int i = 0; i < productCostComponentCalcs.size(); i++) {
-                        GenericValue productCostComponentCalc = productCostComponentCalcs.get(i);
+                    for (GenericValue productCostComponentCalc : productCostComponentCalcs) {
                         GenericValue costComponentCalc = productCostComponentCalc.getRelatedOne("CostComponentCalc", false);
                         GenericValue customMethod = costComponentCalc.getRelatedOne("CustomMethod", false);
                         if (customMethod == null) {
                             // TODO: not supported for CostComponentCalc entries directly associated to a product
                             Debug.logWarning("Unable to create cost component for cost component calc with id [" + costComponentCalc.getString("costComponentCalcId") + "] because customMethod is not set", module);
                         } else {
-                            Map<String, Object> costMethodResult = dispatcher.runSync(customMethod.getString("customMethodName"), 
-                                    UtilMisc.toMap("productCostComponentCalc", productCostComponentCalc,
-                                            "costComponentCalc", costComponentCalc,
-                                            "costComponentTypePrefix", "ACTUAL",
-                                            "baseCost", totalCost,
-                                            "currencyUomId", (String)partyAccountingPreference.get("baseCurrencyUomId"),
-                                            "userLogin", userLogin));
+                            Map<String, Object> costMethodResult = dispatcher.runSync(customMethod.getString("customMethodName"),
+                                UtilMisc.toMap("productCostComponentCalc", productCostComponentCalc,
+                                    "costComponentCalc", costComponentCalc,
+                                    "costComponentTypePrefix", "ACTUAL",
+                                    "baseCost", totalCost,
+                                    "currencyUomId", (String) partyAccountingPreference.get("baseCurrencyUomId"),
+                                    "userLogin", userLogin));
                             if (ServiceUtil.isError(costMethodResult)) {
                                 return ServiceUtil.returnError(ServiceUtil.getErrorMessage(costMethodResult));
                             }
-                            BigDecimal productCostAdjustment = (BigDecimal)costMethodResult.get("productCostAdjustment");
+                            BigDecimal productCostAdjustment = (BigDecimal) costMethodResult.get("productCostAdjustment");
                             totalCost = totalCost.add(productCostAdjustment);
                             Map<String, Object> inMap = UtilMisc.<String, Object>toMap("userLogin", userLogin, "workEffortId", productionRunId);
                             inMap.put("costComponentCalcId", costComponentCalc.getString("costComponentCalcId"));
@@ -1357,24 +1355,23 @@ public class ProductionRunServices {
                 Long priority = (Long) context.get("priority");
                 List<GenericValue> pRRoutingTasks = productionRun.getProductionRunRoutingTasks();
                 boolean first = true;
-                for (Iterator<GenericValue> iter = pRRoutingTasks.iterator(); iter.hasNext();) {
-                    GenericValue routingTask = iter.next();
-                    if (priority.equals(routingTask.get("priority")) && ! routingTaskId.equals(routingTask.get("workEffortId")))
+                for (GenericValue routingTask : pRRoutingTasks) {
+                    if (priority.equals(routingTask.get("priority")) && !routingTaskId.equals(routingTask.get("workEffortId")))
                         return ServiceUtil.returnError(UtilProperties.getMessage(resource, "ManufacturingRoutingTaskSeqIdAlreadyExist", locale));
                     if (routingTaskId.equals(routingTask.get("workEffortId"))) {
                         routingTask.set("estimatedSetupMillis", ((BigDecimal) context.get("estimatedSetupMillis")).doubleValue());
-                        routingTask.set("estimatedMilliSeconds", ( (BigDecimal) context.get("estimatedMilliSeconds")).doubleValue());
+                        routingTask.set("estimatedMilliSeconds", ((BigDecimal) context.get("estimatedMilliSeconds")).doubleValue());
                         if (first) {    // for the first routingTask the estimatedStartDate update imply estimatedStartDate productonRun update
-                            if (! estimatedStartDate.equals(pRestimatedStartDate)) {
+                            if (!estimatedStartDate.equals(pRestimatedStartDate)) {
                                 productionRun.setEstimatedStartDate(estimatedStartDate);
                             }
                         }
                         // the priority has been changed
-                        if (! priority.equals(routingTask.get("priority"))) {
+                        if (!priority.equals(routingTask.get("priority"))) {
                             routingTask.set("priority", priority);
                             // update the routingTask List and re-read it to be able to have it sorted with the new value
-                            if (! productionRun.store()) {
-                                Debug.logError("productionRun.store(), in routingTask.priority update, fail for productionRunId ="+productionRunId,module);
+                            if (!productionRun.store()) {
+                                Debug.logError("productionRun.store(), in routingTask.priority update, fail for productionRunId =" + productionRunId, module);
                                 return ServiceUtil.returnError(UtilProperties.getMessage(resource, "ManufacturingProductionRunNotUpdated", locale));
                             }
                             productionRun.clearRoutingTasksList();
@@ -1425,8 +1422,7 @@ public class ProductionRunServices {
 
         if (workEffortId != null) {
             boolean found = false;
-            for (int i = 0; i < tasks.size(); i++) {
-                GenericValue oneTask = tasks.get(i);
+            for (GenericValue oneTask : tasks) {
                 if (oneTask.getString("workEffortId").equals(workEffortId)) {
                     found = true;
                     break;
@@ -1498,8 +1494,8 @@ public class ProductionRunServices {
 
         boolean found = false;
         GenericValue theComponent = null;
-        for (int i = 0; i < components.size(); i++) {
-            theComponent = components.get(i);
+        for (GenericValue component : components) {
+            theComponent = component;
             if (theComponent.getString("productId").equals(productId)) {
                 if (workEffortId != null) {
                     if (theComponent.getString("workEffortId").equals(workEffortId)) {
@@ -2038,8 +2034,7 @@ public class ProductionRunServices {
         }
 
         List<GenericValue> tasks = productionRun.getProductionRunRoutingTasks();
-        for (int i = 0; i < tasks.size(); i++) {
-            GenericValue oneTask = tasks.get(i);
+        for (GenericValue oneTask : tasks) {
             String taskId = oneTask.getString("workEffortId");
             if ("PRUN_RUNNING".equals(oneTask.getString("currentStatusId"))) {
                 BigDecimal quantityDeclared = oneTask.getBigDecimal("quantityProduced");
@@ -2048,8 +2043,8 @@ public class ProductionRunServices {
                 }
                 if (minimumQuantityProducedByTask.compareTo(quantityDeclared) > 0) {
                     try {
-                        Map<String, Object> serviceContext = UtilMisc.<String, Object>toMap("productionRunId", productionRunId, 
-                                "productionRunTaskId", taskId);
+                        Map<String, Object> serviceContext = UtilMisc.<String, Object>toMap("productionRunId", productionRunId,
+                            "productionRunTaskId", taskId);
                         serviceContext.put("addQuantityProduced", minimumQuantityProducedByTask.subtract(quantityDeclared));
                         serviceContext.put("issueRequiredComponents", Boolean.TRUE);
                         serviceContext.put("componentsLocationMap", componentsLocationMap);
@@ -2342,8 +2337,8 @@ public class ProductionRunServices {
         List<GenericValue> tasks = productionRun.getProductionRunRoutingTasks();
         GenericValue theTask = null;
         GenericValue oneTask = null;
-        for (int i = 0; i < tasks.size(); i++) {
-            oneTask = tasks.get(i);
+        for (GenericValue task : tasks) {
+            oneTask = task;
             if (oneTask.getString("workEffortId").equals(workEffortId)) {
                 theTask = oneTask;
                 break;
@@ -2938,15 +2933,14 @@ public class ProductionRunServices {
             }
         }
         List<String> productionRuns = new LinkedList<String>();
-        for (int i = 0; i < orderItems.size(); i++) {
-            GenericValue orderItemOrShipGroupAssoc = orderItems.get(i);
+        for (GenericValue orderItemOrShipGroupAssoc : orderItems) {
             String productId = null;
             BigDecimal amount = null;
             GenericValue orderItem = null;
             if ("OrderItemShipGroupAssoc".equals(orderItemOrShipGroupAssoc.getEntityName())) {
                 try {
                     orderItem = orderItemOrShipGroupAssoc.getRelatedOne("OrderItem", false);
-                } catch(GenericEntityException gee) {
+                } catch (GenericEntityException gee) {
                     Debug.logInfo("Unable to find order item for " + orderItemOrShipGroupAssoc, module);
                 }
             } else {
@@ -2970,22 +2964,22 @@ public class ProductionRunServices {
             }
             try {
                 List<GenericValue> existingProductionRuns = null;
-                
+
                 if (UtilValidate.isNotEmpty(shipGroupSeqId)) {
                     existingProductionRuns = EntityQuery.use(delegator).from("WorkAndOrderItemFulfillment")
-                            .where(
-                                    EntityCondition.makeCondition("orderId", EntityOperator.EQUALS, orderItemOrShipGroupAssoc.get("orderId")),
-                                    EntityCondition.makeCondition("orderItemSeqId", EntityOperator.EQUALS, orderItemOrShipGroupAssoc.get("orderItemSeqId")),
-                                    EntityCondition.makeCondition("shipGroupSeqId", EntityOperator.EQUALS, orderItemOrShipGroupAssoc.get("shipGroupSeqId")),
-                                    EntityCondition.makeCondition("currentStatusId", EntityOperator.NOT_EQUAL, "PRUN_CANCELLED"))
-                                    .cache().queryList();
+                        .where(
+                            EntityCondition.makeCondition("orderId", EntityOperator.EQUALS, orderItemOrShipGroupAssoc.get("orderId")),
+                            EntityCondition.makeCondition("orderItemSeqId", EntityOperator.EQUALS, orderItemOrShipGroupAssoc.get("orderItemSeqId")),
+                            EntityCondition.makeCondition("shipGroupSeqId", EntityOperator.EQUALS, orderItemOrShipGroupAssoc.get("shipGroupSeqId")),
+                            EntityCondition.makeCondition("currentStatusId", EntityOperator.NOT_EQUAL, "PRUN_CANCELLED"))
+                        .cache().queryList();
                 } else {
                     existingProductionRuns = EntityQuery.use(delegator).from("WorkAndOrderItemFulfillment")
-                            .where(
-                                    EntityCondition.makeCondition("orderId", EntityOperator.EQUALS, orderItemOrShipGroupAssoc.get("orderId")),
-                                    EntityCondition.makeCondition("orderItemSeqId", EntityOperator.EQUALS, orderItemOrShipGroupAssoc.get("orderItemSeqId")),
-                                    EntityCondition.makeCondition("currentStatusId", EntityOperator.NOT_EQUAL, "PRUN_CANCELLED"))
-                                    .cache().queryList();
+                        .where(
+                            EntityCondition.makeCondition("orderId", EntityOperator.EQUALS, orderItemOrShipGroupAssoc.get("orderId")),
+                            EntityCondition.makeCondition("orderItemSeqId", EntityOperator.EQUALS, orderItemOrShipGroupAssoc.get("orderItemSeqId")),
+                            EntityCondition.makeCondition("currentStatusId", EntityOperator.NOT_EQUAL, "PRUN_CANCELLED"))
+                        .cache().queryList();
                 }
                 if (UtilValidate.isNotEmpty(existingProductionRuns)) {
                     Debug.logWarning("Production Run for order item [" + orderItemOrShipGroupAssoc.getString("orderId") + "/" + orderItemOrShipGroupAssoc.getString("orderItemSeqId") + "] and ship group [" + shipGroupSeqId + "] already exists.", module);
@@ -3121,8 +3115,8 @@ public class ProductionRunServices {
         List<GenericValue> tasks = productionRun.getProductionRunRoutingTasks();
         GenericValue oneTask = null;
         String taskId = null;
-        for (int i = 0; i < tasks.size(); i++) {
-            oneTask = tasks.get(i);
+        for (GenericValue task : tasks) {
+            oneTask = task;
             taskId = oneTask.getString("workEffortId");
             try {
                 Map<String, Object> serviceContext = new HashMap<String, Object>();
@@ -3157,15 +3151,15 @@ public class ProductionRunServices {
         List<GenericValue> tasks = productionRun.getProductionRunRoutingTasks();
         GenericValue oneTask = null;
         String taskId = null;
-        for (int i = 0; i < tasks.size(); i++) {
-            oneTask = tasks.get(i);
+        for (GenericValue task : tasks) {
+            oneTask = task;
             taskId = oneTask.getString("workEffortId");
             if ("PRUN_CREATED".equals(oneTask.getString("currentStatusId")) ||
-                    "PRUN_SCHEDULED".equals(oneTask.getString("currentStatusId")) ||
-                    "PRUN_DOC_PRINTED".equals(oneTask.getString("currentStatusId"))) {
+                "PRUN_SCHEDULED".equals(oneTask.getString("currentStatusId")) ||
+                "PRUN_DOC_PRINTED".equals(oneTask.getString("currentStatusId"))) {
                 try {
-                    Map<String, Object> serviceContext = UtilMisc.<String, Object>toMap("productionRunId", productionRunId, 
-                            "workEffortId", taskId);
+                    Map<String, Object> serviceContext = UtilMisc.<String, Object>toMap("productionRunId", productionRunId,
+                        "workEffortId", taskId);
                     serviceContext.put("statusId", "PRUN_RUNNING");
                     serviceContext.put("issueAllComponents", Boolean.FALSE);
                     serviceContext.put("userLogin", userLogin);
@@ -3304,8 +3298,7 @@ public class ProductionRunServices {
                     .orderBy("-estimatedStartDate")
                     .queryList();
             if (outgoingProductionRuns != null) {
-                for (int i = 0; i < outgoingProductionRuns.size(); i++) {
-                    GenericValue outgoingProductionRun = outgoingProductionRuns.get(i);
+                for (GenericValue outgoingProductionRun : outgoingProductionRuns) {
                     BigDecimal qty = outgoingProductionRun.getBigDecimal("estimatedQuantity");
                     qty = qty != null ? qty : BigDecimal.ZERO;
                     totQty = totQty.add(qty);

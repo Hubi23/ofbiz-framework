@@ -175,8 +175,7 @@ public class BOMServices {
                 BOMTree tree = (BOMTree)treeResult.get("tree");
                 List<BOMNode> products = new LinkedList<BOMNode>();
                 tree.print(products, llc.intValue());
-                for (int i = 0; i < products.size(); i++) {
-                    BOMNode oneNode = products.get(i);
+                for (BOMNode oneNode : products) {
                     GenericValue oneProduct = oneNode.getProduct();
                     int lev = 0;
                     if (oneProduct.get("billOfMaterialLevel") != null) {
@@ -542,10 +541,10 @@ public class BOMServices {
         // (search for components that needs to be packaged).
         for (Map.Entry<String, Object> partyOrderShipment : partyOrderShipments.entrySet()) {
             List<Map<String, Object>> orderShipmentReadMapList = UtilGenerics.checkList(partyOrderShipment.getValue());
-            for (int i = 0; i < orderShipmentReadMapList.size(); i++) {
-                Map<String, Object> orderShipmentReadMap = UtilGenerics.checkMap(orderShipmentReadMapList.get(i));
-                GenericValue orderShipment = (GenericValue)orderShipmentReadMap.get("orderShipment");
-                OrderReadHelper orderReadHelper = (OrderReadHelper)orderShipmentReadMap.get("orderReadHelper");
+            for (Map<String, Object> stringObjectMap : orderShipmentReadMapList) {
+                Map<String, Object> orderShipmentReadMap = UtilGenerics.checkMap(stringObjectMap);
+                GenericValue orderShipment = (GenericValue) orderShipmentReadMap.get("orderShipment");
+                OrderReadHelper orderReadHelper = (OrderReadHelper) orderShipmentReadMap.get("orderReadHelper");
                 GenericValue orderItem = orderReadHelper.getOrderItem(orderShipment.getString("orderItemSeqId"));
                 // getProductsInPackages
                 Map<String, Object> serviceContext = new HashMap<String, Object>();
@@ -563,7 +562,7 @@ public class BOMServices {
                 List<BOMNode> productsInPackages = UtilGenerics.checkList(serviceResult.get("productsInPackages"));
                 if (productsInPackages.size() == 1) {
                     BOMNode root = productsInPackages.get(0);
-                    String rootProductId = (root.getSubstitutedNode() != null? root.getSubstitutedNode().getProduct().getString("productId"): root.getProduct().getString("productId"));
+                    String rootProductId = (root.getSubstitutedNode() != null ? root.getSubstitutedNode().getProduct().getString("productId") : root.getProduct().getString("productId"));
                     if (orderItem.getString("productId").equals(rootProductId)) {
                         productsInPackages = null;
                     }
@@ -582,10 +581,10 @@ public class BOMServices {
         for (Map.Entry<String, Object> partyOrderShipment : partyOrderShipments.entrySet()) {
             Map<String, List<Map<String, Object>>> boxTypeContent = new HashMap<String, List<Map<String,Object>>>();
             List<Map<String, Object>> orderShipmentReadMapList = UtilGenerics.checkList(partyOrderShipment.getValue());
-            for (int i = 0; i < orderShipmentReadMapList.size(); i++) {
-                Map<String, Object> orderShipmentReadMap = UtilGenerics.checkMap(orderShipmentReadMapList.get(i));
-                GenericValue orderShipment = (GenericValue)orderShipmentReadMap.get("orderShipment");
-                OrderReadHelper orderReadHelper = (OrderReadHelper)orderShipmentReadMap.get("orderReadHelper");
+            for (Map<String, Object> objectMap : orderShipmentReadMapList) {
+                Map<String, Object> orderShipmentReadMap = UtilGenerics.checkMap(objectMap);
+                GenericValue orderShipment = (GenericValue) orderShipmentReadMap.get("orderShipment");
+                OrderReadHelper orderReadHelper = (OrderReadHelper) orderShipmentReadMap.get("orderReadHelper");
                 List<BOMNode> productsInPackages = UtilGenerics.checkList(orderShipmentReadMap.get("productsInPackages"));
                 if (productsInPackages != null) {
                     // there are subcomponents:
@@ -606,7 +605,7 @@ public class BOMServices {
                                     return ServiceUtil.returnError(UtilProperties.getMessage(resource, "ManufacturingPackageConfiguratorError", locale));
                                 }
                                 boxTypes.put(boxTypeId, boxType);
-                                List<Map<String, Object>> box = new LinkedList<Map<String,Object>>();
+                                List<Map<String, Object>> box = new LinkedList<Map<String, Object>>();
                                 boxTypeContent.put(boxTypeId, box);
                             }
                             List<Map<String, Object>> boxTypeContentList = UtilGenerics.checkList(boxTypeContent.get(boxTypeId));
@@ -636,7 +635,7 @@ public class BOMServices {
                             }
 
                             boxTypes.put(boxTypeId, boxType);
-                            List<Map<String, Object>> box = new LinkedList<Map<String,Object>>();
+                            List<Map<String, Object>> box = new LinkedList<Map<String, Object>>();
                             boxTypeContent.put(boxTypeId, box);
                         }
                         List<Map<String, Object>> boxTypeContentList = UtilGenerics.checkList(boxTypeContent.get(boxTypeId));
@@ -655,19 +654,19 @@ public class BOMServices {
                     boxWidth = BigDecimal.ZERO;
                 }
                 String shipmentPackageSeqId = null;
-                for (int i = 0; i < contentList.size(); i++) {
-                    Map<String, Object> contentMap = UtilGenerics.checkMap(contentList.get(i));
+                for (Map<String, Object> stringObjectMap : contentList) {
+                    Map<String, Object> contentMap = UtilGenerics.checkMap(stringObjectMap);
                     Map<String, Object> content = UtilGenerics.checkMap(contentMap.get("content"));
-                    OrderReadHelper orderReadHelper = (OrderReadHelper)content.get("orderReadHelper");
+                    OrderReadHelper orderReadHelper = (OrderReadHelper) content.get("orderReadHelper");
                     List<BOMNode> productsInPackages = UtilGenerics.checkList(content.get("productsInPackages"));
-                    GenericValue orderShipment = (GenericValue)content.get("orderShipment");
+                    GenericValue orderShipment = (GenericValue) content.get("orderShipment");
 
                     GenericValue product = null;
                     BigDecimal quantity = BigDecimal.ZERO;
                     boolean subProduct = contentMap.containsKey("componentIndex");
                     if (subProduct) {
                         // multi package
-                        Integer index = (Integer)contentMap.get("componentIndex");
+                        Integer index = (Integer) contentMap.get("componentIndex");
                         BOMNode component = productsInPackages.get(index);
                         product = component.getProduct();
                         quantity = component.getQuantity();
@@ -691,10 +690,12 @@ public class BOMServices {
                     }
 
                     BigDecimal firstMaxNumOfProducts = boxWidth.subtract(totalWidth).divide(productDepth, 0, RoundingMode.FLOOR);
-                    if (firstMaxNumOfProducts.compareTo(BigDecimal.ZERO) == 0) firstMaxNumOfProducts = BigDecimal.ONE;
+                    if (firstMaxNumOfProducts.compareTo(BigDecimal.ZERO) == 0)
+                        firstMaxNumOfProducts = BigDecimal.ONE;
                     //
                     BigDecimal maxNumOfProducts = boxWidth.divide(productDepth, 0, RoundingMode.FLOOR);
-                    if (maxNumOfProducts.compareTo(BigDecimal.ZERO) == 0) maxNumOfProducts = BigDecimal.ONE;
+                    if (maxNumOfProducts.compareTo(BigDecimal.ZERO) == 0)
+                        maxNumOfProducts = BigDecimal.ONE;
 
                     BigDecimal remQuantity = quantity;
                     boolean isFirst = true;
@@ -714,7 +715,7 @@ public class BOMServices {
                                 if (ServiceUtil.isError(serviceResult)) {
                                     return ServiceUtil.returnError(ServiceUtil.getErrorMessage(serviceResult));
                                 }
-                                shipmentPackageSeqId = (String)serviceResult.get("shipmentPackageSeqId");
+                                shipmentPackageSeqId = (String) serviceResult.get("shipmentPackageSeqId");
                             } catch (GenericServiceException e) {
                                 return ServiceUtil.returnError(UtilProperties.getMessage(resource, "ManufacturingPackageConfiguratorError", locale));
                             }
@@ -724,17 +725,17 @@ public class BOMServices {
                             Map<String, Object> inputMap = null;
                             if (subProduct) {
                                 inputMap = UtilMisc.toMap("shipmentId", orderShipment.getString("shipmentId"),
-                                "shipmentPackageSeqId", shipmentPackageSeqId,
-                                "shipmentItemSeqId", orderShipment.getString("shipmentItemSeqId"),
-                                "subProductId", product.getString("productId"),
-                                "userLogin", userLogin,
-                                "subProductQuantity", qty);
+                                    "shipmentPackageSeqId", shipmentPackageSeqId,
+                                    "shipmentItemSeqId", orderShipment.getString("shipmentItemSeqId"),
+                                    "subProductId", product.getString("productId"),
+                                    "userLogin", userLogin,
+                                    "subProductQuantity", qty);
                             } else {
                                 inputMap = UtilMisc.toMap("shipmentId", orderShipment.getString("shipmentId"),
-                                "shipmentPackageSeqId", shipmentPackageSeqId,
-                                "shipmentItemSeqId", orderShipment.getString("shipmentItemSeqId"),
-                                "userLogin", userLogin,
-                                "quantity", qty);
+                                    "shipmentPackageSeqId", shipmentPackageSeqId,
+                                    "shipmentItemSeqId", orderShipment.getString("shipmentItemSeqId"),
+                                    "userLogin", userLogin,
+                                    "quantity", qty);
                             }
                             Map<String, Object> serviceResult = dispatcher.runSync("createShipmentPackageContent", inputMap);
                             if (ServiceUtil.isError(serviceResult)) {
@@ -744,7 +745,8 @@ public class BOMServices {
                             return ServiceUtil.returnError(UtilProperties.getMessage(resource, "ManufacturingPackageConfiguratorError", locale));
                         }
                         totalWidth = totalWidth.add(qty.multiply(productDepth));
-                        if (qty.compareTo(maxQuantity) == 0) shipmentPackageSeqId = null;
+                        if (qty.compareTo(maxQuantity) == 0)
+                            shipmentPackageSeqId = null;
                         remQuantity = remQuantity.subtract(qty);
                     }
                 }

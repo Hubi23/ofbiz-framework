@@ -751,8 +751,8 @@ public class WebToolsServices {
                             List<String> fieldNameList = new LinkedList<String>();
 
                             ModelIndex index = entity.getIndex(r);
-                            for (Iterator<ModelIndex.Field> fieldIterator = index.getFields().iterator(); fieldIterator.hasNext();) {
-                                fieldNameList.add(fieldIterator.next().getFieldName());
+                            for (ModelIndex.Field field : index.getFields()) {
+                                fieldNameList.add(field.getFieldName());
                             }
 
                             Map<String, Object> indexMap = new HashMap<String, Object>();

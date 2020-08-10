@@ -100,9 +100,9 @@ public final class SimpleMethod extends MiniLangElement {
     // This method is needed only during the v1 to v2 transition
     private static boolean autoCorrect(Element element) {
         boolean elementModified = false;
-        for (int i = 0; i < DEPRECATED_ATTRIBUTES.length; i++) {
-            if (!element.getAttribute(DEPRECATED_ATTRIBUTES[i]).isEmpty()) {
-                element.removeAttribute(DEPRECATED_ATTRIBUTES[i]);
+        for (String deprecatedAttribute : DEPRECATED_ATTRIBUTES) {
+            if (!element.getAttribute(deprecatedAttribute).isEmpty()) {
+                element.removeAttribute(deprecatedAttribute);
                 elementModified = true;
             }
         }
@@ -344,9 +344,9 @@ public final class SimpleMethod extends MiniLangElement {
             if (simpleMethodElement.getAttribute("method-name").isEmpty()) {
                 MiniLangValidate.handleError("Element must include the \"method-name\" attribute.".concat(locationMsg), null, simpleMethodElement);
             }
-            for (int i = 0; i < DEPRECATED_ATTRIBUTES.length; i++) {
-                if (!simpleMethodElement.getAttribute(DEPRECATED_ATTRIBUTES[i]).isEmpty()) {
-                    MiniLangValidate.handleError("Attribute \"" + DEPRECATED_ATTRIBUTES[i] + "\" is deprecated (no replacement)." + locationMsg, null, simpleMethodElement);
+            for (String deprecatedAttribute : DEPRECATED_ATTRIBUTES) {
+                if (!simpleMethodElement.getAttribute(deprecatedAttribute).isEmpty()) {
+                    MiniLangValidate.handleError("Attribute \"" + deprecatedAttribute + "\" is deprecated (no replacement)." + locationMsg, null, simpleMethodElement);
                 }
             }
         }

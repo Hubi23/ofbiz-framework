@@ -713,9 +713,7 @@ public class ShoppingCart implements Iterable<ShoppingCartItem>, Serializable {
     /** Get a ShoppingCartItem from the cart object. */
     public ShoppingCartItem findCartItem(String productId, Map<String, GenericValue> features, Map<String, Object> attributes, String prodCatalogId, BigDecimal selectedAmount) {
         // Check for existing cart item.
-        for (int i = 0; i < this.cartLines.size(); i++) {
-            ShoppingCartItem cartItem = cartLines.get(i);
-
+        for (ShoppingCartItem cartItem : this.cartLines) {
             if (cartItem.equals(productId, features, attributes, prodCatalogId, selectedAmount)) {
                 return cartItem;
             }
@@ -938,8 +936,7 @@ public class ShoppingCart implements Iterable<ShoppingCartItem>, Serializable {
 
     public ShoppingCartItem findCartItem(String orderItemSeqId) {
         if (orderItemSeqId != null) {
-            for (int i = 0; i < this.cartLines.size(); i++) {
-                ShoppingCartItem cartItem = cartLines.get(i);
+            for (ShoppingCartItem cartItem : this.cartLines) {
                 String itemSeqId = cartItem.getOrderItemSeqId();
                 if (itemSeqId != null && orderItemSeqId.equals(itemSeqId)) {
                     return cartItem;
@@ -5006,8 +5003,7 @@ public class ShoppingCart implements Iterable<ShoppingCartItem>, Serializable {
             public BigDecimal getItemTax(ShoppingCart cart) {
                 BigDecimal itemTax = BigDecimal.ZERO;
 
-                for (int i = 0; i < itemTaxAdj.size(); i++) {
-                    GenericValue v = itemTaxAdj.get(i);
+                for (GenericValue v : itemTaxAdj) {
                     itemTax = itemTax.add(OrderReadHelper.calcItemAdjustment(v, quantity, item.getBasePrice()));
                 }
 

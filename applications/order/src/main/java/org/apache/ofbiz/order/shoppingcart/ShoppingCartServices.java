@@ -593,8 +593,7 @@ public class ShoppingCartServices {
                     if (UtilValidate.isNotEmpty(shipGroupAssocs)) {
                         shipGroupAssocs = EntityUtil.orderBy(shipGroupAssocs, UtilMisc.toList("-shipGroupSeqId"));
                     }
-                    for (int g = 0; g < shipGroupAssocs.size(); g++) {
-                        GenericValue sgAssoc = shipGroupAssocs.get(g);
+                    for (GenericValue sgAssoc : shipGroupAssocs) {
                         BigDecimal shipGroupQty = OrderReadHelper.getOrderItemShipGroupQuantity(sgAssoc);
                         if (shipGroupQty == null) {
                             shipGroupQty = BigDecimal.ZERO;
@@ -611,16 +610,16 @@ public class ShoppingCartServices {
                         // this may not be necessary here, so check it first as calling it here with 0 quantity and
                         // such ends up removing cart items from the group, which causes problems later with inventory
                         // reservation, tax calculation, etc.
-                        ShoppingCart.CartShipInfo csi = cart.getShipInfo(cartShipGroupIndex);
+                        CartShipInfo csi = cart.getShipInfo(cartShipGroupIndex);
                         ShoppingCartItem cartItem = cart.findCartItem(itemIndex);
                         if (cartItem == null || cartItem.getQuantity() == null ||
-                                BigDecimal.ZERO.equals(cartItem.getQuantity()) ||
-                                shipGroupQty.equals(cartItem.getQuantity())) {
+                            BigDecimal.ZERO.equals(cartItem.getQuantity()) ||
+                            shipGroupQty.equals(cartItem.getQuantity())) {
                             Debug.logInfo("In loadCartFromOrder not adding item [" + item.getString("orderItemSeqId") +
-                                    "] to ship group with index [" + itemIndex + "]; group quantity is [" + shipGroupQty +
-                                    "] item quantity is [" + (cartItem != null ? cartItem.getQuantity() : "no cart item") +
-                                    "] cartShipGroupIndex is [" + cartShipGroupIndex + "], csi.shipItemInfo.size(): " +
-                                    (cartShipGroupIndex < 0 ? 0 : csi.shipItemInfo.size()), module);
+                                "] to ship group with index [" + itemIndex + "]; group quantity is [" + shipGroupQty +
+                                "] item quantity is [" + (cartItem != null ? cartItem.getQuantity() : "no cart item") +
+                                "] cartShipGroupIndex is [" + cartShipGroupIndex + "], csi.shipItemInfo.size(): " +
+                                (cartShipGroupIndex < 0 ? 0 : csi.shipItemInfo.size()), module);
                         } else {
                             cart.setItemShipGroupQty(itemIndex, shipGroupQty, cartShipGroupIndex);
                         }

@@ -840,71 +840,69 @@ public class ImageManagementServices {
 
                 List<GenericValue> contentAssocList = EntityQuery.use(delegator).from("ContentAssoc").where("contentId", contentId, "contentAssocTypeId", "IMAGE_THUMBNAIL").queryList();
                 if (contentAssocList.size() > 0) {
-                    for (int i = 0; i < contentAssocList.size(); i++) {
-                        GenericValue contentAssoc = contentAssocList.get(i);
+                  for (GenericValue contentAssoc : contentAssocList) {
+                    List<GenericValue> dataResourceAssocList = EntityQuery.use(delegator).from("ContentDataResourceView").where("contentId", contentAssoc.get("contentIdTo")).queryList();
+                    GenericValue dataResourceAssoc = EntityUtil.getFirst(dataResourceAssocList);
 
-                        List<GenericValue> dataResourceAssocList = EntityQuery.use(delegator).from("ContentDataResourceView").where("contentId", contentAssoc.get("contentIdTo")).queryList();
-                        GenericValue dataResourceAssoc = EntityUtil.getFirst(dataResourceAssocList);
+                    String drDataResourceNameAssoc = (String) dataResourceAssoc.get("drDataResourceName");
+                    String filenameToUseAssoc = filenameToUse.substring(0, filenameToUse.length() - 4) + "-" + contentAssoc.get("mapKey") + imageType;
+                    String imageUrlAssoc = imageServerUrl + "/" + productId + "/" + filenameToUseAssoc;
 
-                        String drDataResourceNameAssoc = (String) dataResourceAssoc.get("drDataResourceName");
-                        String filenameToUseAssoc = filenameToUse.substring(0, filenameToUse.length() - 4) + "-" + contentAssoc.get("mapKey") + imageType;
-                        String imageUrlAssoc = imageServerUrl + "/" + productId + "/" + filenameToUseAssoc;
+                    BufferedImage bufImgAssoc = ImageIO.read(new File(imageServerPath + "/" + productId + "/" + drDataResourceNameAssoc));
+                    ImageIO.write(bufImgAssoc, imgExtension, new File(imageServerPath + "/" + productId + "/" + filenameToUseAssoc));
 
-                        BufferedImage bufImgAssoc = ImageIO.read(new File(imageServerPath + "/" + productId + "/" + drDataResourceNameAssoc));
-                        ImageIO.write(bufImgAssoc, imgExtension, new File(imageServerPath + "/" + productId + "/" + filenameToUseAssoc));
-
-                        File fileAssoc = new File(imageServerPath + "/" + productId + "/" + drDataResourceNameAssoc);
-                        if (!fileAssoc.delete()) {
-                            Debug.logError("File :" + fileAssoc.getName() + ", couldn't be deleted", module);
-                        }
-
-                        Map<String, Object> contentAssocMap = new HashMap<>();
-                        contentAssocMap.put("contentId", contentAssoc.get("contentIdTo"));
-                        contentAssocMap.put("contentName", filenameToUseAssoc);
-                        contentAssocMap.put("userLogin", userLogin);
-                        try {
-                            Map<String, Object> serviceResult = dispatcher.runSync("updateContent", contentAssocMap);
-                            if (ServiceUtil.isError(serviceResult)) {
-                                return ServiceUtil.returnError(ServiceUtil.getErrorMessage(serviceResult));
-                            }
-                        } catch (GenericServiceException e) {
-                            Debug.logError(e, module);
-                            return ServiceUtil.returnError(e.getMessage());
-                        }
-                        GenericValue contentAssocUp = null;
-                        try {
-                            contentAssocUp = EntityQuery.use(delegator).from("Content").where("contentId", contentAssoc.get("contentIdTo")).queryOne();
-                        } catch (GenericEntityException e) {
-                            Debug.logError(e, module);
-                            return ServiceUtil.returnError(e.getMessage());
-                        }
-                        if (contentAssocUp != null) {
-                            GenericValue dataResourceAssocUp = null;
-                            try {
-                                dataResourceAssocUp = contentAssocUp.getRelatedOne("DataResource", false);
-                            } catch (GenericEntityException e) {
-                                Debug.logError(e, module);
-                                return ServiceUtil.returnError(e.getMessage());
-                            }
-
-                            if (dataResourceAssocUp != null) {
-                                Map<String, Object> dataResourceAssocMap = new HashMap<>();
-                                dataResourceAssocMap.put("dataResourceId", dataResourceAssocUp.getString("dataResourceId"));
-                                dataResourceAssocMap.put("objectInfo", imageUrlAssoc);
-                                dataResourceAssocMap.put("dataResourceName", filenameToUseAssoc);
-                                dataResourceAssocMap.put("userLogin", userLogin);
-                                try {
-                                    Map<String, Object> serviceResult = dispatcher.runSync("updateDataResource", dataResourceAssocMap);
-                                    if (ServiceUtil.isError(serviceResult)) {
-                                        return ServiceUtil.returnError(ServiceUtil.getErrorMessage(serviceResult));
-                                    }
-                                } catch (GenericServiceException e) {
-                                    Debug.logError(e, module);
-                                    return ServiceUtil.returnError(e.getMessage());
-                                }
-                            }
-                        }
+                    File fileAssoc = new File(imageServerPath + "/" + productId + "/" + drDataResourceNameAssoc);
+                    if (!fileAssoc.delete()) {
+                      Debug.logError("File :" + fileAssoc.getName() + ", couldn't be deleted", module);
                     }
+
+                    Map<String, Object> contentAssocMap = new HashMap<>();
+                    contentAssocMap.put("contentId", contentAssoc.get("contentIdTo"));
+                    contentAssocMap.put("contentName", filenameToUseAssoc);
+                    contentAssocMap.put("userLogin", userLogin);
+                    try {
+                      Map<String, Object> serviceResult = dispatcher.runSync("updateContent", contentAssocMap);
+                      if (ServiceUtil.isError(serviceResult)) {
+                        return ServiceUtil.returnError(ServiceUtil.getErrorMessage(serviceResult));
+                      }
+                    } catch (GenericServiceException e) {
+                      Debug.logError(e, module);
+                      return ServiceUtil.returnError(e.getMessage());
+                    }
+                    GenericValue contentAssocUp = null;
+                    try {
+                      contentAssocUp = EntityQuery.use(delegator).from("Content").where("contentId", contentAssoc.get("contentIdTo")).queryOne();
+                    } catch (GenericEntityException e) {
+                      Debug.logError(e, module);
+                      return ServiceUtil.returnError(e.getMessage());
+                    }
+                    if (contentAssocUp != null) {
+                      GenericValue dataResourceAssocUp = null;
+                      try {
+                        dataResourceAssocUp = contentAssocUp.getRelatedOne("DataResource", false);
+                      } catch (GenericEntityException e) {
+                        Debug.logError(e, module);
+                        return ServiceUtil.returnError(e.getMessage());
+                      }
+
+                      if (dataResourceAssocUp != null) {
+                        Map<String, Object> dataResourceAssocMap = new HashMap<>();
+                        dataResourceAssocMap.put("dataResourceId", dataResourceAssocUp.getString("dataResourceId"));
+                        dataResourceAssocMap.put("objectInfo", imageUrlAssoc);
+                        dataResourceAssocMap.put("dataResourceName", filenameToUseAssoc);
+                        dataResourceAssocMap.put("userLogin", userLogin);
+                        try {
+                          Map<String, Object> serviceResult = dispatcher.runSync("updateDataResource", dataResourceAssocMap);
+                          if (ServiceUtil.isError(serviceResult)) {
+                            return ServiceUtil.returnError(ServiceUtil.getErrorMessage(serviceResult));
+                          }
+                        } catch (GenericServiceException e) {
+                          Debug.logError(e, module);
+                          return ServiceUtil.returnError(e.getMessage());
+                        }
+                      }
+                    }
+                  }
                 }
             }
         } catch (IOException | IllegalArgumentException | GenericEntityException e) {

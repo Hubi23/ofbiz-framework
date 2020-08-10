@@ -1097,14 +1097,13 @@ public class ShoppingCartHelper {
                  // set order terms based on agreement terms
                  List<GenericValue> agreementTerms = EntityUtil.filterByDate(agreement.getRelated("AgreementTerm", null, null, false));
                  if (agreementTerms.size() > 0) {
-                      for (int i = 0; agreementTerms.size() > i;i++) {
-                           GenericValue agreementTerm = agreementTerms.get(i);
-                           String termTypeId = (String) agreementTerm.get("termTypeId");
-                           BigDecimal termValue = agreementTerm.getBigDecimal("termValue");
-                           Long termDays = (Long) agreementTerm.get("termDays");
-                           String textValue = agreementTerm.getString("textValue");
-                           cart.addOrderTerm(termTypeId, termValue, termDays, textValue);
-                      }
+                     for (GenericValue agreementTerm : agreementTerms) {
+                         String termTypeId = (String) agreementTerm.get("termTypeId");
+                         BigDecimal termValue = agreementTerm.getBigDecimal("termValue");
+                         Long termDays = (Long) agreementTerm.get("termDays");
+                         String textValue = agreementTerm.getString("textValue");
+                         cart.addOrderTerm(termTypeId, termValue, termDays, textValue);
+                     }
                   }
             } catch (GenericEntityException e) {
                   Debug.logWarning(e.toString(), module);

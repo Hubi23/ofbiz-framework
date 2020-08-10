@@ -205,8 +205,7 @@ public final class EntityUtilProperties implements Serializable {
                     .cache()
                     .queryList();
             if (UtilValidate.isNotEmpty(gvList)) {
-                for (Iterator<GenericValue> i = gvList.iterator(); i.hasNext();) {
-                    GenericValue gv = i.next();
+                for (GenericValue gv : gvList) {
                     if (UtilValidate.isNotEmpty(gv.getString("systemPropertyValue"))) {
                         properties.setProperty(gv.getString("systemPropertyId"), gv.getString("systemPropertyValue"));
                     }

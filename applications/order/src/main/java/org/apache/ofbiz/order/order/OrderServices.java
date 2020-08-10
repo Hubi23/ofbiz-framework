@@ -1709,8 +1709,7 @@ public class OrderServices {
 
                     // Accumulate the new tax total from the recalculated item adjustments
                     if (UtilValidate.isNotEmpty(itemAdj)) {
-                        for (int i = 0; i < itemAdj.size(); i++) {
-                            List<GenericValue> itemAdjustments = itemAdj.get(i);
+                        for (List<GenericValue> itemAdjustments : itemAdj) {
                             for (GenericValue ia : itemAdjustments) {
                                 if (ia.get("amount") != null) {
                                     totalNewOrderTax = totalNewOrderTax.add(ia.getBigDecimal("amount").setScale(taxDecimals, taxRounding));

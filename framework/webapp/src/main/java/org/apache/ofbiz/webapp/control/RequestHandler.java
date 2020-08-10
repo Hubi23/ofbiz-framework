@@ -401,8 +401,8 @@ public class RequestHandler {
                     throw new RequestHandlerException(requestMissingErrorMessage);
                 } else {
                     if (Debug.infoOn()) {
-                        for (int i = 0; i < clientCerts.length; i++) {
-                            Debug.logInfo(clientCerts[i].getSubjectX500Principal().getName(), module);
+                        for (X509Certificate clientCert : clientCerts) {
+                            Debug.logInfo(clientCert.getSubjectX500Principal().getName(), module);
                         }
                     }
 

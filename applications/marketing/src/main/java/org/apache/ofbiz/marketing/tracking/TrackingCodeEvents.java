@@ -260,9 +260,9 @@ public class TrackingCodeEvents {
             // first try to get the current ID from the visitor cookie
             javax.servlet.http.Cookie[] cookies = request.getCookies();
             if (cookies != null) {
-                for (int i = 0; i < cookies.length; i++) {
-                    if (cookies[i].getName().equals(visitorSiteIdCookieName)) {
-                        visitorSiteId = cookies[i].getValue();
+                for (Cookie cookie : cookies) {
+                    if (cookie.getName().equals(visitorSiteIdCookieName)) {
+                        visitorSiteId = cookie.getValue();
                         break;
                     }
                 }
@@ -336,9 +336,9 @@ public class TrackingCodeEvents {
             Cookie[] cookies = request.getCookies();
 
             if (cookies != null && cookies.length > 0) {
-                for (int i = 0; i < cookies.length; i++) {
-                    if (cookies[i].getName().startsWith("TKCDT_")) {
-                        String trackingCodeId = cookies[i].getValue();
+                for (Cookie cookie : cookies) {
+                    if (cookie.getName().startsWith("TKCDT_")) {
+                        String trackingCodeId = cookie.getValue();
                         GenericValue trackingCode;
                         try {
                             trackingCode = EntityQuery.use(delegator).from("TrackingCode").where("trackingCodeId", trackingCodeId).cache().queryOne();
@@ -355,17 +355,19 @@ public class TrackingCodeEvents {
 
                         //check effective dates
                         if (trackingCode.get("fromDate") != null && nowStamp.before(trackingCode.getTimestamp("fromDate"))) {
-                            if (Debug.infoOn()) Debug.logInfo("The TrackingCode with ID [" + trackingCodeId + "] has not yet gone into effect, ignoring this trackingCodeId", module);
+                            if (Debug.infoOn())
+                                Debug.logInfo("The TrackingCode with ID [" + trackingCodeId + "] has not yet gone into effect, ignoring this trackingCodeId", module);
                             continue;
                         }
                         if (trackingCode.get("thruDate") != null && nowStamp.after(trackingCode.getTimestamp("thruDate"))) {
-                            if (Debug.infoOn()) Debug.logInfo("The TrackingCode with ID [" + trackingCodeId + "] has expired, ignoring this trackingCodeId", module);
+                            if (Debug.infoOn())
+                                Debug.logInfo("The TrackingCode with ID [" + trackingCodeId + "] has expired, ignoring this trackingCodeId", module);
                             continue;
                         }
 
                         // for each trackingCodeId found in this way attach to the visit with the TKCDSRC_COOKIE sourceEnumId
                         GenericValue trackingCodeVisit = delegator.makeValue("TrackingCodeVisit",
-                                UtilMisc.toMap("trackingCodeId", trackingCodeId, "visitId", visit.get("visitId"),
+                            UtilMisc.toMap("trackingCodeId", trackingCodeId, "visitId", visit.get("visitId"),
                                 "fromDate", nowStamp, "sourceEnumId", "TKCDSRC_COOKIE"));
                         try {
                             //not doing this inside a transaction, want each one possible to go in
@@ -464,20 +466,20 @@ public class TrackingCodeEvents {
         String isBillable = null;
         String trackingCodeId = null;
         if (cookies != null && cookies.length > 0) {
-            for (int i = 0; i < cookies.length; i++) {
-                String cookieName = cookies[i].getName();
+            for (Cookie cookie : cookies) {
+                String cookieName = cookie.getName();
                 // find the siteId cookie if it exists
                 if ("Ofbiz.TKCD.SiteId".equals(cookieName)) {
-                    siteId = cookies[i].getValue();
+                    siteId = cookie.getValue();
                 }
 
                 // find the referred timestamp cookie if it exists
                 if ("Ofbiz.TKCD.UpdatedTimeStamp".equals(cookieName)) {
-                    String affiliateReferredTime = cookies[i].getValue();
-                    if (affiliateReferredTime !=null && !affiliateReferredTime.equals("")) {
+                    String affiliateReferredTime = cookie.getValue();
+                    if (affiliateReferredTime != null && !affiliateReferredTime.equals("")) {
                         try {
                             affiliateReferredTimeStamp = Timestamp.valueOf(affiliateReferredTime);
-                        } catch (IllegalArgumentException  e) {
+                        } catch (IllegalArgumentException e) {
                             Debug.logError(e, "Error parsing affiliateReferredTimeStamp value from cookie", module);
                         }
                     }
@@ -488,10 +490,10 @@ public class TrackingCodeEvents {
                 // This cookie value keeps trackingCodeId
                 if (cookieName.startsWith("TKCDB_")) {
                     isBillable = "Y";
-                    trackingCodeId = cookies[i].getValue();
+                    trackingCodeId = cookie.getValue();
                 } else if (cookieName.startsWith("TKCDT_")) {
                     isBillable = "N";
-                    trackingCodeId = cookies[i].getValue();
+                    trackingCodeId = cookie.getValue();
                 }
 
             }

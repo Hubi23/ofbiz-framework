@@ -2089,9 +2089,7 @@ public class OrderReadHelper {
         List<GenericValue> orderItems = getValidOrderItems();
         BigDecimal totalItems = ZERO;
 
-        for (int i = 0; i < orderItems.size(); i++) {
-            GenericValue oi = orderItems.get(i);
-
+        for (GenericValue oi : orderItems) {
             totalItems = totalItems.add(getOrderItemQuantity(oi)).setScale(scale, rounding);
         }
         return totalItems.setScale(scale, rounding);
@@ -2101,9 +2099,7 @@ public class OrderReadHelper {
         List<GenericValue> orderItems = getValidOrderItems();
         BigDecimal totalItems = ZERO;
 
-        for (int i = 0; i < orderItems.size(); i++) {
-            GenericValue oi = orderItems.get(i);
-
+        for (GenericValue oi : orderItems) {
             totalItems = totalItems.add(oi.getBigDecimal("quantity")).setScale(scale, rounding);
         }
         return totalItems;

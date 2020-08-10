@@ -393,8 +393,7 @@ public class LayoutEvents {
 
         // Can't count on records being unique
         Map<String, GenericValue> beenThere = new HashMap<String, GenericValue>();
-        for (int i=0; i<entityList.size(); i++) {
-            GenericValue view = entityList.get(i);
+        for (GenericValue view : entityList) {
             List<Object> errorMessages = new LinkedList<Object>();
             if (locale == null) {
                 locale = Locale.getDefault();
@@ -412,7 +411,8 @@ public class LayoutEvents {
             String mapKey = (String) view.get("caMapKey");
             Timestamp fromDate = (Timestamp) view.get("caFromDate");
             Timestamp thruDate = (Timestamp) view.get("caThruDate");
-            if (Debug.verboseOn()) Debug.logVerbose("in cloneLayout, contentIdFrom:" + contentIdFrom + " fromDate:" + fromDate + " thruDate:" + thruDate + " mapKey:" + mapKey, "");
+            if (Debug.verboseOn())
+                Debug.logVerbose("in cloneLayout, contentIdFrom:" + contentIdFrom + " fromDate:" + fromDate + " thruDate:" + thruDate + " mapKey:" + mapKey, "");
             if (beenThere.get(contentIdFrom) == null) {
                 serviceIn.put("contentIdFrom", contentIdFrom);
                 serviceIn.put("contentIdTo", newId);

@@ -89,8 +89,8 @@ public class ControlFilter implements Filter {
         String allowedPathsString = filterConfig.getInitParameter("allowedPaths");
         if (allowedPathsString != null) {
             String[] result = allowedPathsString.split(":");
-            for (int x = 0; x < result.length; x++) {
-                allowedPaths.add(result[x]);
+            for (String s : result) {
+                allowedPaths.add(s);
             }
             // if an URI is specified in the redirectPath parameter, it is added to the allowed list
             if (redirectPath != null && !redirectPathIsUrl) {
