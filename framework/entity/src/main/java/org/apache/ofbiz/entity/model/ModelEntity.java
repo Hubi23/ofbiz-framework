@@ -481,13 +481,8 @@ public class ModelEntity implements Comparable<ModelEntity>, Serializable {
     }
 
     public boolean getHasFieldWithAuditLog() {
-        // REFACTOR to use stream(), anyMatch()
-        for (ModelField mf : getFieldsUnmodifiable()) {
-            if (mf.getEnableAuditLog()) {
-                return true;
-            }
-        }
-        return false;
+        // REFACTO to use stream(), anyMatch()
+        return getFieldsUnmodifiable().stream().anyMatch(ModelField::getEnableAuditLog);
     }
 
     /* Get the location of this entity's definition */
@@ -530,12 +525,9 @@ public class ModelEntity implements Comparable<ModelEntity>, Serializable {
     }
 
     public boolean areFields(Collection<String> fieldNames) {
-        // REFACTOR to use stream(), allMatch()
+        // REFACTO to use stream(), allMatch()
         if (fieldNames == null) return false;
-        for (String fieldName: fieldNames) {
-            if (!isField(fieldName)) return false;
-        }
-        return true;
+        return fieldNames.stream().allMatch(this::isField);
     }
 
     public int getPksSize() {

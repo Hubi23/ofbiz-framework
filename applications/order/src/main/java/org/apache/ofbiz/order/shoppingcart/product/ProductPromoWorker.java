@@ -390,21 +390,16 @@ public final class ProductPromoWorker {
     }
 
     private static boolean hasOrderTotalCondition(GenericValue productPromo, Delegator delegator) throws GenericEntityException {
-        // REFACTOR to stream(), anyMatch
-        boolean hasOtCond = false;
+        // REFACTO to stream(), anyMatch
         List<GenericValue> productPromoConds = EntityQuery.use(delegator).from("ProductPromoCond")
                 .where("productPromoId", productPromo.get("productPromoId"))
                 .orderBy("productPromoCondSeqId")
                 .cache(true).queryList();
-        for (GenericValue productPromoCond : productPromoConds) {
+        return productPromoConds.stream().anyMatch(productPromoCond -> {
             String inputParamEnumId = productPromoCond.getString("inputParamEnumId");
             String customMethodId = productPromoCond.getString("customMethodId");
-            if ("PPIP_ORDER_TOTAL".equals(inputParamEnumId) || "PPC_ORDER_TOTAL".equals(customMethodId)) {
-                hasOtCond = true;
-                break;
-            }
-        }
-        return hasOtCond;
+            return "PPIP_ORDER_TOTAL".equals(inputParamEnumId) || "PPC_ORDER_TOTAL".equals(customMethodId);
+        });
     }
 
     private static void runProductPromos(List<GenericValue> productPromoList, ShoppingCart cart, Delegator delegator, LocalDispatcher dispatcher, Timestamp nowTimestamp, boolean isolatedTestRun) throws GeneralException {

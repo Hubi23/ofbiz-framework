@@ -25,6 +25,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.ofbiz.base.lang.*;
 import org.apache.ofbiz.base.util.UtilValidate;
 import org.apache.ofbiz.entity.Delegator;
 import org.apache.ofbiz.entity.GenericEntity;
@@ -105,13 +106,8 @@ public class EntityJoinOperator extends EntityOperator<EntityCondition, EntityCo
     }
 
     public boolean isEmpty(List<? extends EntityCondition> conditionList) {
-        // REFACTOR to use stream(), allMatch()
-        for (EntityCondition condition: conditionList) {
-            if (!condition.isEmpty()) {
-                return false;
-            }
-        }
-        return true;
+        // REFACTO to use stream(), allMatch()
+        return conditionList.stream().allMatch(IsEmpty::isEmpty);
     }
 
     @Override
