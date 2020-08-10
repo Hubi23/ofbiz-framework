@@ -33,7 +33,7 @@ public class RequestBodyMapHandlerFactory {
 
     public static RequestBodyMapHandler getRequestBodyMapHandler(ServletRequest request) {
         String contentType = request.getContentType();
-        if (contentType != null && contentType.indexOf(";") != -1) {
+        if (contentType != null && contentType.contains(";")) {
             contentType = contentType.substring(0, contentType.indexOf(";"));
         }
         return requestBodyMapHandlers.get(contentType);

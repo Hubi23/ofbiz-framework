@@ -178,7 +178,7 @@ public class DataEvents {
         String mimeType = DataResourceWorker.getMimeType(dataResource);
 
         // hack for IE and mime types
-        if (UtilValidate.isNotEmpty(userAgent) && userAgent.indexOf("MSIE") > -1) {
+        if (UtilValidate.isNotEmpty(userAgent) && userAgent.contains("MSIE")) {
             Debug.logInfo("Found MSIE changing mime type from - " + mimeType, module);
             mimeType = "application/octet-stream";
         }
@@ -283,7 +283,7 @@ public class DataEvents {
 
             // hack for IE and mime types
             String userAgent = request.getHeader("User-Agent");
-            if (userAgent != null && userAgent.indexOf("MSIE") > -1) {
+            if (userAgent != null && userAgent.contains("MSIE")) {
                 Debug.logInfo("Found MSIE changing mime type from - " + mimeType, module);
                 mimeType = "application/octet-stream";
             }

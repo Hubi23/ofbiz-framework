@@ -563,7 +563,7 @@ public final class ArtifactInfoGatherer implements ModelWidgetVisitor, ModelActi
         if (!modelForm.getTarget().isEmpty()) {
             String target = modelForm.getTarget();
             String urlMode = UtilValidate.isNotEmpty(modelForm.getTargetType()) ? modelForm.getTargetType() : "intra-app";
-            if (target.indexOf("${") < 0) {
+            if (!target.contains("${")) {
                 try {
                     Set<String> controllerLocAndRequestSet = ConfigXMLReader.findControllerRequestUniqueForTargetType(target,
                             urlMode);

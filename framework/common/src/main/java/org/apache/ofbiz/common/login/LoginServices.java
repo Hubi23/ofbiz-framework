@@ -1152,7 +1152,7 @@ public class LoginServices {
                 errMsg = UtilProperties.getMessage(resource,"loginservices.password_may_not_equal_username", locale);
                 errorMessageList.add(errMsg);
             }
-            if (UtilValidate.isNotEmpty(passwordHint) && (passwordHint.toUpperCase(Locale.getDefault()).indexOf(newPassword.toUpperCase(Locale.getDefault())) >= 0)) {
+            if (UtilValidate.isNotEmpty(passwordHint) && (passwordHint.toUpperCase(Locale.getDefault()).contains(newPassword.toUpperCase(Locale.getDefault())))) {
                 errMsg = UtilProperties.getMessage(resource,"loginservices.password_hint_may_not_contain_password", locale);
                 errorMessageList.add(errMsg);
             }

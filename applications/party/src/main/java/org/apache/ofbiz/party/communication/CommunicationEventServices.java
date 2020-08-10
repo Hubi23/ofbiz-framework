@@ -1022,7 +1022,7 @@ public class CommunicationEventServices {
             if (wrapper.getMainPartCount() > 1) {
                 for (int ind=0; ind < wrapper.getMainPartCount(); ind++) {
                     BodyPart p = wrapper.getPart(ind + "");
-                    if (p.getContentType().toLowerCase(Locale.getDefault()).indexOf("text/plain") > -1) {
+                    if (p.getContentType().toLowerCase(Locale.getDefault()).contains("text/plain")) {
                         messageBody = (String) p.getContent();
                         break;
                     }

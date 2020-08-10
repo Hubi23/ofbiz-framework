@@ -154,7 +154,7 @@ public class FormWidgetArtifactInfo extends ArtifactInfoBase {
                 continue;
             }
 
-            if (requestUniqueId.indexOf("#") > -1) {
+            if (requestUniqueId.contains("#")) {
                 String controllerXmlUrl = requestUniqueId.substring(0, requestUniqueId.indexOf("#"));
                 String requestUri = requestUniqueId.substring(requestUniqueId.indexOf("#") + 1);
                 // the forward reference
@@ -171,7 +171,7 @@ public class FormWidgetArtifactInfo extends ArtifactInfoBase {
                 continue;
             }
 
-            if (requestUniqueId.indexOf("#") > -1) {
+            if (requestUniqueId.contains("#")) {
                 String controllerXmlUrl = requestUniqueId.substring(0, requestUniqueId.indexOf("#"));
                 String requestUri = requestUniqueId.substring(requestUniqueId.indexOf("#") + 1);
                 // the forward reference

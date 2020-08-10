@@ -87,7 +87,7 @@ public final class FileUtil {
             boolean hasAllPathStrings = true;
             String fullPath = dir.getPath().replace('\\', '/');
             for (String pathString: stringsToFindInPath) {
-                if (fullPath.indexOf(pathString) < 0) {
+                if (!fullPath.contains(pathString)) {
                     hasAllPathStrings = false;
                     break;
                 }

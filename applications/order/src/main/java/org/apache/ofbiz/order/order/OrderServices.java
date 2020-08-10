@@ -5768,7 +5768,7 @@ public class OrderServices {
             String shipmentMethodTypeId = (String) context.get("shipmentMethodTypeId");
             if (UtilValidate.isNotEmpty(shipmentMethodTypeId)) {
                 // carrierPartyId is not in shipmentMethodTypeId
-                if (shipmentMethodTypeId.indexOf("_o_" ) == -1) {
+                if (!shipmentMethodTypeId.contains("_o_")) {
                     GenericValue shipmentMethod = EntityQuery.use(delegator).from("CarrierShipmentMethod").where("partyId", carrierPartyId, "roleTypeId", "CARRIER", "shipmentMethodTypeId", shipmentMethodTypeId).cache().queryOne();
                     if (UtilValidate.isEmpty(shipmentMethod)) {
                         String errMsg = mainErrorMessage + UtilProperties.getMessage(resource_error, "OrderCartShipGroupShipmentMethodNotFound", UtilMisc.toMap("shipmentMethodTypeId", shipmentMethodTypeId), locale);

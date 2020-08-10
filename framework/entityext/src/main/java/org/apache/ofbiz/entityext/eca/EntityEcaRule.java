@@ -126,7 +126,7 @@ public final class EntityEcaRule implements java.io.Serializable {
             return;
         }
 
-        if (!"any".equals(this.operationName) && this.operationName.indexOf(currentOperation) == -1) {
+        if (!"any".equals(this.operationName) && !this.operationName.contains(currentOperation)) {
             return;
         }
         // Are fields tested in a condition missing? If so, we need to load them

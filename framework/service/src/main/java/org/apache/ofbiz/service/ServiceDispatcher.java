@@ -440,7 +440,7 @@ public class ServiceDispatcher {
                         // NOTE DEJ20070908 are there other things we need to check? I don't think so because these will
                         //be Entity Engine errors that will be caught and come back in an error message... IFF the
                         //service is written to not ignore it of course!
-                        if (errMsg != null && errMsg.toUpperCase(Locale.getDefault()).indexOf("DEADLOCK") >= 0) {
+                        if (errMsg != null && errMsg.toUpperCase(Locale.getDefault()).contains("DEADLOCK")) {
                             // it's a deadlock! retry...
                             String retryMsg = "RETRYING SERVICE [" + modelService.name + "]: Deadlock error found in message [" + errMsg + "]; retry [" + (LOCK_RETRIES - lockRetriesRemaining) + "] of [" + LOCK_RETRIES + "]";
 
@@ -478,8 +478,8 @@ public class ServiceDispatcher {
                             // look for lock wait timeout error, retry in a different way by running after the parent transaction finishes, ie attach to parent tx
                             // - Derby 10.2.2.0 lock wait timeout string: "A lock could not be obtained within the time requested"
                             // - MySQL ? lock wait timeout string: "Lock wait timeout exceeded; try restarting transaction"
-                            if (errMsg.indexOf("A lock could not be obtained within the time requested") >= 0 ||
-                                    errMsg.indexOf("Lock wait timeout exceeded") >= 0) {
+                            if (errMsg.contains("A lock could not be obtained within the time requested") ||
+                                errMsg.contains("Lock wait timeout exceeded")) {
                                 // TODO: add to run after parent tx
                             }
                         }

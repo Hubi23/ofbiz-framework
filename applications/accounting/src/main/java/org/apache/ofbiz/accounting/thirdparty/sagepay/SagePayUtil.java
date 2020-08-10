@@ -151,7 +151,7 @@ public final class SagePayUtil {
             try{
                 String data = null;
                 while ((data = reader.readLine()) != null) {
-                    if (data.indexOf("=") != -1) {
+                    if (data.contains("=")) {
                         String name = data.substring(0, data.indexOf("="));
                         String value = data.substring(data.indexOf("=") + 1);
                         responseData.put(name, value);

@@ -915,7 +915,7 @@ public class ValueLinkApi {
         // check for a history table
         String history = null;
         List<Map<String, String>> historyMapList = null;
-        if (subResponse.indexOf("<table") > -1) {
+        if (subResponse.contains("<table")) {
             int startHistory = subResponse.indexOf("<table");
             int endHistory = subResponse.indexOf("</table>") + 8;
             history = subResponse.substring(startHistory, endHistory);

@@ -115,7 +115,7 @@ public class FtpServices {
             String hostname = ftpAddress.getString("hostname");
             if (UtilValidate.isEmpty(hostname))
                 return ServiceUtil.returnError("Ftp destination server is null");
-            else if (hostname.indexOf("://") == -1) {
+            else if (!hostname.contains("://")) {
                 return ServiceUtil.returnError("No protocol defined in ftp destination address");
             }
 

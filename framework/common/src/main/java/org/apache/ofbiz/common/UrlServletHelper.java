@@ -271,7 +271,7 @@ public final class UrlServletHelper {
         while(str.endsWith("-")){
             str = str.substring(0,str.length() - 1);
         }
-        while(str.indexOf("--") != -1){
+        while(str.contains("--")){
             str = str.replace("--","-");
         }
         return str;

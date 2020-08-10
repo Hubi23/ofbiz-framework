@@ -20,7 +20,7 @@ public class RefactoringTasks {
     }
 
     public static void java5Optional() {
-        // REFACTOR Replace 'indexOf()' with 'contains()' in String
+        // REFACTO Replace 'indexOf()' with 'contains()' in String
         // REFACTOR 'for' loop replaceable with 'foreach'
         // REFACTOR 'while' loop replaceable with 'foreach'
     }

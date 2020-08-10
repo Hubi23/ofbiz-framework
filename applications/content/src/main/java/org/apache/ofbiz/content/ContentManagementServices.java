@@ -576,7 +576,7 @@ public class ContentManagementServices {
       newDrContext.put("skipPermissionCheck", context.get("skipPermissionCheck"));
       ByteBuffer imageDataBytes = (ByteBuffer) context.get("imageData");
       String mimeTypeId = (String) newDrContext.get("mimeTypeId");
-      if (imageDataBytes != null && (mimeTypeId == null || (mimeTypeId.indexOf("image") >= 0) || (mimeTypeId.indexOf("application") >= 0))) {
+      if (imageDataBytes != null && (mimeTypeId == null || (mimeTypeId.contains("image")) || (mimeTypeId.contains("application")))) {
           mimeTypeId = (String) context.get("_imageData_contentType");
           if ("IMAGE_OBJECT".equals(dataResourceTypeId)) {
               String fileName = (String) context.get("_imageData_fileName");
@@ -609,7 +609,7 @@ public class ContentManagementServices {
                 // We don't want SHORT_TEXT and SURVEY to be caught by the last else if, hence the 2 empty else if
             } else if ("SHORT_TEXT".equals(dataResourceTypeId)) {
             } else if (dataResourceTypeId.startsWith("SURVEY")) {
-            } else if (dataResourceTypeId.indexOf("_FILE") >= 0) {
+            } else if (dataResourceTypeId.contains("_FILE")) {
                 Map<String, Object> uploadImage = new HashMap<>();
                 uploadImage.put("userLogin", userLogin);
                 uploadImage.put("dataResourceId", dataResourceId);
@@ -653,7 +653,7 @@ public class ContentManagementServices {
                 // We don't want SHORT_TEXT and SURVEY to be caught by the last else if, hence the 2 empty else if
             } else if ("SHORT_TEXT".equals(dataResourceTypeId)) {
             } else if (dataResourceTypeId.startsWith("SURVEY")) {
-            } else if (dataResourceTypeId.indexOf("_FILE") >= 0) {
+            } else if (dataResourceTypeId.contains("_FILE")) {
                 Map<String, Object> uploadImage = new HashMap<>();
                 uploadImage.put("userLogin", userLogin);
                 uploadImage.put("dataResourceId", dataResourceId);
@@ -1001,7 +1001,7 @@ public class ContentManagementServices {
         String contentId = (String)context.get("contentId");
         visitedSet.add(contentId);
         String contentTypeId = "PAGE_NODE";
-        if (pageMode != null && pageMode.toLowerCase(Locale.getDefault()).indexOf("outline") >= 0)
+        if (pageMode != null && pageMode.toLowerCase(Locale.getDefault()).contains("outline"))
             contentTypeId = "OUTLINE_NODE";
         GenericValue thisContent = null;
         try {
@@ -1040,7 +1040,7 @@ public class ContentManagementServices {
         String contentId = (String)context.get("contentId");
         String pageMode = (String)context.get("pageMode");
         String contentTypeId = "OUTLINE_NODE";
-        if (pageMode != null && pageMode.toLowerCase(Locale.getDefault()).indexOf("page") >= 0) {
+        if (pageMode != null && pageMode.toLowerCase(Locale.getDefault()).contains("page")) {
             contentTypeId = "PAGE_NODE";
         }
         GenericValue thisContent = null;

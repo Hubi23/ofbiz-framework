@@ -330,7 +330,7 @@ public class WebToolsServices {
         // parse the pass in list of readers to use
         List<String> readerNames = null;
         if (UtilValidate.isNotEmpty(readers) && !"none".equalsIgnoreCase(readers)) {
-            if (readers.indexOf(",") == -1) {
+            if (!readers.contains(",")) {
                 readerNames = new LinkedList<String>();
                 readerNames.add(readers);
             } else {
@@ -649,7 +649,7 @@ public class WebToolsServices {
                     Map<String, Object> entityMap = new HashMap<String, Object>();
                     String helperName = delegator.getEntityHelperName(entityName);
                     String groupName = delegator.getEntityGroupName(entityName);
-                    if (search == null || entityName.toLowerCase().indexOf(search.toLowerCase()) != -1) {
+                    if (search == null || entityName.toLowerCase().contains(search.toLowerCase())) {
                         ModelEntity entity = reader.getModelEntity(entityName);
                         ResourceBundle bundle = null;
                         if (UtilValidate.isNotEmpty(entity.getDefaultResourceName())) {

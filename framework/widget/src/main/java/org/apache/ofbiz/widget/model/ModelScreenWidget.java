@@ -1429,7 +1429,7 @@ public abstract class ModelScreenWidget extends ModelWidget {
                 }
 
                 if (!(mimeTypeId != null
-                        && ((mimeTypeId.indexOf("application") >= 0) || (mimeTypeId.indexOf("image")) >= 0))) {
+                        && ((mimeTypeId.contains("application")) || mimeTypeId.contains("image")))) {
                     screenStringRenderer.renderContentBegin(writer, context, this);
                     screenStringRenderer.renderContentBody(writer, context, this);
                     screenStringRenderer.renderContentEnd(writer, context, this);

@@ -649,20 +649,20 @@ public class ModelFormFieldBuilder {
         this.serviceName = modelService.name;
         this.attributeName = modelParam.name;
         if ("find".equals(defaultFieldType)) {
-            if (modelParam.type.indexOf("Double") != -1 || modelParam.type.indexOf("Float") != -1
-                    || modelParam.type.indexOf("Long") != -1 || modelParam.type.indexOf("Integer") != -1) {
+            if (modelParam.type.contains("Double") || modelParam.type.contains("Float")
+                    || modelParam.type.contains("Long") || modelParam.type.contains("Integer")) {
                 ModelFormField.RangeFindField textField = new ModelFormField.RangeFindField(FieldInfo.SOURCE_AUTO_SERVICE, 6,
                         null);
                 this.setFieldInfo(textField);
-            } else if (modelParam.type.indexOf("Timestamp") != -1) {
+            } else if (modelParam.type.contains("Timestamp")) {
                 ModelFormField.DateFindField dateTimeField = new ModelFormField.DateFindField(FieldInfo.SOURCE_AUTO_SERVICE,
                         "timestamp");
                 this.setFieldInfo(dateTimeField);
-            } else if (modelParam.type.indexOf("Date") != -1) {
+            } else if (modelParam.type.contains("Date")) {
                 ModelFormField.DateFindField dateTimeField = new ModelFormField.DateFindField(FieldInfo.SOURCE_AUTO_SERVICE,
                         "date");
                 this.setFieldInfo(dateTimeField);
-            } else if (modelParam.type.indexOf("Time") != -1) {
+            } else if (modelParam.type.contains("Time")) {
                 ModelFormField.DateFindField dateTimeField = new ModelFormField.DateFindField(FieldInfo.SOURCE_AUTO_SERVICE,
                         "time");
                 this.setFieldInfo(dateTimeField);
@@ -675,19 +675,19 @@ public class ModelFormFieldBuilder {
             this.setFieldInfo(displayField);
         } else {
             // default to "edit"
-            if (modelParam.type.indexOf("Double") != -1 || modelParam.type.indexOf("Float") != -1
-                    || modelParam.type.indexOf("Long") != -1 || modelParam.type.indexOf("Integer") != -1) {
+            if (modelParam.type.contains("Double") || modelParam.type.contains("Float")
+                    || modelParam.type.contains("Long") || modelParam.type.contains("Integer")) {
                 ModelFormField.TextField textField = new ModelFormField.TextField(FieldInfo.SOURCE_AUTO_SERVICE, 6, null, null);
                 this.setFieldInfo(textField);
-            } else if (modelParam.type.indexOf("Timestamp") != -1) {
+            } else if (modelParam.type.contains("Timestamp")) {
                 ModelFormField.DateTimeField dateTimeField = new ModelFormField.DateTimeField(FieldInfo.SOURCE_AUTO_SERVICE,
                         "timestamp");
                 this.setFieldInfo(dateTimeField);
-            } else if (modelParam.type.indexOf("Date") != -1) {
+            } else if (modelParam.type.contains("Date")) {
                 ModelFormField.DateTimeField dateTimeField = new ModelFormField.DateTimeField(FieldInfo.SOURCE_AUTO_SERVICE,
                         "date");
                 this.setFieldInfo(dateTimeField);
-            } else if (modelParam.type.indexOf("Time") != -1) {
+            } else if (modelParam.type.contains("Time")) {
                 ModelFormField.DateTimeField dateTimeField = new ModelFormField.DateTimeField(FieldInfo.SOURCE_AUTO_SERVICE,
                         "time");
                 this.setFieldInfo(dateTimeField);

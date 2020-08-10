@@ -121,11 +121,11 @@ public final class KeywordSearchUtil {
             // check stop words
             String colonToken = ":" + token + ":";
             if (forSearch) {
-                if ((isAnd && stopWordBagAnd.indexOf(colonToken) >= 0) || (!isAnd && stopWordBagOr.indexOf(colonToken) >= 0)) {
+                if ((isAnd && stopWordBagAnd.contains(colonToken)) || (!isAnd && stopWordBagOr.contains(colonToken))) {
                     continue;
                 }
             } else {
-                if (stopWordBagOr.indexOf(colonToken) >= 0 && stopWordBagAnd.indexOf(colonToken) >= 0) {
+                if (stopWordBagOr.contains(colonToken) && stopWordBagAnd.contains(colonToken)) {
                     continue;
                 }
             }

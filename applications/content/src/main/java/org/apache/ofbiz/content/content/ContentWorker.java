@@ -303,7 +303,7 @@ public class ContentWorker implements org.apache.ofbiz.widget.content.ContentWor
 
                 // This part is using an xml file as the input data and an ftl or xsl file to present it.
                 if (UtilValidate.isNotEmpty(mimeType)) {
-                    if (mimeType.toLowerCase().indexOf("xml") >= 0) {
+                    if (mimeType.toLowerCase().contains("xml")) {
                         GenericValue dataResource = EntityQuery.use(delegator).from("DataResource").where("dataResourceId", dataResourceId).cache().queryOne();
                         GenericValue templateDataResource = EntityQuery.use(delegator).from("DataResource").where("dataResourceId", templateDataResourceId).cache().queryOne();
                         if ("FTL".equals(templateDataResource.getString("dataTemplateTypeId"))) {
@@ -1253,7 +1253,7 @@ public class ContentWorker implements org.apache.ofbiz.widget.content.ContentWor
                 Debug.logError(e.getMessage(), module);
             }
             context.put("typeAncestry", contentTypeAncestry);
-            if (contentAssoc == null && (content.getEntityName().indexOf("Assoc") >= 0)) {
+            if (contentAssoc == null && (content.getEntityName().contains("Assoc"))) {
                 contentAssoc = delegator.makeValue("ContentAssoc");
                 try {
                     // TODO: locale needs to be gotten correctly
@@ -1580,7 +1580,7 @@ public class ContentWorker implements org.apache.ofbiz.widget.content.ContentWor
         }
         s.append("=").append(indent).append("==>").append(eol);
         for (String key : map.keySet()) {
-            if ("request response session".indexOf(key) < 0) {
+            if (!"request response session".contains(key)) {
                 Object obj = map.get(key);
                 s.append(spc).append(key).append(sep);
                 if (obj instanceof GenericValue) {

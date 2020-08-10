@@ -867,8 +867,8 @@ public class SQLProcessor implements AutoCloseable {
         // see if there is a lock wait timeout error, if so try to get and print more info about it
         //   the string for Derby is "A lock could not be obtained within the time requested"
         //   the string for MySQL is "Lock wait timeout exceeded; try restarting transaction"
-        if (eMsg.indexOf("A lock could not be obtained within the time requested") >= 0 ||
-                eMsg.indexOf("Lock wait timeout exceeded") >= 0) {
+        if (eMsg.contains("A lock could not be obtained within the time requested") ||
+            eMsg.contains("Lock wait timeout exceeded")) {
             Debug.logWarning(sqle, "Lock wait timeout error found in thread [" + Thread.currentThread().getId() + "]: (" + eMsg + ") when executing the SQL [" + _sql + "]", module);
             TransactionUtil.printAllThreadsTransactionBeginStacks();
         }

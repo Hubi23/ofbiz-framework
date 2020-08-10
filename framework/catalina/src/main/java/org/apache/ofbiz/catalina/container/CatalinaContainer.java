@@ -421,7 +421,7 @@ public class CatalinaContainer implements Container {
             .filter(prop -> !"protocol".equals(prop.name) && !"port".equals(prop.name))
             .forEach(prop -> {
                 if (IntrospectionUtils.setProperty(connector, prop.name, prop.value)) {
-                    if (prop.name.indexOf("Pass") != -1) {
+                    if (prop.name.contains("Pass")) {
                         // this property may be a password, do not include its value in the logs
                         Debug.logInfo("Tomcat " + connector + ": set " + prop.name, module);
                     } else {

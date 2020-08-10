@@ -92,7 +92,7 @@ public class ModelFieldType implements Serializable {
      */
     public int stringLength() {
         String sqlTypeUpperCase = sqlType.toUpperCase(Locale.getDefault());
-        if (sqlTypeUpperCase.indexOf("VARCHAR") >= 0) {
+        if (sqlTypeUpperCase.contains("VARCHAR")) {
             if (sqlTypeUpperCase.indexOf('(') > 0 && sqlTypeUpperCase.indexOf(')') > 0) {
                 String length = sqlTypeUpperCase.substring(sqlTypeUpperCase.indexOf('(') + 1, sqlTypeUpperCase.indexOf(')'));
 
@@ -100,7 +100,7 @@ public class ModelFieldType implements Serializable {
             } else {
                 return 255;
             }
-        } else if (sqlTypeUpperCase.indexOf("CHAR") >= 0) {
+        } else if (sqlTypeUpperCase.contains("CHAR")) {
             if (sqlTypeUpperCase.indexOf('(') > 0 && sqlTypeUpperCase.indexOf(')') > 0) {
                 String length = sqlTypeUpperCase.substring(sqlTypeUpperCase.indexOf('(') + 1, sqlTypeUpperCase.indexOf(')'));
 
@@ -108,7 +108,7 @@ public class ModelFieldType implements Serializable {
             } else {
                 return 255;
             }
-        } else if (sqlTypeUpperCase.indexOf("TEXT") >= 0 || sqlTypeUpperCase.indexOf("LONG") >= 0 || sqlTypeUpperCase.indexOf("CLOB") >= 0) {
+        } else if (sqlTypeUpperCase.contains("TEXT") || sqlTypeUpperCase.contains("LONG") || sqlTypeUpperCase.contains("CLOB")) {
             return 5000;
         }
         return 20;

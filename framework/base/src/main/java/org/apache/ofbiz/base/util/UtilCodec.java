@@ -391,7 +391,7 @@ public class UtilCodec {
         }
 
         // check for "<", ">"
-        if (value.indexOf("<") >= 0 || value.indexOf(">") >= 0) {
+        if (value.contains("<") || value.contains(">")) {
             String issueMsg = null;
             if (locale.equals(new Locale("test"))) {
                 issueMsg = "In field [" + valueName + "] less-than (<) and greater-than (>) symbols are not allowed.";

@@ -449,7 +449,7 @@ public class MacroScreenRenderer implements ScreenStringRenderer {
         String enableEditName = content.getEnableEditName(context);
         String enableEditValue = (String)context.get(enableEditName);
         String urlString = "";
-        if (editRequest != null && editRequest.toUpperCase(Locale.getDefault()).indexOf("IMAGE") < 0) {
+        if (editRequest != null && !editRequest.toUpperCase(Locale.getDefault()).contains("IMAGE")) {
             editMode += " Image";
         }
 

@@ -149,7 +149,7 @@ public class HttpRequestFileUpload {
                 newLine = new String(line, 0, i, UtilIO.getUtf8());
             }
             if (newLine.startsWith("Content-Disposition: form-data; name=\"")) {
-                if (newLine.indexOf("filename=\"") != -1) {
+                if (newLine.contains("filename=\"")) {
                     setFilename(new String(line, 0, i - 2, UtilIO.getUtf8()));
                     if (filename == null) {
                         return;

@@ -1418,7 +1418,7 @@ public final class UtilHttp {
         Map<String, V> filteredParameters = new HashMap<>();
         for (Map.Entry<String, V> entry : parameters.entrySet()) {
             String key = entry.getKey();
-            if (key != null && (key.indexOf(MULTI_ROW_DELIMITER) != -1 || key.indexOf("_useRowSubmit") != -1 || key.indexOf("_rowCount") != -1)) {
+            if (key != null && (key.contains(MULTI_ROW_DELIMITER) || key.contains("_useRowSubmit") || key.contains("_rowCount"))) {
                 continue;
             }
 
@@ -1605,7 +1605,7 @@ public final class UtilHttp {
             int rowDelimiterIndex = (parameterName != null? parameterName.indexOf(MULTI_ROW_DELIMITER): -1);
             if (rowDelimiterIndex > 0) {
                 String thisRowIndex = parameterName.substring(rowDelimiterIndex + rowDelimiterLength);
-                if (thisRowIndex.indexOf("_") > -1) {
+                if (thisRowIndex.contains("_")) {
                     thisRowIndex = thisRowIndex.substring(0, thisRowIndex.indexOf("_"));
                 }
                 if (maxRowIndex.length() < thisRowIndex.length()) {

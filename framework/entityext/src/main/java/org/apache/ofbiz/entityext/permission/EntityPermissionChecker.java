@@ -641,7 +641,7 @@ public class EntityPermissionChecker {
                     for (GenericValue partyRole: partyRoleList) {
                         String roleTypeId = partyRole.getString("roleTypeId");
                         for (String thisRole: newHasRoleList) {
-                            if (roleTypeId.indexOf(thisRole) >= 0) {
+                            if (roleTypeId.contains(thisRole)) {
                                 hasRoleOperation = true;
                                 break;
                             }

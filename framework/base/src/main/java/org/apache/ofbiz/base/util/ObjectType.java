@@ -119,7 +119,7 @@ public class ObjectType {
 
         // Handle array classes. Details in http://java.sun.com/j2se/1.5.0/docs/guide/jni/spec/types.html#wp16437
         if (className.endsWith("[]")) {
-            if (Character.isLowerCase(className.charAt(0)) && className.indexOf(".") < 0) {
+            if (Character.isLowerCase(className.charAt(0)) && !className.contains(".")) {
                 String prefix = className.substring(0, 1).toUpperCase(Locale.getDefault());
                // long and boolean have other prefix than first letter
                if (className.startsWith("long")) {
@@ -690,7 +690,7 @@ public class ObjectType {
                 String str1 = (String) convertedValue1;
                 String str2 = (String) convertedValue2;
 
-                return str1.indexOf(str2) < 0 ? Boolean.FALSE : Boolean.TRUE;
+                return !str1.contains(str2) ? Boolean.FALSE : Boolean.TRUE;
             }
             messages.add("Error in XML file: cannot do a contains compare between a String and a non-String type");
             return null;
