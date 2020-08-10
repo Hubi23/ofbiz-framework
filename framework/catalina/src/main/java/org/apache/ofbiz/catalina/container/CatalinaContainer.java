@@ -121,7 +121,7 @@ public class CatalinaContainer implements Container {
 
         // clustering, valves and connectors setup
         Property clusterProps = prepareTomcatClustering(host, engineConfig);
-        prepareTomcatEngineValves(engineConfig).forEach(valve -> ((StandardEngine)engine).addValve(valve));
+        prepareTomcatEngineValves(engineConfig).forEach(((StandardEngine) engine)::addValve);
         prepareTomcatConnectors(configuration).forEach(connector -> tomcat.getService().addConnector(connector));
 
         loadWebapps(tomcat, configuration, clusterProps);
@@ -249,7 +249,7 @@ public class CatalinaContainer implements Container {
 
         virtualHosts.stream()
             .filter(virtualHost -> virtualHost != hostName)
-            .forEach(virtualHost -> host.addAlias(virtualHost));
+            .forEach(host::addAlias);
 
         return host;
     }
@@ -409,7 +409,7 @@ public class CatalinaContainer implements Container {
         }
         return connectorProps.stream()
             .filter(connectorProp -> UtilValidate.isNotEmpty(connectorProp.properties))
-            .map(connectorProp -> prepareConnector(connectorProp))
+            .map(this::prepareConnector)
             .collect(Collectors.toList());
     }
 

@@ -421,7 +421,7 @@ public class ShippingEvents {
                 GenericValue finalAddressGV = addressGV;
                 geoIds = fieldNameGeoIds.stream()
                         .filter(key -> finalAddressGV.get(key) != null)
-                        .map(key -> finalAddressGV.getString(key))
+                        .map(finalAddressGV::getString)
                         .collect(Collectors.toList());
             }
         }

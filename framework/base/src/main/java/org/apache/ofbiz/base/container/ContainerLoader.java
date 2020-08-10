@@ -87,7 +87,7 @@ public class ContainerLoader implements StartupLoader {
                 .filter(containerCfg ->
                     UtilValidate.isEmpty(containerCfg.loaders) &&
                     UtilValidate.isEmpty(loaders) ||
-                    containerCfg.loaders.stream().anyMatch(loader -> loaders.contains(loader)))
+                    containerCfg.loaders.stream().anyMatch(loaders::contains))
                 .collect(Collectors.toList());
     }
 
