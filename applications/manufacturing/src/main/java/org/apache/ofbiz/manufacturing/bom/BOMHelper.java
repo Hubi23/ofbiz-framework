@@ -162,12 +162,10 @@ public final class BOMHelper {
                 return "error";
             }
         }
-        } catch (GenericEntityException|GenericServiceException ge) {
+        } catch (Exception ge) {
             Debug.logWarning(ge, module);
-        } catch (Exception e) {
-            // if there is an exception for either, the other probably wont work
-            Debug.logWarning(e, module);
-        }
+        }// if there is an exception for either, the other probably wont work
+
 
         return "success";
     }

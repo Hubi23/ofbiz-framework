@@ -339,10 +339,7 @@ public class ContentMapFacade implements Map<Object, Object> {
 
         try {
             return ContentWorker.renderContentAsText(dispatcher, contentId, renderCtx, locale, mimeType, cache);
-        } catch (GeneralException e) {
-            Debug.logError(e, module);
-            return e.toString();
-        } catch (IOException e) {
+        } catch (GeneralException | IOException e) {
             Debug.logError(e, module);
             return e.toString();
         }
@@ -530,10 +527,7 @@ public class ContentMapFacade implements Map<Object, Object> {
                 // render just the dataresource
                 try {
                     return DataResourceWorker.renderDataResourceAsText(dispatcher, delegator, value.getString("dataResourceId"), context, locale, mimeType, cache);
-                } catch (GeneralException e) {
-                    Debug.logError(e, module);
-                    return e.toString();
-                } catch (IOException e) {
+                } catch (GeneralException | IOException e) {
                     Debug.logError(e, module);
                     return e.toString();
                 }

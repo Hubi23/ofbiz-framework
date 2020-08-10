@@ -424,15 +424,12 @@ public class PayPalEvents {
         java.sql.Timestamp authDate = null;
         try {
             authDate = new java.sql.Timestamp(sdf.parse(paymentDate).getTime());
-        } catch (ParseException e) {
-            Debug.logError(e, "Cannot parse date string: " + paymentDate, module);
-            authDate = UtilDateTime.nowTimestamp();
-        } catch (NullPointerException e) {
+        } catch (ParseException | NullPointerException e) {
             Debug.logError(e, "Cannot parse date string: " + paymentDate, module);
             authDate = UtilDateTime.nowTimestamp();
         }
 
-        paymentPreference.set("maxAmount", new BigDecimal(paymentAmount));
+      paymentPreference.set("maxAmount", new BigDecimal(paymentAmount));
         if ("Completed".equals(paymentStatus)) {
             paymentPreference.set("statusId", "PAYMENT_RECEIVED");
         } else if ("Pending".equals(paymentStatus)) {

@@ -742,8 +742,6 @@ public class MrpServices {
                             if (ServiceUtil.isError(serviceResponse)) {
                                 return ServiceUtil.returnError(ServiceUtil.getErrorMessage(serviceResponse));
                             }
-                        } catch (GenericServiceException e) {
-                            return ServiceUtil.returnError(UtilProperties.getMessage(resource, "ManufacturingMrpErrorExplodingProduct", UtilMisc.toMap("productId", product.getString("productId")), locale));
                         } catch (Exception e) {
                             return ServiceUtil.returnError(UtilProperties.getMessage(resource, "ManufacturingMrpErrorExplodingProduct", UtilMisc.toMap("productId", product.getString("productId")), locale));
                         }
@@ -779,8 +777,6 @@ public class MrpServices {
                             if (ServiceUtil.isError(serviceResponse)) {
                                 return ServiceUtil.returnError(ServiceUtil.getErrorMessage(serviceResponse));
                             }
-                        } catch (GenericServiceException e) {
-                            return ServiceUtil.returnError(UtilProperties.getMessage(resource, "ManufacturingMrpErrorExplodingProduct", UtilMisc.toMap("productId", product.getString("productId")), locale));
                         } catch (Exception e) {
                             return ServiceUtil.returnError(UtilProperties.getMessage(resource, "ManufacturingMrpErrorExplodingProduct", UtilMisc.toMap("productId", product.getString("productId")), locale));
                         }

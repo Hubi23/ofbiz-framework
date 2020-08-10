@@ -2936,10 +2936,8 @@ public class PaymentGatewayServices {
         try {
             dispatcher.addRollbackService("savePaymentGatewayResponse", context, true);
             delegator.create(pgr);
-        } catch (GenericEntityException | GenericServiceException ge) {
+        } catch (Exception ge) {
             Debug.logError(ge, module);
-        } catch (Exception e) {
-            Debug.logError(e, module);
         }
     }
 
@@ -2954,10 +2952,8 @@ public class PaymentGatewayServices {
             for (GenericValue message : messages) {
                 delegator.create(message);
             }
-        } catch (GenericEntityException | GenericServiceException ge) {
+        } catch (Exception ge) {
             Debug.logError(ge, module);
-        } catch (Exception e) {
-            Debug.logError(e, module);
         }
     }
 

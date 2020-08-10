@@ -994,9 +994,7 @@ public class PackingSession implements java.io.Serializable {
                 return shipmentCostEstimate;
             }
 
-        } catch (GenericEntityException e) {
-            Debug.logError(e, module);
-        } catch (GenericServiceException e) {
+        } catch (GenericEntityException | GenericServiceException e) {
             Debug.logError(e, module);
         }
 

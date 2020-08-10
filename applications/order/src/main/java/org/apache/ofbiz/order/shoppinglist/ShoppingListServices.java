@@ -568,10 +568,8 @@ public class ShoppingListServices {
                     }
                 }
             }
-        } catch (GenericEntityException gee) {
+        } catch (Exception gee) {
             Debug.logInfo("updateShoppingListQuantitiesFromOrder error:"+gee.getMessage(), module);
-        } catch (Exception e) {
-            Debug.logInfo("updateShoppingListQuantitiesFromOrder error:"+e.getMessage(), module);
         }
         return result;
     }

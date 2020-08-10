@@ -107,12 +107,10 @@ public class SimpleMethodTest extends OFBizTestCase {
                 }
             }
 
-        } catch (MiniLangException e) {
-            result.addError(this, e);
-        } catch (SecurityConfigurationException e) {
+        } catch (MiniLangException | SecurityConfigurationException e) {
             result.addError(this, e);
         }
 
-        result.endTest(this);
+      result.endTest(this);
     }
 }

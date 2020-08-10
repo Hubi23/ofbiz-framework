@@ -236,12 +236,6 @@ public class ContentManagementServices {
             Map<String, Object> dataResourceResult;
             try {
                 dataResourceResult = persistDataResourceAndDataMethod(dctx, context);
-            } catch (GenericServiceException e) {
-                Debug.logError(e, e.toString(), module);
-                return ServiceUtil.returnError(e.toString());
-            } catch (GenericEntityException e) {
-                Debug.logError(e, e.toString(), module);
-                return ServiceUtil.returnError(e.toString());
             } catch (Exception e) {
                 Debug.logError(e, e.toString(), module);
                 return ServiceUtil.returnError(e.toString());
@@ -381,10 +375,8 @@ public class ContentManagementServices {
                         return ServiceUtil.returnError(ServiceUtil.getErrorMessage(thisResult));
                     }
                 }
-            } catch (GenericEntityException e) {
+            } catch (Exception e) {
                 throw new GenericServiceException(e.toString());
-            } catch (Exception e2) {
-                throw new GenericServiceException(e2.toString());
             }
             String errMsg = ServiceUtil.getErrorMessage(thisResult);
             if (UtilValidate.isNotEmpty(errMsg)) {
@@ -461,12 +453,9 @@ public class ContentManagementServices {
                       if (ServiceUtil.isError(permResults)) {
                           return ServiceUtil.returnError(ServiceUtil.getErrorMessage(permResults));
                       } 
-                  } catch (GenericServiceException e) {
+                  } catch (Exception e) {
                       Debug.logError(e, e.toString(), module);
                       return ServiceUtil.returnError(e.toString());
-                  } catch (Exception e2) {
-                      Debug.logError(e2, e2.toString(), module);
-                      return ServiceUtil.returnError(e2.toString());
                   }
               }
           } else {
@@ -483,12 +472,9 @@ public class ContentManagementServices {
                       if (ServiceUtil.isError(permResults)) {
                           return ServiceUtil.returnError(ServiceUtil.getErrorMessage(permResults));
                       }
-                  } catch (GenericServiceException e) {
+                  } catch (Exception e) {
                       Debug.logError(e, e.toString(), module);
                       return ServiceUtil.returnError(e.toString());
-                  } catch (Exception e2) {
-                      Debug.logError(e2, e2.toString(), module);
-                      return ServiceUtil.returnError(e2.toString());
                   }
               }
           }
@@ -514,17 +500,11 @@ public class ContentManagementServices {
           else {
               return ServiceUtil.returnError(UtilProperties.getMessage(resource, "ContentContentNoAccessToUploadImage", locale));
           }
-      } catch (GenericServiceException e) {
-          Debug.logError(e, e.toString(), module);
-          return ServiceUtil.returnError(e.toString());
-      } catch (GenericEntityException e) {
-          Debug.logError(e, e.toString(), module);
-          return ServiceUtil.returnError(e.toString());
       } catch (Exception e) {
           Debug.logError(e, e.toString(), module);
           return ServiceUtil.returnError(e.toString());
       }
-      String errorMsg = ServiceUtil.getErrorMessage(result);
+        String errorMsg = ServiceUtil.getErrorMessage(result);
       if (UtilValidate.isNotEmpty(errorMsg)) {
           return ServiceUtil.returnError(errorMsg);
       }
@@ -738,10 +718,8 @@ public class ContentManagementServices {
                         if (ServiceUtil.isError(thisResult)) {
                             return ServiceUtil.returnError(ServiceUtil.getErrorMessage(thisResult));
                         }
-                    } catch (GenericServiceException e) {
+                    } catch (Exception e) {
                         Debug.logError(e, e.toString(), module);
-                    } catch (Exception e2) {
-                        Debug.logError(e2, e2.toString(), module);
                     }
                 }
             } else {
@@ -758,10 +736,8 @@ public class ContentManagementServices {
                         if (ServiceUtil.isError(thisResult)) {
                             return ServiceUtil.returnError(ServiceUtil.getErrorMessage(thisResult));
                         }
-                    } catch (GenericServiceException e) {
+                    } catch (Exception e) {
                         Debug.logError(e, e.toString(), module);
-                    } catch (Exception e2) {
-                        Debug.logError(e2, e2.toString(), module);
                     }
                 }
             }

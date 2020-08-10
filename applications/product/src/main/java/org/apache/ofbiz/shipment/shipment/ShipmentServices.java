@@ -863,12 +863,9 @@ public class ShipmentServices {
             if (ServiceUtil.isError(serviceResult)) {
                 return ServiceUtil.returnError(ServiceUtil.getErrorMessage(serviceResult));
             }
-        } catch (GenericEntityException e) {
+        } catch (GenericEntityException | GenericServiceException e) {
             Debug.logError(e, module);
             return ServiceUtil.returnError(e.getMessage());
-        } catch (GenericServiceException se) {
-            Debug.logError(se, module);
-            return ServiceUtil.returnError(se.getMessage());
         }
         return ServiceUtil.returnSuccess();
     }
@@ -909,9 +906,7 @@ public class ShipmentServices {
                 results.put("newShipmentRouteSegmentId", tmpResult.get("shipmentRouteSegmentId"));
                 return results;
             }
-        } catch (GenericEntityException ex) {
-            return ServiceUtil.returnError(ex.getMessage());
-        } catch (GenericServiceException ex) {
+        } catch (GenericEntityException | GenericServiceException ex) {
             return ServiceUtil.returnError(ex.getMessage());
         }
     }
@@ -1030,10 +1025,7 @@ public class ShipmentServices {
                 packageTotalValue = packageTotalValue.add(packageContentValue);
             }
 
-        } catch (GenericEntityException e) {
-            Debug.logError(e, module);
-            return ServiceUtil.returnError(e.getMessage());
-        } catch (GenericServiceException e) {
+        } catch (GenericEntityException | GenericServiceException e) {
             Debug.logError(e, module);
             return ServiceUtil.returnError(e.getMessage());
         }
@@ -1118,11 +1110,8 @@ public class ShipmentServices {
         Map<String, Object> sendResp = null;
         try {
             sendResp = dispatcher.runSync("sendMailFromScreen", sendMap);
-        } catch (GenericServiceException gse) {
+        } catch (Exception gse) {
             Debug.logError(gse, "Problem sending mail", module);
-            return ServiceUtil.returnError(UtilProperties.getMessage(resource_error, "OrderProblemSendingEmail", localePar));
-        } catch (Exception e) {
-            Debug.logError(e, "Problem sending mail", module);
             return ServiceUtil.returnError(UtilProperties.getMessage(resource_error, "OrderProblemSendingEmail", localePar));
         }
         // check for errors
@@ -1174,14 +1163,10 @@ public class ShipmentServices {
                         "ProductStoreShipmentMethodNotFound", 
                         UtilMisc.toMap("shipmentId", shipmentId), locale));
             }
-        } catch (GenericEntityException gee) {
-            return ServiceUtil.returnError(UtilProperties.getMessage(resource, 
-                    "FacilityShipmentGatewayConfigFromShipmentError", 
+        } catch (Exception gee) {
+            return ServiceUtil.returnError(UtilProperties.getMessage(resource,
+                    "FacilityShipmentGatewayConfigFromShipmentError",
                     UtilMisc.toMap("errorString", gee.getMessage()), locale));
-        } catch (Exception e) {
-            return ServiceUtil.returnError(UtilProperties.getMessage(resource, 
-                    "FacilityShipmentGatewayConfigFromShipmentError", 
-                    UtilMisc.toMap("errorString", e.getMessage()), locale));
         }
         return shipmentGatewayConfig;
     }

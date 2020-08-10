@@ -118,9 +118,7 @@ public class BlogRssServices {
                 try {
                     Map<String, Object> dummy = new HashMap<>();
                     sub = ContentWorker.renderSubContentAsText(dispatcher, v.getString("contentId"), mapKey, dummy, locale, mimeTypeId, true);
-                } catch (GeneralException e) {
-                    Debug.logError(e, module);
-                } catch (IOException e) {
+                } catch (GeneralException | IOException e) {
                     Debug.logError(e, module);
                 }
                 if (sub != null) {

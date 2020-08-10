@@ -292,21 +292,7 @@ public class DhlServices {
             rateResponseDocument = UtilXml.readXmlDocument(rateResponseString, false);
             return handleDhlRateResponse(rateResponseDocument, locale);
         }
-        catch (SAXException e2) {
-            String excErrMsg = "Error parsing the RatingServiceResponse: " + e2.toString();
-            Debug.logError(e2, excErrMsg, module);
-            return ServiceUtil.returnError(UtilProperties.getMessage(resourceError, 
-                    "FacilityShipmentFedexShipmentTemplateParsingError", 
-                    UtilMisc.toMap("errorString", e2.toString()), locale));
-        }
-        catch (ParserConfigurationException e2) {
-            String excErrMsg = "Error parsing the RatingServiceResponse: " + e2.toString();
-            Debug.logError(e2, excErrMsg, module);
-            return ServiceUtil.returnError(UtilProperties.getMessage(resourceError, 
-                    "FacilityShipmentFedexShipmentTemplateParsingError", 
-                    UtilMisc.toMap("errorString", e2.toString()), locale));
-        }
-        catch (IOException e2) {
+        catch (SAXException | IOException | ParserConfigurationException e2) {
             String excErrMsg = "Error parsing the RatingServiceResponse: " + e2.toString();
             Debug.logError(e2, excErrMsg, module);
             return ServiceUtil.returnError(UtilProperties.getMessage(resourceError, 
@@ -444,19 +430,7 @@ public class DhlServices {
             registerResponseDocument = UtilXml.readXmlDocument(registerResponseString, false);
             result = handleDhlRegisterResponse(registerResponseDocument, locale);
             Debug.logInfo("DHL response for DHL Register Account:" + registerResponseString, module);
-        } catch (SAXException e2) {
-            String excErrMsg = "Error parsing the RegisterAccountServiceSelectionResponse: " + e2.toString();
-            Debug.logError(e2, excErrMsg, module);
-            return ServiceUtil.returnError(UtilProperties.getMessage(resourceError, 
-                    "FacilityShipmentDhlErrorParsingRegisterAccountResponse", 
-                    UtilMisc.toMap("errorString", e2.toString()), locale));
-        } catch (ParserConfigurationException e2) {
-            String excErrMsg = "Error parsing the RegisterAccountServiceSelectionResponse: " + e2.toString();
-            Debug.logError(e2, excErrMsg, module);
-            return ServiceUtil.returnError(UtilProperties.getMessage(resourceError, 
-                    "FacilityShipmentDhlErrorParsingRegisterAccountResponse", 
-                    UtilMisc.toMap("errorString", e2.toString()), locale));
-        } catch (IOException e2) {
+        } catch (SAXException | IOException | ParserConfigurationException e2) {
             String excErrMsg = "Error parsing the RegisterAccountServiceSelectionResponse: " + e2.toString();
             Debug.logError(e2, excErrMsg, module);
             return ServiceUtil.returnError(UtilProperties.getMessage(resourceError, 
@@ -788,12 +762,7 @@ public class DhlServices {
             }
             // pass to handler method
             return handleDhlShipmentConfirmResponse(responseString, shipmentRouteSegment, shipmentPackageRouteSegs, locale);
-        } catch (GenericEntityException e) {
-            Debug.logError(e, module);
-            return ServiceUtil.returnError(UtilProperties.getMessage(resourceError, 
-                    "FacilityShipmentFedexRateTemplateReadingError", 
-                    UtilMisc.toMap("errorString", e.toString()), locale));
-        } catch (GenericServiceException e) {
+        } catch (GenericEntityException | GenericServiceException e) {
             Debug.logError(e, module);
             return ServiceUtil.returnError(UtilProperties.getMessage(resourceError, 
                     "FacilityShipmentFedexRateTemplateReadingError", 
@@ -811,19 +780,13 @@ public class DhlServices {
         Document rateResponseDocument = null;
         try {
             rateResponseDocument = UtilXml.readXmlDocument(rateResponseString, false);
-        } catch (SAXException e2) {
+        } catch (SAXException | IOException | ParserConfigurationException e2) {
             String excErrMsg = "Error parsing the RatingServiceSelectionResponse: " + e2.toString();
             Debug.logError(e2, excErrMsg, module);
             // TODO: VOID
-        } catch (ParserConfigurationException e2) {
-            String excErrMsg = "Error parsing the RatingServiceSelectionResponse: " + e2.toString();
-            Debug.logError(e2, excErrMsg, module);
-            // TODO VOID
-        } catch (IOException e2) {
-            String excErrMsg = "Error parsing the RatingServiceSelectionResponse: " + e2.toString();
-            Debug.logError(e2, excErrMsg, module);
-            // TODO VOID
-        }
+        } // TODO VOID
+        // TODO VOID
+
 
         // tracking number: Shipment/ShipmentDetail/AirbillNbr
         Element rootElement = rateResponseDocument.getDocumentElement();

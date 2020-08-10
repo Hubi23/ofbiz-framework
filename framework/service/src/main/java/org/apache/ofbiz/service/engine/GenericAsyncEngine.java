@@ -120,13 +120,7 @@ public abstract class GenericAsyncEngine extends AbstractEngine {
                 jobV.create();
             } catch (GenericEntityException e) {
                 throw new GenericServiceException("Unable to create persisted job", e);
-            } catch (SerializeException e) {
-                throw new GenericServiceException("Problem serializing service attributes", e);
-            } catch (FileNotFoundException e) {
-                throw new GenericServiceException("Problem serializing service attributes", e);
-            } catch (IOException e) {
-                throw new GenericServiceException("Problem serializing service attributes", e);
-            } catch (GenericConfigException e) {
+            } catch (SerializeException | GenericConfigException | IOException e) {
                 throw new GenericServiceException("Problem serializing service attributes", e);
             }
 

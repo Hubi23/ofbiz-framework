@@ -319,9 +319,7 @@ public class ArtifactInfoFactory {
             } else if ("view".equals(type)) {
                 return this.getControllerViewArtifactInfo(new URL(artifactLocation), artifactName);
             }
-        } catch (GeneralException e) {
-            Debug.logError(e, "Error getting artifact info: " + e.toString(), module);
-        } catch (MalformedURLException e) {
+        } catch (GeneralException | MalformedURLException e) {
             Debug.logError(e, "Error getting artifact info: " + e.toString(), module);
         }
         return null;

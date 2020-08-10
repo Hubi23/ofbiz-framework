@@ -59,13 +59,11 @@ public class CertificateServices {
         X509Certificate cert;
         try {
             cert =  (X509Certificate) KeyStoreUtil.pemToCert(certString);
-        } catch (CertificateException e) {
+        } catch (CertificateException | IOException e) {
             return ServiceUtil.returnError(e.getMessage());
-        } catch (IOException e) {
-             return ServiceUtil.returnError(e.getMessage());
         }
 
-        // store the cert
+      // store the cert
         try {
             ks.setCertificateEntry(alias, cert);
         } catch (Exception e) {

@@ -312,13 +312,7 @@ public final class SeoConfigUtil {
                 // no "char-filters" element
                 Debug.logWarning("No " + ELEMENT_CHAR_FILTER + " element found in " + seoConfigFilename.toString(), module);
             }
-        } catch (SAXException e) {
-            result = "error";
-            Debug.logError(e, module);
-        } catch (ParserConfigurationException e) {
-            result = "error";
-            Debug.logError(e, module);
-        } catch (IOException e) {
+        } catch (SAXException | IOException | ParserConfigurationException e) {
             result = "error";
             Debug.logError(e, module);
         } finally {

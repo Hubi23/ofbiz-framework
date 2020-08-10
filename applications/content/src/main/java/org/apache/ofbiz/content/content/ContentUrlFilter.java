@@ -74,10 +74,8 @@ public class ContentUrlFilter implements Filter {
                             urlContentId = content.getString("contentId");
                         }
                     }
-                } catch (GenericEntityException gee) {
+                } catch (Exception gee) {
                     Debug.logWarning(gee.getMessage(), module);
-                } catch (Exception e) {
-                    Debug.logWarning(e.getMessage(), module);
                 }
             }
             if (UtilValidate.isNotEmpty(urlContentId)) {

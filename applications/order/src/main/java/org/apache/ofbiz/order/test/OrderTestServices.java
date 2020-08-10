@@ -110,10 +110,8 @@ public class OrderTestServices {
                     }
                 }
             }
-        } catch (GenericServiceException gse) {
+        } catch (Exception gse) {
             return ServiceUtil.returnError(gse.getMessage());
-        } catch (Exception e) {
-            return ServiceUtil.returnError(e.getMessage());
         }
         if (productsList.size() == 0) {
             return ServiceUtil.returnError(UtilProperties.getMessage("OrderUiLabels",
@@ -170,10 +168,8 @@ public class OrderTestServices {
                     return ServiceUtil.returnError(ServiceUtil.getErrorMessage(result));
                 }
                 Debug.logInfo("Test sales order with id [" + orderId + "] has been shipped", module);
-            } catch (GenericServiceException gse) {
+            } catch (Exception gse) {
                 Debug.logWarning("Unable to quick ship test sales order with id [" + orderId + "] with error: " + gse.getMessage(), module);
-            } catch (Exception exc) {
-                Debug.logWarning("Unable to quick ship test sales order with id [" + orderId + "] with error: " + exc.getMessage(), module);
             }
         }
 

@@ -261,11 +261,7 @@ public class WorkEffortContentWrapper implements ContentWrapper {
                 workEffortContentCache.put(cacheKey, outString);
             }
             return outString;
-        } catch (GeneralException e) {
-            Debug.logError(e, "Error rendering WorkEffortContent, inserting empty String", module);
-            String candidateOut = workEffort.getModelEntity().isField(candidateFieldName) ? workEffort.getString(candidateFieldName): "";
-            return candidateOut == null? "" : encoder.sanitize(candidateOut, null);
-        } catch (IOException e) {
+        } catch (GeneralException | IOException e) {
             Debug.logError(e, "Error rendering WorkEffortContent, inserting empty String", module);
             String candidateOut = workEffort.getModelEntity().isField(candidateFieldName) ? workEffort.getString(candidateFieldName): "";
             return candidateOut == null? "" : encoder.sanitize(candidateOut, null);

@@ -502,9 +502,7 @@ public class EntitySyncServices {
                 // write the XML file
                 try {
                     UtilXml.writeXmlDocument(fileName, mainDoc);
-                } catch (java.io.FileNotFoundException e) {
-                    throw new EntitySyncContext.SyncOtherErrorException(e);
-                } catch (java.io.IOException e) {
+                } catch (IOException e) {
                     throw new EntitySyncContext.SyncOtherErrorException(e);
                 }
             } else {
@@ -534,11 +532,7 @@ public class EntitySyncServices {
             Document xmlSyncDoc = null;
             try {
                 xmlSyncDoc = UtilXml.readXmlDocument(xmlFile, false);
-            } catch (SAXException e) {
-                Debug.logError(e, module);
-            } catch (ParserConfigurationException e) {
-                Debug.logError(e, module);
-            } catch (IOException e) {
+            } catch (SAXException | IOException | ParserConfigurationException e) {
                 Debug.logError(e, module);
             }
             if (xmlSyncDoc == null) {
@@ -571,10 +565,8 @@ public class EntitySyncServices {
                         }
 
                         // TODO create a response document to send back to the initial sync machine
-                    } catch (GenericServiceException gse) {
+                    } catch (Exception gse) {
                         return ServiceUtil.returnError(UtilProperties.getMessage(resource, "EntityExtUnableToLoadXMLDocument", UtilMisc.toMap("entitySyncId", entitySyncId, "startTime", startTime, "errorString", gse.getMessage()), locale));
-                    } catch (Exception e) {
-                        return ServiceUtil.returnError(UtilProperties.getMessage(resource, "EntityExtUnableToLoadXMLDocument", UtilMisc.toMap("entitySyncId", entitySyncId, "startTime", startTime, "errorString", e.getMessage()), locale));
                     }
                 }
             }

@@ -99,14 +99,8 @@ public class PartyContentWrapper implements ContentWrapper {
     public List<String> getList(String contentTypeId) {
         try {
             return getPartyContentTextList(party, contentTypeId, locale, mimeTypeId, party.getDelegator(), dispatcher);
-        } catch (GeneralException ge) {
-            Debug.logError(ge, module);
-            return null;
-        } catch (IOException ioe) {
+        } catch (Exception ioe) {
             Debug.logError(ioe, module);
-            return null;
-        } catch (Exception e) {
-            Debug.logError(e, module);
             return null;
         }
     }
@@ -173,11 +167,7 @@ public class PartyContentWrapper implements ContentWrapper {
                 partyContentCache.put(cacheKey, outString);
             }
             return outString;
-        } catch (GeneralException e) {
-            Debug.logError(e, "Error rendering PartyContent, inserting empty String", module);
-            String candidateOut = party.getModelEntity().isField(candidateFieldName) ? party.getString(candidateFieldName): "";
-            return candidateOut == null? "" : encoder.sanitize(candidateOut, null);
-        } catch (IOException e) {
+        } catch (GeneralException | IOException e) {
             Debug.logError(e, "Error rendering PartyContent, inserting empty String", module);
             String candidateOut = party.getModelEntity().isField(candidateFieldName) ? party.getString(candidateFieldName): "";
             return candidateOut == null? "" : encoder.sanitize(candidateOut, null);

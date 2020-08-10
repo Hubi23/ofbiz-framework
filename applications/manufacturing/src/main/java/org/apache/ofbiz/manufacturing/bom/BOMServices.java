@@ -198,10 +198,8 @@ public class BOMServices {
                     variantProduct.store();
                 }
             }
-        } catch (GenericEntityException|GenericServiceException ge) {
+        } catch (Exception ge) {
             return ServiceUtil.returnError(UtilProperties.getMessage(resource, "ManufacturingBomErrorRunningUpdateLowLevelCode", UtilMisc.toMap("errorString", ge.getMessage()), locale));
-        } catch (Exception e) {
-            return ServiceUtil.returnError(UtilProperties.getMessage(resource, "ManufacturingBomErrorRunningUpdateLowLevelCode", UtilMisc.toMap("errorString", e.getMessage()), locale));
         }
         result.put("lowLevelCode", llc);
         return result;
@@ -242,8 +240,6 @@ public class BOMServices {
                 }
             }
             // FIXME: also all the variants llc should be updated?
-        } catch (GenericEntityException e) {
-            return ServiceUtil.returnError(UtilProperties.getMessage(resource, "ManufacturingBomErrorRunningInitLowLevelCode", UtilMisc.toMap("errorString", e.getMessage()), locale));
         } catch (Exception e) {
             return ServiceUtil.returnError(UtilProperties.getMessage(resource, "ManufacturingBomErrorRunningInitLowLevelCode", UtilMisc.toMap("errorString", e.getMessage()), locale));
         }
