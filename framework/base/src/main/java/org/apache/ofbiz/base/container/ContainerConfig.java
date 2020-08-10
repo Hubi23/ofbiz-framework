@@ -26,6 +26,7 @@ import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.*;
 
 import javax.xml.parsers.ParserConfigurationException;
 
@@ -149,12 +150,10 @@ public class ContainerConfig {
             throw new ContainerException("Error reading the container config file: " + xmlUrl, e);
         }
         Element root = containerDocument.getDocumentElement();
-        // REFACTOR to use stream(), map(), collect()
-        List<Configuration> result = new ArrayList<>();
-        for (Element curElement: UtilXml.childElementList(root, "container")) {
-            result.add(new Configuration(curElement));
-        }
-        return result;
+        // REFACTO to use stream(), map(), collect()
+        return UtilXml.childElementList(root, "container").stream()
+            .map(Configuration::new)
+            .collect(Collectors.toList());
     }
 
     public static class Configuration {

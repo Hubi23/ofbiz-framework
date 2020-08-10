@@ -29,6 +29,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
+import java.util.stream.*;
 
 import org.apache.ofbiz.base.component.ComponentConfig;
 import org.apache.ofbiz.base.config.GenericConfigException;
@@ -301,11 +302,9 @@ public class ModelReader implements Serializable {
                     }
                     if (!tempViewEntityList.isEmpty()) {
                         StringBuilder sb = new StringBuilder("View entities reference non-existant members:\n");
-                        // REFACTOR to use stream(), map(), collect()
-                        Set<String> allViews = new HashSet<>();
-                        for (ModelViewEntity curViewEntity : tempViewEntityList) {
-                            allViews.add(curViewEntity.getEntityName());
-                        }
+                        // REFACTO to use stream(), map(), collect()
+                        Set<String> allViews = tempViewEntityList.stream()
+                            .map(ModelEntity::getEntityName).collect(Collectors.toSet());
                         for (ModelViewEntity curViewEntity : tempViewEntityList) {
                             // REFACTOR two loops to use stream(), map(), filter() x 2, distinct() and forEach()
                             Set<String> perViewMissingEntities = new HashSet<>();

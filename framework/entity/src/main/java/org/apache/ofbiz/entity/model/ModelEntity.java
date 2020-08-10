@@ -34,6 +34,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.TimeZone;
 import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.stream.*;
 
 import org.apache.ofbiz.base.util.Debug;
 import org.apache.ofbiz.base.util.GeneralException;
@@ -671,12 +672,8 @@ public class ModelEntity implements Comparable<ModelEntity>, Serializable {
     }
 
     private List<String> getFieldNamesFromFieldVector(List<ModelField> modelFields) {
-        // REFACTOR to use stream(), map(), collect()
-        List<String> nameList = new ArrayList<>(modelFields.size());
-        for (ModelField field: modelFields) {
-            nameList.add(field.getName());
-        }
-        return nameList;
+        // REFACTO to use stream(), map(), collect()
+        return modelFields.stream().map(ModelField::getName).collect(Collectors.toList());
     }
 
     /**

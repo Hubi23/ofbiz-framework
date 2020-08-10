@@ -22,6 +22,7 @@ package org.apache.ofbiz.entity;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.Future;
+import java.util.stream.*;
 
 import org.apache.ofbiz.base.concurrent.ExecutionPool;
 import org.apache.ofbiz.base.container.Container;
@@ -49,11 +50,10 @@ public class DelegatorContainer implements Container {
         if (UtilValidate.isEmpty(preloadedDelegatorNames)) {
             return true;
         }
-        // REFACTOR to use stream(), map(), collect()
-        List<Future<Delegator>> futures = new ArrayList<>();
-        for (String preloadedDelegatorName: preloadedDelegatorNames) {
-            futures.add(DelegatorFactory.getDelegatorFuture(preloadedDelegatorName));
-        }
+        // REFACTO to use stream(), map(), collect()
+        List<Future<Delegator>> futures = preloadedDelegatorNames.stream()
+            .map(DelegatorFactory::getDelegatorFuture)
+            .collect(Collectors.toList());
         ExecutionPool.getAllFutures(futures);
         return true;
     }
