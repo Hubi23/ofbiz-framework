@@ -18,53 +18,26 @@
  *******************************************************************************/
 package org.apache.ofbiz.accounting.invoice;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.StringReader;
-import java.math.BigDecimal;
-import java.math.RoundingMode;
-import java.nio.ByteBuffer;
-import java.nio.charset.Charset;
-import java.sql.Timestamp;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-import java.util.Map.Entry;
+import org.apache.commons.collections4.*;
+import org.apache.commons.csv.*;
+import org.apache.ofbiz.accounting.payment.*;
+import org.apache.ofbiz.accounting.util.*;
+import org.apache.ofbiz.base.util.*;
+import org.apache.ofbiz.entity.*;
+import org.apache.ofbiz.entity.condition.*;
+import org.apache.ofbiz.entity.util.*;
+import org.apache.ofbiz.order.order.*;
+import org.apache.ofbiz.product.product.*;
+import org.apache.ofbiz.service.*;
 
-import org.apache.commons.collections4.CollectionUtils;
-import org.apache.commons.csv.CSVFormat;
-import org.apache.commons.csv.CSVRecord;
-import org.apache.ofbiz.accounting.payment.PaymentGatewayServices;
-import org.apache.ofbiz.accounting.payment.PaymentWorker;
-import org.apache.ofbiz.accounting.util.UtilAccounting;
-import org.apache.ofbiz.base.util.Debug;
-import org.apache.ofbiz.base.util.UtilDateTime;
-import org.apache.ofbiz.base.util.UtilFormatOut;
-import org.apache.ofbiz.base.util.UtilGenerics;
-import org.apache.ofbiz.base.util.UtilMisc;
-import org.apache.ofbiz.base.util.UtilNumber;
-import org.apache.ofbiz.base.util.UtilProperties;
-import org.apache.ofbiz.base.util.UtilValidate;
-import org.apache.ofbiz.entity.Delegator;
-import org.apache.ofbiz.entity.GenericEntityException;
-import org.apache.ofbiz.entity.GenericValue;
-import org.apache.ofbiz.entity.condition.EntityCondition;
-import org.apache.ofbiz.entity.condition.EntityExpr;
-import org.apache.ofbiz.entity.condition.EntityOperator;
-import org.apache.ofbiz.entity.util.EntityQuery;
-import org.apache.ofbiz.entity.util.EntityTypeUtil;
-import org.apache.ofbiz.entity.util.EntityUtil;
-import org.apache.ofbiz.entity.util.EntityUtilProperties;
-import org.apache.ofbiz.order.order.OrderReadHelper;
-import org.apache.ofbiz.product.product.ProductWorker;
-import org.apache.ofbiz.service.DispatchContext;
-import org.apache.ofbiz.service.GenericServiceException;
-import org.apache.ofbiz.service.LocalDispatcher;
-import org.apache.ofbiz.service.ServiceUtil;
+import java.io.*;
+import java.math.*;
+import java.nio.*;
+import java.nio.charset.*;
+import java.sql.*;
+import java.util.*;
+import java.util.Map.*;
+import java.util.concurrent.atomic.*;
 
 /**
  * InvoiceServices - Services for creating invoices
@@ -3297,12 +3270,12 @@ public class InvoiceServices {
                 BigDecimal alreadyApplied;
                 if (UtilValidate.isNotEmpty(paymentApplications)) {
                     // application(s) found, add them all together
-                    GenericValue[] tempPaymentApplication = { paymentApplication };
+                    AtomicReference<GenericValue> tempPaymentApplication = new AtomicReference<>(paymentApplication);
                     alreadyApplied = paymentApplications.stream()
-                        .peek(application -> tempPaymentApplication[0] = application)
+                        .peek(tempPaymentApplication::set)
                         .map(application -> application.getBigDecimal("amountApplied").setScale(DECIMALS, ROUNDING))
                         .reduce(BigDecimal.ZERO, BigDecimal::add);
-                    paymentApplication = tempPaymentApplication[0];
+                    paymentApplication = tempPaymentApplication.get();
                     tobeApplied = itemTotal.subtract(alreadyApplied).setScale(DECIMALS,ROUNDING);
                 } else {
                     // no application connected yet
