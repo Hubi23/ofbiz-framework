@@ -24,6 +24,7 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.*;
 
 import org.apache.ofbiz.base.lang.*;
 import org.apache.ofbiz.base.util.UtilValidate;
@@ -88,11 +89,10 @@ public class EntityJoinOperator extends EntityOperator<EntityCondition, EntityCo
     }
 
     public EntityCondition freeze(List<? extends EntityCondition> conditionList) {
-        // REFACTOR to use stream(), map(), collect(), Collectors.toCollection()
-        List<EntityCondition> newList = new ArrayList<>(conditionList.size());
-        for (EntityCondition condition: conditionList) {
-            newList.add(condition.freeze());
-        }
+        // REFACTO to use stream(), map(), collect(), Collectors.toCollection()
+        List<EntityCondition> newList = conditionList.stream()
+            .map(EntityCondition::freeze)
+            .collect(Collectors.toList());
         return EntityCondition.makeCondition(newList, this);
     }
 

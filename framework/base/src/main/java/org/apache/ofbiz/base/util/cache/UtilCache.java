@@ -38,6 +38,7 @@ import java.util.concurrent.CopyOnWriteArraySet;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
+import java.util.stream.*;
 
 import org.apache.ofbiz.base.concurrent.ExecutionPool;
 import org.apache.ofbiz.base.util.Debug;
@@ -355,12 +356,10 @@ public class UtilCache<K, V> implements Serializable, EvictionListener<Object, C
     }
 
     public Collection<V> values() {
-        // REFACTOR to use stream(), map(), collect() and Collectors.toCollection()
-        List<V> valuesList = new LinkedList<>();
-        for (CacheLine<V> line: memoryTable.values()) {
-            valuesList.add(line.getValue());
-        }
-        return valuesList;
+        // REFACTO to use stream(), map(), collect() and Collectors.toCollection()
+        return memoryTable.values().stream()
+            .map(CacheLine::getValue)
+            .collect(Collectors.toCollection(LinkedList::new));
     }
 
     private long findSizeInBytes(Object o) {

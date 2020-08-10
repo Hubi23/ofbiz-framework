@@ -31,6 +31,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.TimeZone;
+import java.util.stream.*;
 
 import com.ibm.icu.util.Calendar;
 
@@ -1051,23 +1052,20 @@ public final class UtilDateTime {
         private static final List<TimeZone> availableTimeZoneList = getTimeZones();
 
         private static List<TimeZone> getTimeZones() {
-            // REFACTOR to use stream(), map(), collect() and Collectors.toCollection() to create the list
-            ArrayList<TimeZone> availableTimeZoneList = new ArrayList<>();
-            List<String> idList = null;
+            // REFACTO to use stream(), map(), collect() and Collectors.toCollection() to create the list
             String tzString = UtilProperties.getPropertyValue("general", "timeZones.available");
+            List<String> idList;
             if (UtilValidate.isNotEmpty(tzString)) {
                 idList = StringUtil.split(tzString, ",");
             } else {
                 idList = Arrays.asList(TimeZone.getAvailableIDs());
             }
-            for (String id : idList) {
-                TimeZone curTz = TimeZone.getTimeZone(id);
-                availableTimeZoneList.add(curTz);
-            }
+            ArrayList<TimeZone> availableTimeZoneList = idList.stream()
+                .map(TimeZone::getTimeZone)
+                .collect(Collectors.toCollection(ArrayList::new));
             availableTimeZoneList.trimToSize();
             return Collections.unmodifiableList(availableTimeZoneList);
         }
-
     }
 
     /** Returns a List of available TimeZone objects.
