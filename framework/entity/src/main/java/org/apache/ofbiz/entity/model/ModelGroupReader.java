@@ -221,8 +221,8 @@ public class ModelGroupReader implements Serializable {
         // REFACTO to use Collections.emptySet(), stream(), filter(), map(), collect()
         Map<String, String> gc = getGroupCache(delegatorBaseName);
 
-        if (UtilValidate.isEmpty(groupName)) return Collections.emptySet();
-        if (UtilValidate.isEmpty(gc)) return Collections.emptySet();
+        if (UtilValidate.isEmpty(groupName)) return Set.of();
+        if (UtilValidate.isEmpty(gc)) return Set.of();
         return gc.entrySet().stream()
             .filter(entry -> groupName.equals(entry.getValue()))
             .map(Map.Entry::getKey)
