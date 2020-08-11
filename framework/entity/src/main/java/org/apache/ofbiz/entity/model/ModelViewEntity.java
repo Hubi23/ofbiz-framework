@@ -18,36 +18,16 @@
  *******************************************************************************/
 package org.apache.ofbiz.entity.model;
 
-import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import org.apache.ofbiz.base.util.*;
+import org.apache.ofbiz.entity.condition.*;
+import org.apache.ofbiz.entity.jdbc.*;
+import org.apache.ofbiz.entity.util.*;
+import org.w3c.dom.*;
 
-import org.apache.ofbiz.base.util.Debug;
-import org.apache.ofbiz.base.util.StringUtil;
-import org.apache.ofbiz.base.util.UtilFormatOut;
-import org.apache.ofbiz.base.util.UtilTimer;
-import org.apache.ofbiz.base.util.UtilValidate;
-import org.apache.ofbiz.base.util.UtilXml;
-import org.apache.ofbiz.entity.condition.EntityComparisonOperator;
-import org.apache.ofbiz.entity.condition.EntityCondition;
-import org.apache.ofbiz.entity.condition.EntityConditionValue;
-import org.apache.ofbiz.entity.condition.EntityFieldValue;
-import org.apache.ofbiz.entity.condition.EntityFunction;
-import org.apache.ofbiz.entity.condition.EntityJoinOperator;
-import org.apache.ofbiz.entity.condition.EntityOperator;
-import org.apache.ofbiz.entity.jdbc.SqlJdbcUtil;
-import org.apache.ofbiz.entity.util.EntityUtil;
-import org.w3c.dom.Element;
-import org.w3c.dom.NodeList;
+import java.io.*;
+import java.util.*;
+import java.util.function.*;
+import java.util.stream.*;
 
 /**
  * This class extends ModelEntity and provides additional information appropriate to view entities
@@ -269,18 +249,12 @@ public class ModelViewEntity extends ModelEntity {
     }
 
     public List<ModelField> getGroupBysCopy(List<ModelField> selectFields) {
-        // REFACTOR by creating a Predicate<ModelField> that works for both if-clauses and then use stream(), filter(), collect(), Collectors.toCollection()
-        List<ModelField> newList = new ArrayList<>(this.groupBys.size());
-        if (UtilValidate.isEmpty(selectFields)) {
-            newList.addAll(this.groupBys);
-        } else {
-            for (ModelField groupByField: this.groupBys) {
-                if (selectFields.contains(groupByField)) {
-                    newList.add(groupByField);
-                }
-            }
-        }
-        return newList;
+        // REFACTO by creating a Predicate<ModelField> that works for both if-clauses and then use stream(), filter(), collect(), Collectors.toCollection()
+        Predicate<ModelField> predicate = groupByField ->
+            UtilValidate.isEmpty(selectFields) || selectFields.contains(groupByField);
+        return groupBys.stream()
+            .filter(predicate)
+            .collect(Collectors.toList());
     }
 
     /** List of view links to define how entities are connected (or "joined") */
