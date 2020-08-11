@@ -189,21 +189,20 @@ public final class ModelRelation extends ModelChild {
 
     /** Find a KeyMap with the specified fieldName */
     public ModelKeyMap findKeyMap(String fieldName) {
-        // REFACTOR to use stream(), filter(), findFirst(), orElse()
-        for (ModelKeyMap keyMap: keyMaps) {
-            if (keyMap.getFieldName().equals(fieldName)) return keyMap;
-        }
-        return null;
+        // REFACTO to use stream(), filter(), findFirst(), orElse()
+        return keyMaps.stream()
+            .filter(keyMap -> keyMap.getFieldName().equals(fieldName))
+            .findFirst()
+            .orElse(null);
     }
 
     /** Find a KeyMap with the specified relFieldName */
     public ModelKeyMap findKeyMapByRelated(String relFieldName) {
-        // REFACTOR to use stream(), filter(), findFirst(), orElse()
-        for (ModelKeyMap keyMap: keyMaps) {
-            if (keyMap.getRelFieldName().equals(relFieldName))
-                return keyMap;
-        }
-        return null;
+        // REFACTO to use stream(), filter(), findFirst(), orElse()
+        return keyMaps.stream()
+            .filter(keyMap -> keyMap.getRelFieldName().equals(relFieldName))
+            .findFirst()
+            .orElse(null);
     }
 
     @Override
