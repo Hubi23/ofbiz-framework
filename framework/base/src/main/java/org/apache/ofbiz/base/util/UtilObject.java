@@ -18,17 +18,12 @@
  *******************************************************************************/
 package org.apache.ofbiz.base.util;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.ObjectOutputStream;
-import java.lang.reflect.Array;
-import java.util.Iterator;
-import java.util.ServiceLoader;
+import org.apache.ofbiz.base.lang.*;
 
-import org.apache.ofbiz.base.lang.Factory;
-import org.apache.ofbiz.base.lang.SourceMonitored;
+import java.io.*;
+import java.lang.reflect.*;
+import java.util.*;
+import java.util.stream.*;
 
 /**
  * UtilObject
@@ -160,14 +155,12 @@ public final class UtilObject {
     }
 
     public static <A, R> R getObjectFromFactory(Class<? extends Factory<R, A>> factoryInterface, A obj) throws ClassNotFoundException {
-        // REFACTOR to generate stream from ServiceLoader (hint, use StreamSupport and spliterator()
-        // REFACTOR loop use map(), filter(), findFirst() and Optional.orElseThrow() to complete refactoring
-      for (Factory<R, A> factory : ServiceLoader.load(factoryInterface)) {
-        R instance = factory.getInstance(obj);
-        if (instance != null) {
-          return instance;
-        }
-      }
-        throw new ClassNotFoundException(factoryInterface.getClass().getName());
+        // REFACTO to generate stream from ServiceLoader (hint, use StreamSupport and spliterator()
+        // REFACTO loop use map(), filter(), findFirst() and Optional.orElseThrow() to complete refactoring
+        return StreamSupport.stream(ServiceLoader.load(factoryInterface).spliterator(), false)
+            .map(factory -> factory.getInstance(obj))
+            .filter(Objects::nonNull)
+            .findFirst()
+            .orElseThrow(() -> new ClassNotFoundException(factoryInterface.getClass().getName()));
     }
 }
