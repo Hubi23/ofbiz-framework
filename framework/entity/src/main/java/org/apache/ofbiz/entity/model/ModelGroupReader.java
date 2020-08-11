@@ -26,7 +26,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
+import java.util.stream.*;
 
+import edu.emory.mathcs.backport.java.util.*;
 import org.apache.ofbiz.base.component.ComponentConfig;
 import org.apache.ofbiz.base.config.GenericConfigException;
 import org.apache.ofbiz.base.config.MainResourceHandler;
@@ -216,15 +218,14 @@ public class ModelGroupReader implements Serializable {
      * @return A Set of entityName Strings
      */
     public Set<String> getEntityNamesByGroup(String delegatorBaseName, String groupName) {
-        // REFACTOR to use Collections.emptySet(), stream(), filter(), map(), collect()
+        // REFACTO to use Collections.emptySet(), stream(), filter(), map(), collect()
         Map<String, String> gc = getGroupCache(delegatorBaseName);
-        Set<String> enames = new HashSet<>();
 
-        if (UtilValidate.isEmpty(groupName)) return enames;
-        if (UtilValidate.isEmpty(gc)) return enames;
-        for (Map.Entry<String, String> entry: gc.entrySet()) {
-            if (groupName.equals(entry.getValue())) enames.add(entry.getKey());
-        }
-        return enames;
+        if (UtilValidate.isEmpty(groupName)) return Collections.emptySet();
+        if (UtilValidate.isEmpty(gc)) return Collections.emptySet();
+        return gc.entrySet().stream()
+            .filter(entry -> groupName.equals(entry.getValue()))
+            .map(Map.Entry::getKey)
+            .collect(Collectors.toSet());
     }
 }
