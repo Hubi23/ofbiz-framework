@@ -1,19 +1,95 @@
-(Some of these steps take a bit of time and we all want to be ready for the class and not waste time downloading and indexing)
+PREPARATION FOR REFACTORING TO JAVA 8 STREAMS AND LAMBDAS
 
-1. Download and install JDK 11 (although JDK 8 also works)
-(We recommend Azul Zulu https://www.azul.com/downloads/zulu-community/?version=java-11-lts&package=jdk)
+Some of these steps take a bit of time and we all want to be ready for the class
+and not spend class time downloading and indexing. If you have problems please
+contact heinz@javaspecialists.eu before the course.
 
-2. Download and install latest IntelliJ IDEA Community Edition
-https://www.jetbrains.com/idea/download
+1. Download and install JDK 11. We recommend Azul Zulu at
 
-3. Get the sources for the practical exercises. We recommend that you fork our repository https://github.com/kabutz/ofbiz-framework and then checkout the refactorj8 branch.  Create a branch off the refactorj8 branch for your exercises.
+     https://www.azul.com/downloads/zulu-community/?version=java-11-lts&package=jdk
 
-4. In the ofbiz-framework directory call "gradlew cleanAll loadAll" and then once that is done, "gradlew ofbiz"
-https://localhost:8443/ordermgr
-https://localhost:8443/accounting
-https://localhost:8443/webtools
-You can log in with the user *admin* and password *ofbiz*.
+   JDK 8 also works but some solutions will use features of Java 9, 10 and 11.
 
-5. Open IntelliJ IDEA Community Edition and set it to use your JDK 8 and open the ofbiz-framework directory as your project. It will take a bit of time to index all the files.
+2. Download and install the latest free IntelliJ IDEA Community Edition IDE at
 
-6. In IntelliJ, go to Analyze -> Inspect Code. Select "Whole project" and 
+     https://www.jetbrains.com/idea/download
+
+   We will use many refactoring features of this IDE so it is required.
+
+   If you already have IntelliJ IDEA, please update to a recent version if
+   possible. The paid-for Ultimate Edition is suitable too.
+
+   If you wish to learn more, there are "Getting Started" video tutorials at
+
+     https://www.jetbrains.com/idea/documentation/
+
+3. Get the sources for the practical exercises.
+
+   3.1. We recommend that you fork our repository at
+
+          https://github.com/kabutz/ofbiz-framework
+
+        by clicking on "Fork" on that page, which requires a GitHub account. The
+        fork is not essential but doing so means you can share your work easily.
+
+   3.2. Start IntelliJ and copying the clone link from GitHub by clicking "Code"
+        and copying the link. Then in the IntelliJ menu, choose
+
+          [File -> New -> Project from Version Control...]
+
+        and paste the URL.  Choose a suitable directory and click "Clone".
+
+4. The default branch is called "refactorj8", and it should now be checked out.
+   Create a branch off the refactorj8 branch for your exercises.
+
+5. Go to [File -> Project Structure] and set the Project SDK to use your JDK 11.
+   It will take a bit of time to index all the files.
+
+6. Check that the project builds and runs correctly.
+
+   6.1. In a Terminal with the project root as the current directory, which you
+        can reach from [View -> Tool Windows -> Terminal] or use any terminal
+        application (e.g., "Command Prompt" in Windows), type
+
+          ./gradlew cleanAll loadAll
+
+        followed by
+
+          ./gradlew ofbiz
+
+        If you are using Windows, omit ./ at the beginning of these commands.
+
+   6.2. Browse to
+
+          https://localhost:8443/ordermgr
+          https://localhost:8443/accounting
+          https://localhost:8443/webtools
+
+        You can log in with the user *admin* and password *ofbiz*.
+
+7. In IntelliJ, go to [Analyze -> Inspect Code].
+   Select "Whole project", check "Include test sources", and the
+   Inspection Profile "Java All Migrate". Click "OK" to start the analysis.
+   It should run to completion without error after some time. We will use
+   subset profiles during the course which run faster but this one will check
+   that everything is working.
+
+8. Set up the TODO list so that you can find the exercises easily.
+
+   8.1. In IntelliJ, go to the Preferences dialog (in MacOS type Cmd-, and
+        in Windows type Ctrl-Alt-S). Now type "TODO" in the search box and click
+        on "TODO" in the side menu. Add a new case-sensitive pattern REFACTOR.*
+        You can view the all the exercise instructions in the "TODO" view at
+        [View -> Tool Windows -> TODO], which may already be visible.
+
+   8.2. The existing TODO items from the OFBiz project need to be deactivated or
+        they will clutter the view. Return to Preferences - TODO and edit the
+        pre-defined patterns by inserting something that is not likely, e.g.,
+        change "\btodo\b.*" to "\btodo-off\b.*". When returning to your own
+        projects after the course, remember to revert this.
+
+   8.3. You should now have 61 TODO items in 28 files. Using the buttons in the
+        vertical side menu in the TODO window, choose "Group By" -> "Packages"
+        to make this more readable. The file RefactoringTasks.java at the bottom
+        will be our starting point and the individual items further up will be
+        done during one of the steps.
