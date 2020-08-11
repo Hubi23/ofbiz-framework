@@ -425,19 +425,13 @@ public class ModelReader implements Serializable {
      * consistent again.
      */
     public void rebuildResourceHandlerEntities() {
-        // REFACTOR to use collect(), Collectors.groupingBy() and Collectors.mapping()
-        resourceHandlerEntities = new HashMap<>();
-
-      for (Map.Entry<String, ResourceHandler> entry : entityResourceHandlerMap.entrySet()) {
-        // add entityName to appropriate resourceHandlerEntities collection
-        Collection<String> resourceHandlerEntityNames = resourceHandlerEntities.get(entry.getValue());
-
-        if (resourceHandlerEntityNames == null) {
-          resourceHandlerEntityNames = new LinkedList<>();
-          resourceHandlerEntities.put(entry.getValue(), resourceHandlerEntityNames);
-        }
-        resourceHandlerEntityNames.add(entry.getKey());
-      }
+        // REFACTO to use collect(), Collectors.groupingBy() and Collectors.mapping()
+        resourceHandlerEntities = entityResourceHandlerMap.entrySet().stream()
+            .collect(Collectors.groupingBy(
+                Map.Entry::getValue,
+                Collectors.mapping(
+                    Map.Entry::getKey,
+                    Collectors.toCollection(LinkedList::new))));
     }
 
     public Iterator<ResourceHandler> getResourceHandlerEntitiesKeyIterator() {
