@@ -61,9 +61,4 @@ public class RefactoringTasks {
         // REFACTOR Java 9: replace null check with Objects.requireNonNullElse() call where it makes sense
         // REFACTOR Java 10: Omit local variable name - but only in a few places that would make code easier to read and understand.
     }
-
-    public static void java9to11Optional() {
-        // REFACTOR : replace AtomicFieldUpdater with VarHandles
-        // REFACTOR : replace StringBuilder.append with simple + where possible
-    }
 }
