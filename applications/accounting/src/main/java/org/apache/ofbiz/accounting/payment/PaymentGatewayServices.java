@@ -31,6 +31,7 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Random;
 import java.util.Set;
+import java.util.concurrent.atomic.*;
 
 import org.apache.ofbiz.accounting.invoice.InvoiceWorker;
 import org.apache.ofbiz.base.util.Debug;
@@ -1120,18 +1121,14 @@ public class PaymentGatewayServices {
         String testOrderId = null;
         boolean allSameOrder = true;
         if (orderItemBillings != null) {
-            // REFACTOR to use stream(), map(), distinct() and count()
-            for (GenericValue oib : orderItemBillings) {
-                String orderId = oib.getString("orderId");
-                if (testOrderId == null) {
-                    testOrderId = orderId;
-                } else {
-                    if (!orderId.equals(testOrderId)) {
-                        allSameOrder = false;
-                        break;
-                    }
-                }
-            }
+            // REFACTO to use stream(), map(), distinct() and count()
+            AtomicReference<String> tempTestOrderId = new AtomicReference<>();
+            allSameOrder = 1 == orderItemBillings.stream()
+                .map(oib -> oib.getString("orderId"))
+                .peek(orderId -> tempTestOrderId.compareAndSet(null, orderId))
+                .distinct()
+                .count();
+            testOrderId = tempTestOrderId.get();
         }
 
         if (testOrderId == null || !allSameOrder) {
