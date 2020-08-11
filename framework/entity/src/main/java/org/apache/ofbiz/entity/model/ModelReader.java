@@ -29,6 +29,7 @@ import org.w3c.dom.*;
 
 import java.io.*;
 import java.util.*;
+import java.util.function.*;
 import java.util.stream.*;
 
 /**
@@ -426,12 +427,22 @@ public class ModelReader implements Serializable {
      */
     public void rebuildResourceHandlerEntities() {
         // REFACTO to use collect(), Collectors.groupingBy() and Collectors.mapping()
-        resourceHandlerEntities = entityResourceHandlerMap.entrySet().stream()
+        resourceHandlerEntities = invertMap(entityResourceHandlerMap, LinkedList::new);
+    }
+
+    public static <K, V> Map<V, Collection<K>> invertMap(Map<K, V> map) {
+        return invertMap(map, ArrayList::new);
+    }
+
+    public static <K, V, C extends Collection<K>> Map<V, C> invertMap(Map<K, V> map, Supplier<C> collectionFactory) {
+        return map.entrySet().stream()
             .collect(Collectors.groupingBy(
                 Map.Entry::getValue,
                 Collectors.mapping(
                     Map.Entry::getKey,
-                    Collectors.toCollection(LinkedList::new))));
+                    Collectors.toCollection(collectionFactory)
+                )
+            ));
     }
 
     public Iterator<ResourceHandler> getResourceHandlerEntitiesKeyIterator() {
