@@ -391,12 +391,11 @@ public class UtilCache<K, V> implements Serializable, EvictionListener<Object, C
     }
 
     public long getSizeInBytes() {
-        // REFACTOR to use stream(), map(), sum().  Added bonus: use only method references without writing new methods
-        long totalSize = 0;
-        for (CacheLine<V> line: memoryTable.values()) {
-            totalSize += findSizeInBytes(line.getValue());
-        }
-        return totalSize;
+        // REFACTO to use stream(), map(), sum().  Added bonus: use only method references without writing new methods
+        return memoryTable.values().stream()
+            .map(CacheLine::getValue)
+            .mapToLong(this::findSizeInBytes)
+            .sum();
     }
 
     /** Removes an element from the cache according to the specified key
