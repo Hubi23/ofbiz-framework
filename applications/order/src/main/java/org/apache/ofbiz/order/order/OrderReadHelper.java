@@ -3013,10 +3013,10 @@ public class OrderReadHelper {
     public List<BigDecimal> getShippableSizes(String shipGrouSeqId) {
         // REFACTO to use Optional (for the null), map() on Optional, then stream(), map(), collect() and lastly orElseGet() on the Optional
         return Optional.ofNullable(getValidOrderItems(shipGrouSeqId))
-            .map(validItems -> validItems.stream()
-                .map(this::getItemSize)
-                .collect(Collectors.toList()))
-            .orElseGet(ArrayList::new);
+            .stream()
+            .flatMap(Collection::stream)
+            .map(this::getItemSize)
+            .collect(Collectors.toList());
     }
     public BigDecimal getItemReceivedQuantity(GenericValue orderItem) {
         BigDecimal totalReceived = BigDecimal.ZERO;
