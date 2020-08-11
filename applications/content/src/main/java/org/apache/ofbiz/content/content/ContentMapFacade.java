@@ -28,6 +28,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.*;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -298,9 +299,9 @@ public class ContentMapFacade implements Map<Object, Object> {
                 Debug.logError(e, module);
             }
             if (subs != null) {
-                for (GenericValue v: subs) {
-                    subContent.add(new ContentMapFacade(dispatcher, v.getString("contentId"), context, locale, mimeType, cache));
-                }
+                subContent = subs.stream()
+                    .map(v -> new ContentMapFacade(dispatcher, v.getString("contentId"), context, locale, mimeType, cache))
+                    .collect(Collectors.toCollection(LinkedList::new));
             }
             return subContent;
         } else if ("subcontent".equalsIgnoreCase(name)) {

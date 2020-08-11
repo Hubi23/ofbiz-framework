@@ -28,6 +28,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.TimeZone;
+import java.util.stream.*;
 
 import javax.servlet.ServletContext;
 import javax.servlet.http.HttpSession;
@@ -118,11 +119,9 @@ public abstract class AbstractModelAction implements Serializable, ModelAction {
 
     public static List<ModelAction> readSubActions(ModelWidget modelWidget, Element parentElement) {
         List<? extends Element> actionElementList = UtilXml.childElementList(parentElement);
-        List<ModelAction> actions = new ArrayList<>(actionElementList.size());
-        for (Element actionElement : actionElementList) {
-            actions.add(newInstance(modelWidget, actionElement));
-        }
-        return Collections.unmodifiableList(actions);
+        return actionElementList.stream()
+            .map(actionElement -> newInstance(modelWidget, actionElement))
+            .collect(Collectors.toUnmodifiableList());
     }
 
     /**

@@ -40,9 +40,9 @@ public class RefactoringTasks {
         // REFACTO Replace with single Map method (we won't be replacing computeIfAbsent() as it is dangerous - contention and possible livelocks)
 
         // Part 2
-        // REFACTO Search for the places in the code that we've marked with "REFACTORING" and improve the code by hand.
-        // REFACTOR Carefully look through "Loop can be collapsed with Stream API" inspections and check if the code after the refactoring is better or worse
-        // REFACTOR IDEA does not show where Java 5 for-in loops can be replaced with Java 8 forEach() and forEachOrdered() (there would be too many places and doing it automatically can be risky).  Have a look if you can find some and refactor them.  Alt+Enter is your friend
+        // REFACTO Search for the places in the code that we've marked with "REFACTO" and improve the code by hand.
+        // REFACTO Carefully look through "Loop can be collapsed with Stream API" inspections and check if the code after the refactoring is better or worse
+        // REFACTO IDEA does not show where Java 5 for-in loops can be replaced with Java 8 forEach() and forEachOrdered() (there would be too many places and doing it automatically can be risky).  Have a look if you can find some and refactor them.  Alt+Enter is your friend
     }
 
     public static void java9To11Required() {

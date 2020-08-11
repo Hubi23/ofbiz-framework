@@ -18,54 +18,24 @@
  *******************************************************************************/
 package org.apache.ofbiz.content.content;
 
-import java.io.IOException;
-import java.io.StringReader;
-import java.io.StringWriter;
-import java.io.Writer;
-import java.sql.Timestamp;
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
+import freemarker.ext.dom.*;
+import org.apache.ofbiz.base.util.*;
+import org.apache.ofbiz.base.util.string.*;
+import org.apache.ofbiz.content.*;
+import org.apache.ofbiz.content.data.*;
+import org.apache.ofbiz.entity.*;
+import org.apache.ofbiz.entity.condition.*;
+import org.apache.ofbiz.entity.util.*;
+import org.apache.ofbiz.minilang.*;
+import org.apache.ofbiz.service.*;
+import org.codehaus.groovy.control.*;
+import org.xml.sax.*;
 
-import javax.xml.parsers.ParserConfigurationException;
-
-import org.apache.ofbiz.base.util.Debug;
-import org.apache.ofbiz.base.util.GeneralException;
-import org.apache.ofbiz.base.util.GroovyUtil;
-import org.apache.ofbiz.base.util.StringUtil;
-import org.apache.ofbiz.base.util.UtilCodec;
-import org.apache.ofbiz.base.util.UtilDateTime;
-import org.apache.ofbiz.base.util.UtilGenerics;
-import org.apache.ofbiz.base.util.UtilMisc;
-import org.apache.ofbiz.base.util.UtilProperties;
-import org.apache.ofbiz.base.util.UtilValidate;
-import org.apache.ofbiz.base.util.string.FlexibleStringExpander;
-import org.apache.ofbiz.content.ContentManagementWorker;
-import org.apache.ofbiz.content.data.DataResourceWorker;
-import org.apache.ofbiz.entity.Delegator;
-import org.apache.ofbiz.entity.GenericEntityException;
-import org.apache.ofbiz.entity.GenericPK;
-import org.apache.ofbiz.entity.GenericValue;
-import org.apache.ofbiz.entity.condition.EntityCondition;
-import org.apache.ofbiz.entity.condition.EntityConditionList;
-import org.apache.ofbiz.entity.condition.EntityExpr;
-import org.apache.ofbiz.entity.condition.EntityOperator;
-import org.apache.ofbiz.entity.util.EntityQuery;
-import org.apache.ofbiz.entity.util.EntityUtil;
-import org.apache.ofbiz.minilang.MiniLangException;
-import org.apache.ofbiz.minilang.SimpleMapProcessor;
-import org.apache.ofbiz.service.DispatchContext;
-import org.apache.ofbiz.service.GenericServiceException;
-import org.apache.ofbiz.service.LocalDispatcher;
-import org.apache.ofbiz.service.ModelService;
-import org.apache.ofbiz.service.ServiceUtil;
-import org.codehaus.groovy.control.CompilationFailedException;
-import org.xml.sax.InputSource;
-import org.xml.sax.SAXException;
-
-import freemarker.ext.dom.NodeModel;
+import javax.xml.parsers.*;
+import java.io.*;
+import java.sql.*;
+import java.util.*;
+import java.util.stream.*;
 
 /**
  * ContentWorker Class
@@ -478,20 +448,17 @@ public class ContentWorker implements org.apache.ofbiz.widget.content.ContentWor
             contentId = (String) content.get("contentId");
             contentTypeId = (String) content.get("contentTypeId");
             List<GenericValue> topicList = content.getRelated("ToContentAssoc", UtilMisc.toMap("contentAssocTypeId", "TOPIC"), null, false);
-            List<String> topics = new LinkedList<>();
-            for (GenericValue assoc : topicList) {
-                topics.add(assoc.getString("contentId"));
-            }
+            List<String> topics = topicList.stream()
+                .map(assoc -> assoc.getString("contentId"))
+                .collect(Collectors.toList());
             List<GenericValue> keywordList = content.getRelated("ToContentAssoc", UtilMisc.toMap("contentAssocTypeId", "KEYWORD"), null, false);
-            List<String> keywords = new LinkedList<>();
-            for (GenericValue assoc : keywordList) {
-                keywords.add(assoc.getString("contentId"));
-            }
+            List<String> keywords = keywordList.stream()
+                .map(assoc -> assoc.getString("contentId"))
+                .collect(Collectors.toList());
             List<GenericValue> purposeValueList = content.getRelated("ContentPurpose", null, null, true);
-            List<String> purposes = new LinkedList<>();
-            for (GenericValue purposeValue : purposeValueList) {
-                purposes.add(purposeValue.getString("contentPurposeTypeId"));
-            }
+            List<String> purposes = purposeValueList.stream()
+                .map(purposeValue -> purposeValue.getString("contentPurposeTypeId"))
+                .collect(Collectors.toList());
             List<String> contentTypeAncestry = new LinkedList<>();
             getContentTypeAncestry(delegator, contentTypeId, contentTypeAncestry);
 
@@ -646,10 +613,9 @@ public class ContentWorker implements org.apache.ofbiz.widget.content.ContentWor
     public static List<Object> getPurposes(GenericValue content) {
         List<Object> purposes = new LinkedList<>();
         try {
-            List<GenericValue> purposeValueList = content.getRelated("ContentPurpose", null, null, true);
-            for (GenericValue purposeValue : purposeValueList) {
-                purposes.add(purposeValue.get("contentPurposeTypeId"));
-            }
+            purposes = content.getRelated("ContentPurpose", null, null, true).stream()
+                .map(purposeValue -> purposeValue.get("contentPurposeTypeId"))
+                .collect(Collectors.toList());
         } catch (GenericEntityException e) {
             Debug.logError("Entity Error:" + e.getMessage(), null);
         }
@@ -968,14 +934,11 @@ public class ContentWorker implements org.apache.ofbiz.widget.content.ContentWor
     }
 
     public static List<Map<String, Object>> getContentAncestryNodeTrail(Delegator delegator, String contentId, String contentAssocTypeId, String direction) throws GenericEntityException {
-         List<GenericValue> contentAncestorList = new LinkedList<>();
-         List<Map<String, Object>> nodeTrail = new LinkedList<>();
-         getContentAncestry(delegator, contentId, contentAssocTypeId, direction, contentAncestorList);
-         for (GenericValue value : contentAncestorList) {
-             Map<String, Object> thisNode = ContentWorker.makeNode(value);
-             nodeTrail.add(thisNode);
-         }
-         return nodeTrail;
+        List<GenericValue> contentAncestorList = new LinkedList<>();
+        getContentAncestry(delegator, contentId, contentAssocTypeId, direction, contentAncestorList);
+        return contentAncestorList.stream()
+            .map(ContentWorker::makeNode)
+            .collect(Collectors.toList());
     }
 
     public static String getContentAncestryNodeTrailCsv(Delegator delegator, String contentId, String contentAssocTypeId, String direction) throws GenericEntityException {
@@ -1469,16 +1432,10 @@ public class ContentWorker implements org.apache.ofbiz.widget.content.ContentWor
     }
 
     public static List<Map<String, Object>> csvToTrail(String csv, Delegator delegator) {
-        List<Map<String, Object>> trail = new LinkedList<>();
-        if (csv == null) {
-            return trail;
-        }
-        List<GenericValue> contentList = csvToContentList(csv, delegator);
-        for (GenericValue content : contentList) {
-            Map<String, Object> node = makeNode(content);
-            trail.add(node);
-        }
-        return trail;
+        if (csv == null) return List.of();
+        return csvToContentList(csv, delegator).stream()
+            .map(ContentWorker::makeNode)
+            .collect(Collectors.toList());
     }
 
     public static String getMimeTypeId(Delegator delegator, GenericValue view, Map<String, Object> ctx) {
