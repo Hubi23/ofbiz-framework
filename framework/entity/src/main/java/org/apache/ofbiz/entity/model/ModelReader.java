@@ -18,38 +18,18 @@
  *******************************************************************************/
 package org.apache.ofbiz.entity.model;
 
-import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.TreeSet;
-import java.util.stream.*;
-
-import org.apache.ofbiz.base.component.ComponentConfig;
-import org.apache.ofbiz.base.config.GenericConfigException;
-import org.apache.ofbiz.base.config.MainResourceHandler;
-import org.apache.ofbiz.base.config.ResourceHandler;
-import org.apache.ofbiz.base.util.Debug;
-import org.apache.ofbiz.base.util.UtilTimer;
-import org.apache.ofbiz.base.util.UtilValidate;
-import org.apache.ofbiz.base.util.UtilXml;
-import org.apache.ofbiz.base.util.cache.UtilCache;
-import org.apache.ofbiz.entity.GenericEntityConfException;
-import org.apache.ofbiz.entity.GenericEntityException;
-import org.apache.ofbiz.entity.GenericModelException;
-import org.apache.ofbiz.entity.config.model.DelegatorElement;
-import org.apache.ofbiz.entity.config.model.EntityConfig;
-import org.apache.ofbiz.entity.config.model.EntityModelReader;
-import org.apache.ofbiz.entity.config.model.Resource;
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
+import org.apache.ofbiz.base.component.*;
+import org.apache.ofbiz.base.config.*;
+import org.apache.ofbiz.base.util.*;
+import org.apache.ofbiz.base.util.cache.*;
+import org.apache.ofbiz.entity.*;
+import org.apache.ofbiz.entity.config.model.*;
 import org.w3c.dom.Node;
+import org.w3c.dom.*;
+
+import java.io.*;
+import java.util.*;
+import java.util.stream.*;
 
 /**
  * Generic Entity - Entity Definition Reader
@@ -306,23 +286,16 @@ public class ModelReader implements Serializable {
                         Set<String> allViews = tempViewEntityList.stream()
                             .map(ModelEntity::getEntityName).collect(Collectors.toSet());
                         for (ModelViewEntity curViewEntity : tempViewEntityList) {
-                            // REFACTOR two loops to use stream(), map(), filter() x 2, distinct() and forEach()
-                            Set<String> perViewMissingEntities = new HashSet<>();
-                          for (ModelViewEntity.ModelMemberEntity mme : curViewEntity.getAllModelMemberEntities()) {
-                            String memberEntityName = mme.getEntityName();
-                            if (!entityCache.containsKey(memberEntityName)) {
-                              // this member is not a real entity
-                              // check to see if it is a view
-                              if (!allViews.contains(memberEntityName)) {
-                                // not a view, it's a real missing entity
-                                perViewMissingEntities.add(memberEntityName);
-                              }
-                            }
-                          }
-                            for (String perViewMissingEntity : perViewMissingEntities) {
-                                sb.append("\t[").append(curViewEntity.getEntityName()).append("] missing member entity [").append(perViewMissingEntity).append("]\n");
-                            }
-
+                            // REFACTO two loops to use stream(), map(), filter() x 2, distinct() and forEach()
+                            curViewEntity.getAllModelMemberEntities().stream()
+                                .map(ModelViewEntity.ModelMemberEntity::getEntityName)
+                                .filter(memberEntityName -> !entityCache.containsKey(memberEntityName)) // this member is not a real entity, check to see if it is a view
+                                .filter(memberEntityName -> !allViews.contains(memberEntityName)) // not a view, it's a real missing entity
+                                .distinct()
+                                .forEach(perViewMissingEntity -> {
+                                    sb.append("\t[").append(curViewEntity.getEntityName())
+                                        .append("] missing member entity [").append(perViewMissingEntity).append("]\n");
+                                });
                         }
                         throw new GenericEntityConfException(sb.toString());
                     }
