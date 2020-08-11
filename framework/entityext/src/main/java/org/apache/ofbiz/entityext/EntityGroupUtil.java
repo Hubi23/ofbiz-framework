@@ -76,32 +76,10 @@ public final class EntityGroupUtil {
                 // if we find an always we can break right there because this will always be include regardless of excludes, etc
                 // if we find an include or exclude we have to finish going through the rest of them just in case there is something that overrides it (ie an exclude for an include or an always for an exclude)
 
-                // REFACTOR to use stream(), filter() and anyMatch() (difficult)
-                boolean matchesInclude = false;
-                boolean matchesExclude = false;
-                boolean matchesAlways = false;
-                for (GenericValue entitySyncInclude : entityGroupEntryValues) {
-                    String entityOrPackage = entitySyncInclude.getString("entityOrPackage");
-                    boolean matches = false;
-                    if (entityName.equals(entityOrPackage)) {
-                        matches = true;
-                    } else if (modelEntity.getPackageName().startsWith(entityOrPackage)) {
-                        matches = true;
-                    }
-
-                    if (matches) {
-                        if ("ESIA_INCLUDE".equals(entitySyncInclude.getString("applEnumId"))) {
-                            matchesInclude = true;
-                        } else if ("ESIA_EXCLUDE".equals(entitySyncInclude.getString("applEnumId"))) {
-                            matchesExclude = true;
-                        } else if ("ESIA_ALWAYS".equals(entitySyncInclude.getString("applEnumId"))) {
-                            matchesAlways = true;
-                            break;
-                        }
-                    }
-                }
-
-                if (matchesAlways || (matchesInclude && !matchesExclude)) {
+                // REFACTO to use stream(), filter() and anyMatch() (difficult)
+                if (matches(entityGroupEntryValues, modelEntity, "ESIA_ALWAYS")
+                    || (matches(entityGroupEntryValues, modelEntity, "ESIA_INCLUDE")
+                    && !matches(entityGroupEntryValues, modelEntity, "ESIA_EXCLUDE"))) {
                     // make sure this log message is not checked in uncommented:
                     //Debug.logInfo("In runEntitySync adding [" + modelEntity.getEntityName() + "] to list of Entities to sync", module);
                     entityModelToUseList.add(modelEntity);
@@ -110,5 +88,15 @@ public final class EntityGroupUtil {
         }
 
         return entityModelToUseList;
+    }
+
+    private static boolean matches(List<GenericValue> entityGroupEntryValues, ModelEntity modelEntity, String applEnumId) {
+        return entityGroupEntryValues.stream()
+            .filter(entitySyncInclude -> {
+                String entityOrPackage = entitySyncInclude.getString("entityOrPackage");
+                return modelEntity.getEntityName().equals(entityOrPackage) ||
+                    modelEntity.getPackageName().startsWith(entityOrPackage);
+            })
+            .anyMatch(entitySyncInclude -> applEnumId.equals(entitySyncInclude.getString("applEnumId")));
     }
 }
