@@ -20,14 +20,7 @@ package org.apache.ofbiz.widget.model;
 
 import java.io.Serializable;
 import java.text.MessageFormat;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-import java.util.TimeZone;
+import java.util.*;
 import java.util.stream.*;
 
 import javax.servlet.ServletContext;
@@ -907,11 +900,7 @@ public abstract class AbstractModelAction implements Serializable, ModelAction {
             }
             if (global) {
                 Map<String, Object> globalCtx = UtilGenerics.checkMap(context.get("globalContext"));
-                if (globalCtx != null) {
-                    this.field.put(globalCtx, newValue);
-                } else {
-                    this.field.put(context, newValue);
-                }
+                this.field.put(Objects.requireNonNullElse(globalCtx, context), newValue);
             }
         }
 

@@ -18,10 +18,7 @@
  *******************************************************************************/
 package org.apache.ofbiz.entityext.eca;
 
-import java.util.ArrayList;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import org.apache.ofbiz.base.util.Debug;
 import org.apache.ofbiz.base.util.ObjectType;
@@ -118,11 +115,7 @@ public final class EntityEcaCondition implements java.io.Serializable {
                 Debug.logWarning((String) message, module);
             }
         }
-        if (cond != null) {
-            return cond;
-        } else {
-            return false;
-        }
+        return Objects.requireNonNullElse(cond, false);
     }
 
     public String getLValue() {

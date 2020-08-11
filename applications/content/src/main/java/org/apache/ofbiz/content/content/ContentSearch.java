@@ -19,15 +19,7 @@
 package org.apache.ofbiz.content.content;
 
 import java.sql.Timestamp;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-import java.util.Set;
-import java.util.TreeSet;
+import java.util.*;
 
 import org.apache.ofbiz.base.util.Debug;
 import org.apache.ofbiz.base.util.UtilDateTime;
@@ -617,11 +609,7 @@ public class ContentSearch {
             this.anyPrefix = anyPrefix;
             this.anySuffix = anySuffix;
             this.isAnd = isAnd;
-            if (removeStems != null) {
-                this.removeStems = removeStems;
-            } else {
-                this.removeStems = UtilProperties.propertyValueEquals("keywordsearch", "remove.stems", "true");
-            }
+            this.removeStems = Objects.requireNonNullElseGet(removeStems, () -> UtilProperties.propertyValueEquals("keywordsearch", "remove.stems", "true"));
         }
 
         public Set<String> makeFullKeywordSet(Delegator delegator) {

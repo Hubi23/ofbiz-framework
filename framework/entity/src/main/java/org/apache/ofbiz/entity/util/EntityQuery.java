@@ -19,14 +19,7 @@
 package org.apache.ofbiz.entity.util;
 
 import java.sql.Timestamp;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Date;
-import java.util.LinkedHashSet;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 import org.apache.ofbiz.base.util.Debug;
 import org.apache.ofbiz.base.util.UtilGenerics;
@@ -442,11 +435,7 @@ public class EntityQuery {
 
     private List<GenericValue> query(EntityFindOptions efo) throws GenericEntityException {
         EntityFindOptions findOptions = null;
-        if (efo == null) {
-            findOptions = makeEntityFindOptions();
-        } else {
-            findOptions = efo;
-        }
+        findOptions = Objects.requireNonNullElseGet(efo, this::makeEntityFindOptions);
         List<GenericValue> result = null;
         if (dynamicViewEntity == null && this.havingEntityCondition == null) {
             result = delegator.findList(entityName, makeWhereCondition(useCache), fieldsToSelect, orderBy, findOptions, useCache);
