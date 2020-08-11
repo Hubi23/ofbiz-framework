@@ -533,44 +533,45 @@ public class ModelReader implements Serializable {
     /** Get all entities, organized by package */
     public Map<String, TreeSet<String>> getEntitiesByPackage(Set<String> packageFilterSet, Set<String> entityFilterSet)
             throws GenericEntityException {
-        // REFACTOR to use stream(), filter() x 2, collect() with groupingBy() and mapping()
-        // REFACTOR wrap the GenericEntityException in your own unchecked exception and then unwrap it again before rethrowing it
-        Map<String, TreeSet<String>> entitiesByPackage = new HashMap<>();
-
-        // put the entityNames TreeSets in a HashMap by packageName
-      for (String entityName : this.getEntityNames()) {
-        ModelEntity entity = this.getModelEntity(entityName);
-        String packageName = entity.getPackageName();
-
-        if (UtilValidate.isNotEmpty(packageFilterSet)) {
-          // does it match any of these?
-          boolean foundMatch = false;
-          for (String packageFilter : packageFilterSet) {
-            if (packageName.contains(packageFilter)) {
-              foundMatch = true;
-            }
-          }
-          if (!foundMatch) {
-            // Debug.logInfo("Not including entity " + entityName + " becuase it is not in
-            // the package set: " + packageFilterSet, module);
-            continue;
-          }
+        // REFACTO to use stream(), filter() x 2, collect() with groupingBy() and mapping()
+        // REFACTO wrap the GenericEntityException in your own unchecked exception and then unwrap it again before rethrowing it
+        try {
+            return getEntityNames().stream()
+                .map(this::getModelEntityUnchecked)
+                .filter(entity ->
+                    !UtilValidate.isNotEmpty(packageFilterSet)
+                        || packageFilterSet.stream().anyMatch(entity.getPackageName()::contains))
+                .filter(entity ->
+                    !UtilValidate.isNotEmpty(entityFilterSet)
+                        || entityFilterSet.contains(entity.getEntityName()))
+                .collect(Collectors.groupingBy(
+                    ModelEntity::getPackageName,
+                    Collectors.mapping(
+                        ModelEntity::getEntityName,
+                        Collectors.toCollection(TreeSet::new))));
+        } catch (UncheckedGenericEntityException e) {
+            throw e.cause;
         }
-        if (UtilValidate.isNotEmpty(entityFilterSet) && !entityFilterSet.contains(entityName)) {
-          // Debug.logInfo("Not including entity " + entityName + " because it is not in
-          // the entity set: " + entityFilterSet, module);
-          continue;
+    }
+
+    private static class UncheckedGenericEntityException extends RuntimeException {
+        private final GenericEntityException cause;
+
+        public UncheckedGenericEntityException(GenericEntityException cause) {
+            this.cause = cause;
         }
 
-        TreeSet<String> entities = entitiesByPackage.get(entity.getPackageName());
-        if (entities == null) {
-          entities = new TreeSet<>();
-          entitiesByPackage.put(entity.getPackageName(), entities);
+        public Throwable fillInStackTrace() {
+            return null;
         }
-        entities.add(entityName);
-      }
+    }
 
-        return entitiesByPackage;
+    private ModelEntity getModelEntityUnchecked(String entityName) {
+        try {
+            return getModelEntity(entityName);
+        } catch (GenericEntityException e) {
+            throw new UncheckedGenericEntityException(e);
+        }
     }
 
     /**
