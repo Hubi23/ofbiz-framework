@@ -29,6 +29,7 @@ import org.apache.ofbiz.security.*;
 import java.math.*;
 import java.sql.*;
 import java.util.*;
+import java.util.stream.*;
 
 /**
  * Utility class for easily extracting important information from orders
@@ -3010,16 +3011,12 @@ public class OrderReadHelper {
     }
 
     public List<BigDecimal> getShippableSizes(String shipGrouSeqId) {
-        // REFACTOR to use Optional (for the null), map() on Optional, then stream(), map(), collect() and lastly orElseGet() on the Optional
-        List<BigDecimal> shippableSizes = new ArrayList<>();
-
-        List<GenericValue> validItems = getValidOrderItems(shipGrouSeqId);
-        if (validItems != null) {
-            for (GenericValue item : validItems) {
-                shippableSizes.add(this.getItemSize(item));
-            }
-        }
-        return shippableSizes;
+        // REFACTO to use Optional (for the null), map() on Optional, then stream(), map(), collect() and lastly orElseGet() on the Optional
+        return Optional.ofNullable(getValidOrderItems(shipGrouSeqId))
+            .map(validItems -> validItems.stream()
+                .map(this::getItemSize)
+                .collect(Collectors.toList()))
+            .orElseGet(ArrayList::new);
     }
     public BigDecimal getItemReceivedQuantity(GenericValue orderItem) {
         BigDecimal totalReceived = BigDecimal.ZERO;
