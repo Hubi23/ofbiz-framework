@@ -589,13 +589,12 @@ public final class UtilMisc {
                     .filter(Objects::nonNull)
                     .filter(locale -> !locale.getDisplayName().isEmpty());
             }
-            TreeMap<String, Locale> localeMap = localeStream.collect(
-                Collectors.toMap(
-                    Locale::getDisplayName,
-                    Function.identity(),
-                    (a, b) -> b,
-                    TreeMap::new));
-            return Collections.unmodifiableList(new ArrayList<>(localeMap.values()));
+            return localeStream
+                .collect(Collectors.toMap(
+                    Locale::getDisplayName, Function.identity(), (a, b) -> b, TreeMap::new))
+                .values()
+                .stream()
+                .collect(Collectors.toUnmodifiableList());
         }
     }
 
