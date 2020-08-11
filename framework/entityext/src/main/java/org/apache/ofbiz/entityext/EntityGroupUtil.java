@@ -23,6 +23,7 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.*;
 
 import org.apache.ofbiz.entity.Delegator;
 import org.apache.ofbiz.entity.GenericEntityException;
@@ -77,9 +78,18 @@ public final class EntityGroupUtil {
                 // if we find an include or exclude we have to finish going through the rest of them just in case there is something that overrides it (ie an exclude for an include or an always for an exclude)
 
                 // REFACTO to use stream(), filter() and anyMatch() (difficult)
-                if (matches(entityGroupEntryValues, modelEntity, "ESIA_ALWAYS")
-                    || (matches(entityGroupEntryValues, modelEntity, "ESIA_INCLUDE")
-                    && !matches(entityGroupEntryValues, modelEntity, "ESIA_EXCLUDE"))) {
+                List<String> applEnumIds = entityGroupEntryValues.stream()
+                    .filter(entitySyncInclude -> {
+                        String entityOrPackage = entitySyncInclude.getString("entityOrPackage");
+                        return modelEntity.getEntityName().equals(entityOrPackage) ||
+                            modelEntity.getPackageName().startsWith(entityOrPackage);
+                    })
+                    .map(entitySyncInclude -> entitySyncInclude.getString("applEnumId"))
+                    .collect(Collectors.toList());
+
+                if (applEnumIds.contains("ESIA_ALWAYS")
+                    || (applEnumIds.contains("ESIA_INCLUDE")
+                    && !applEnumIds.contains("ESIA_EXCLUDE"))) {
                     // make sure this log message is not checked in uncommented:
                     //Debug.logInfo("In runEntitySync adding [" + modelEntity.getEntityName() + "] to list of Entities to sync", module);
                     entityModelToUseList.add(modelEntity);
@@ -88,15 +98,5 @@ public final class EntityGroupUtil {
         }
 
         return entityModelToUseList;
-    }
-
-    private static boolean matches(List<GenericValue> entityGroupEntryValues, ModelEntity modelEntity, String applEnumId) {
-        return entityGroupEntryValues.stream()
-            .filter(entitySyncInclude -> {
-                String entityOrPackage = entitySyncInclude.getString("entityOrPackage");
-                return modelEntity.getEntityName().equals(entityOrPackage) ||
-                    modelEntity.getPackageName().startsWith(entityOrPackage);
-            })
-            .anyMatch(entitySyncInclude -> applEnumId.equals(entitySyncInclude.getString("applEnumId")));
     }
 }
