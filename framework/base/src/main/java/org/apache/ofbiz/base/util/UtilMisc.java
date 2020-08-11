@@ -26,20 +26,9 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.Serializable;
 import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.LinkedHashSet;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-import java.util.Set;
-import java.util.TreeMap;
-import java.util.TreeSet;
-import java.util.function.Supplier;
+import java.util.*;
+import java.util.function.*;
+import java.util.stream.*;
 
 import org.apache.ofbiz.base.util.collections.MapComparator;
 import org.apache.ofbiz.entity.Delegator;
@@ -197,7 +186,7 @@ public final class UtilMisc {
                 if (Debug.verboseOn()) {
                     Debug.logVerbose("Found Map value that is not Serializable: " + mapEntry.getKey() + "=" + mapEntry.getValue(), module);
                 }
-                
+
             }
         }
         for (String keyToRemove: keysToRemove) { map.remove(keyToRemove); }
@@ -589,24 +578,23 @@ public final class UtilMisc {
         private static final List<Locale> availableLocaleList = getAvailableLocaleList();
 
         private static List<Locale> getAvailableLocaleList() {
-            // REFACTOR this is an interesting one, as we can combine parts of these two if clauses once we've converted to stream()
-            TreeMap<String, Locale> localeMap = new TreeMap<>();
+            // REFACTO this is an interesting one, as we can combine parts of these two if clauses once we've converted to stream()
             String localesString = UtilProperties.getPropertyValue("general", "locales.available");
+            Stream<Locale> localeStream;
             if (UtilValidate.isNotEmpty(localesString)) {
-                List<String> idList = StringUtil.split(localesString, ",");
-                for (String id : idList) {
-                    Locale curLocale = parseLocale(id);
-                    localeMap.put(curLocale.getDisplayName(), curLocale);
-                }
+                localeStream = StringUtil.split(localesString, ",").stream()
+                    .map(UtilMisc::parseLocale);
             } else {
-                Locale[] locales = Locale.getAvailableLocales();
-                for (int i = 0; i < locales.length && locales[i] != null; i++) {
-                    String displayName = locales[i].getDisplayName();
-                    if (!displayName.isEmpty()) {
-                        localeMap.put(displayName, locales[i]);
-                    }
-                }
+                localeStream = Stream.of(Locale.getAvailableLocales())
+                    .filter(Objects::nonNull)
+                    .filter(locale -> !locale.getDisplayName().isEmpty());
             }
+            TreeMap<String, Locale> localeMap = localeStream.collect(
+                Collectors.toMap(
+                    Locale::getDisplayName,
+                    Function.identity(),
+                    (a, b) -> b,
+                    TreeMap::new));
             return Collections.unmodifiableList(new ArrayList<>(localeMap.values()));
         }
     }
@@ -616,8 +604,8 @@ public final class UtilMisc {
         return LocaleHolder.availableLocaleList;
     }
 
-    /** List of domains or IP addresses to be checked to prevent Host Header Injection, 
-     * no spaces after commas,no wildcard, can be extended of course... 
+    /** List of domains or IP addresses to be checked to prevent Host Header Injection,
+     * no spaces after commas,no wildcard, can be extended of course...
      * @return List of domains or IP addresses to be checked to prevent Host Header Injection,
      */
     public static List<String> getHostHeadersAllowed() {
