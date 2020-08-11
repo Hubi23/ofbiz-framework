@@ -18,26 +18,17 @@
  *******************************************************************************/
 package org.apache.ofbiz.base.util.string;
 
-import java.beans.FeatureDescriptor;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
+import org.apache.ofbiz.base.util.*;
+import org.apache.ofbiz.base.util.cache.*;
+import org.apache.xerces.dom.*;
+import org.w3c.dom.*;
 
-import javax.el.CompositeELResolver;
-import javax.el.ELContext;
-import javax.el.ELResolver;
-import javax.el.PropertyNotWritableException;
-import javax.xml.xpath.XPath;
-import javax.xml.xpath.XPathConstants;
-import javax.xml.xpath.XPathExpression;
-import javax.xml.xpath.XPathExpressionException;
-import javax.xml.xpath.XPathFactory;
-
-import org.apache.ofbiz.base.util.Debug;
-import org.apache.ofbiz.base.util.cache.UtilCache;
-import org.apache.xerces.dom.NodeImpl;
-import org.w3c.dom.Node;
-import org.w3c.dom.NodeList;
+import javax.el.*;
+import javax.xml.xpath.*;
+import java.beans.*;
+import java.util.*;
+import java.util.function.*;
+import java.util.stream.*;
 
 /**
  * Defines property resolution behavior on Nodes. This resolver handles base objects that implement
@@ -85,6 +76,47 @@ public class NodeELResolver extends ELResolver {
         return result;
     }
 
+    private static class NodeSpliterator implements Spliterator<Node> {
+        private final NodeList list;
+        private int index;        // current index, modified on advance/split
+        private final int fence;  // one past last index
+
+        public NodeSpliterator(NodeList list) {
+            this(list, 0, list.getLength());
+        }
+
+        public NodeSpliterator(NodeList list, int index, int fence) {
+            this.list = list;
+            this.index = index;
+            this.fence = fence;
+        }
+
+        public boolean tryAdvance(Consumer<? super Node> action) {
+            Objects.requireNonNull(action);
+            if (index >= 0 && index < fence) {
+                Node node = list.item(index++);
+                action.accept(node);
+                return true;
+            }
+            return false;
+        }
+
+        public Spliterator<Node> trySplit() {
+            int lo = index, mid = (lo + fence) >>> 1;
+            return (lo >= mid)
+                ? null
+                : new NodeSpliterator(list, lo, index = mid);
+        }
+
+        public long estimateSize() {
+            return fence - index;
+        }
+
+        public int characteristics() {
+            return ORDERED | SIZED | SUBSIZED;
+        }
+    }
+
     @Override
     public Object getValue(ELContext context, Object base, Object property) {
         if (context == null) {
@@ -102,12 +134,9 @@ public class NodeELResolver extends ELResolver {
                 } else if (nodeList.getLength() == 1) {
                     result = nodeList.item(0);
                 } else {
-                    // REFACTOR write a NodeSpliterator that wraps NodeList and then create the result list using StreamSupport.stream() and collect()
-                    List<Node> newList = new ArrayList<>(nodeList.getLength());
-                    for (int i = 0; i < nodeList.getLength(); i++) {
-                        newList.add(nodeList.item(i));
-                    }
-                    result = newList;
+                    // REFACTO write a NodeSpliterator that wraps NodeList and then create the result list using StreamSupport.stream() and collect()
+                    result = StreamSupport.stream(new NodeSpliterator(nodeList), false)
+                        .collect(Collectors.toList());
                 }
                 context.setPropertyResolved(true);
             } catch (XPathExpressionException e) {
