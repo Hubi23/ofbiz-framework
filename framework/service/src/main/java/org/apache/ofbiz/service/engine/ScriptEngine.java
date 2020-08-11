@@ -56,14 +56,10 @@ public final class ScriptEngine extends GenericAsyncEngine {
     private static final Set<String> protectedKeys = createProtectedKeys();
 
     private static Set<String> createProtectedKeys() {
-        Set<String> newSet = new HashSet<>();
         /* Commenting out for now because some scripts write to the parameters Map - which should not be allowed.
         newSet.add(ScriptUtil.PARAMETERS_KEY);
         */
-        newSet.add("dctx");
-        newSet.add("dispatcher");
-        newSet.add("delegator");
-        return Collections.unmodifiableSet(newSet);
+        return Set.of("dctx", "dispatcher", "delegator");
     }
 
     public ScriptEngine(ServiceDispatcher dispatcher) {

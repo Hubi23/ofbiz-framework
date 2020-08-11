@@ -482,7 +482,7 @@ public final class ComponentConfig {
         try {
             Collection<Configuration> configurations = ContainerConfig.getConfigurations(xmlUrl);
             if (!configurations.isEmpty()) {
-                this.configurations = Collections.unmodifiableList(new ArrayList<>(configurations));
+                this.configurations = List.copyOf(configurations);
             } else {
                 this.configurations = Collections.emptyList();
             }
@@ -676,7 +676,7 @@ public final class ComponentConfig {
         }
 
         private synchronized Collection<ComponentConfig> values() {
-            return Collections.unmodifiableList(new ArrayList<>(componentConfigs.values()));
+            return List.copyOf(componentConfigs.values());
         }
     }
 

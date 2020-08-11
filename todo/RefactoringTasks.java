@@ -48,7 +48,7 @@ public class RefactoringTasks {
     public static void java9To11Required() {
         // Only if we have time ...
 
-        // REFACTOR Java 9: replace immutable collections with collection factory call (e.g. List.of()
+        // REFACTO Java 9: replace immutable collections with collection factory call (e.g. List.of()
         // REFACTOR Java 9: replace null check with Objects.requireNonNullElse() call where it makes sense
         // REFACTOR Java 10: Omit local variable name - but only in a few places that would make code easier to read and understand.
     }

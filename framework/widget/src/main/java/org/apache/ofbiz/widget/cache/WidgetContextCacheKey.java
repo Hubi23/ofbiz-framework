@@ -36,53 +36,17 @@ public final class WidgetContextCacheKey {
     private static Set<String> fieldNamesToSkip = createFieldNamesToSkip();
 
     private static Set<String> createFieldNamesToSkip(){
-        Set<String> fieldNamesToSkip = new HashSet<>();
-        fieldNamesToSkip.add("globalContext");
-        fieldNamesToSkip.add("delegator");
-        fieldNamesToSkip.add("dispatcher");
-        fieldNamesToSkip.add("security");
-        fieldNamesToSkip.add("webSiteId");
-        fieldNamesToSkip.add("userLogin");
-        fieldNamesToSkip.add("screens");
-        fieldNamesToSkip.add("nullField");
-        fieldNamesToSkip.add("autoUserLogin");
-        fieldNamesToSkip.add("person");
-        fieldNamesToSkip.add("partyGroup");
-        fieldNamesToSkip.add("timeZone");
-        fieldNamesToSkip.add("sessionAttributes");
-        fieldNamesToSkip.add("requestAttributes");
-        fieldNamesToSkip.add("JspTaglibs");
-        fieldNamesToSkip.add("requestParameters");
-        fieldNamesToSkip.add("controlPath");
-        fieldNamesToSkip.add("contextRoot");
-        fieldNamesToSkip.add("serverRoot");
-        fieldNamesToSkip.add("checkLoginUrl");
-        fieldNamesToSkip.add("externalLoginKey");
-        fieldNamesToSkip.add("externalKeyParam");
-        fieldNamesToSkip.add("nowTimestamp");
-        fieldNamesToSkip.add("session");
-        fieldNamesToSkip.add("request");
-        fieldNamesToSkip.add("response");
-        fieldNamesToSkip.add("application");
-        fieldNamesToSkip.add("formStringRenderer");
-        fieldNamesToSkip.add("null");
-        fieldNamesToSkip.add("sections");
-        fieldNamesToSkip.add("uiLabelMap");
-        // remove
-        fieldNamesToSkip.add("layoutSettings");
-        fieldNamesToSkip.add("activeApp");
-        fieldNamesToSkip.add("appheaderTemplate");
-        fieldNamesToSkip.add("servletContext");
-        // parameters
-        fieldNamesToSkip.add("visit");
-        fieldNamesToSkip.add("visitor");
-        return Collections.unmodifiableSet(fieldNamesToSkip);
+        return Set.of("globalContext", "delegator", "dispatcher", "security", "webSiteId", "userLogin", "screens", "nullField", "autoUserLogin", "person", "partyGroup", "timeZone", "sessionAttributes", "requestAttributes", "JspTaglibs", "requestParameters", "controlPath", "contextRoot", "serverRoot", "checkLoginUrl", "externalLoginKey", "externalKeyParam", "nowTimestamp", "session", "request", "response", "application", "formStringRenderer", "null", "sections", "uiLabelMap",
+            // remove
+            "layoutSettings", "activeApp", "appheaderTemplate", "servletContext",
+            // parameters
+            "visit", "visitor");
     }
 
     private final Map<String, Object> context;
 
     public WidgetContextCacheKey(Map<String, ? extends Object> context) {
-        this.context = Collections.unmodifiableMap(new HashMap<>(context));
+        this.context = Map.copyOf(context);
     }
 
     @Override

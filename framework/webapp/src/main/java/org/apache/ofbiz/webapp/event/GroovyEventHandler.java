@@ -53,20 +53,10 @@ public class GroovyEventHandler implements EventHandler {
     private static final Set<String> protectedKeys = createProtectedKeys();
 
     private static Set<String> createProtectedKeys() {
-        Set<String> newSet = new HashSet<>();
-        newSet.add("request");
-        newSet.add("response");
-        newSet.add("session");
-        newSet.add("dispatcher");
-        newSet.add("delegator");
-        newSet.add("security");
-        newSet.add("locale");
-        newSet.add("timeZone");
-        newSet.add("userLogin");
         /* Commenting out for now because some scripts write to the parameters Map - which should not be allowed.
         newSet.add(ScriptUtil.PARAMETERS_KEY);
         */
-        return Collections.unmodifiableSet(newSet);
+        return Set.of("request", "response", "session", "dispatcher", "delegator", "security", "locale", "timeZone", "userLogin");
     }
 
     public void init(ServletContext context) throws EventHandlerException {

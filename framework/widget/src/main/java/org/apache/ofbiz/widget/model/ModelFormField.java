@@ -174,12 +174,12 @@ public class ModelFormField {
         if (builder.getOnChangeUpdateAreas().isEmpty()) {
             this.onChangeUpdateAreas = Collections.emptyList();
         } else {
-            this.onChangeUpdateAreas = Collections.unmodifiableList(new ArrayList<>(builder.getOnChangeUpdateAreas()));
+            this.onChangeUpdateAreas = List.copyOf(builder.getOnChangeUpdateAreas());
         }
         if (builder.getOnClickUpdateAreas().isEmpty()) {
             this.onClickUpdateAreas = Collections.emptyList();
         } else {
-            this.onClickUpdateAreas = Collections.unmodifiableList(new ArrayList<>(builder.getOnClickUpdateAreas()));
+            this.onClickUpdateAreas = List.copyOf(builder.getOnClickUpdateAreas());
         }
         this.parameterName = builder.getParameterName();
         this.position = builder.getPosition();
@@ -2140,7 +2140,7 @@ public class ModelFormField {
         protected FieldInfoWithOptions(int fieldSource, int fieldType, List<OptionSource> optionSources) {
             super(fieldSource, fieldType, null);
             this.noCurrentSelectedKey = FlexibleStringExpander.getInstance("");
-            this.optionSources = Collections.unmodifiableList(new ArrayList<>(optionSources));
+            this.optionSources = List.copyOf(optionSources);
         }
 
         public FieldInfoWithOptions(int fieldSource, int fieldType, ModelFormField modelFormField) {

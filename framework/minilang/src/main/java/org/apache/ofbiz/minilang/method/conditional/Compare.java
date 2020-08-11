@@ -48,18 +48,7 @@ public abstract class Compare {
     }
 
     private static Map<String, Compare> createInstanceMap() {
-        Map<String, Compare> writableMap = new HashMap<>(10);
-        writableMap.put("contains", new CompareContains());
-        writableMap.put("equals", new CompareEquals());
-        writableMap.put("greater", new CompareGreater());
-        writableMap.put("greater-equals", new CompareGreaterEquals());
-        writableMap.put("is-empty", new CompareIsEmpty());
-        writableMap.put("is-not-null", new CompareIsNotNull());
-        writableMap.put("is-null", new CompareIsNull());
-        writableMap.put("less", new CompareLess());
-        writableMap.put("less-equals", new CompareLessEquals());
-        writableMap.put("not-equals", new CompareNotEquals());
-        return Collections.unmodifiableMap(writableMap);
+        return Map.of("contains", new CompareContains(), "equals", new CompareEquals(), "greater", new CompareGreater(), "greater-equals", new CompareGreaterEquals(), "is-empty", new CompareIsEmpty(), "is-not-null", new CompareIsNotNull(), "is-null", new CompareIsNull(), "less", new CompareLess(), "less-equals", new CompareLessEquals(), "not-equals", new CompareNotEquals());
     }
 
     /**

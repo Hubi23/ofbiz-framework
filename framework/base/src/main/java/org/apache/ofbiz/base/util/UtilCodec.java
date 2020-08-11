@@ -70,10 +70,7 @@ public class UtilCodec {
             "onURLFlip", "seekSegmentTime" });
 
     static {
-        List<Codec> tmpCodecs = new ArrayList<>();
-        tmpCodecs.add(new HTMLEntityCodec());
-        tmpCodecs.add(new PercentCodec());
-        codecs = Collections.unmodifiableList(tmpCodecs);
+        codecs = List.of(new HTMLEntityCodec(), new PercentCodec());
     }
 
     @SuppressWarnings("serial")

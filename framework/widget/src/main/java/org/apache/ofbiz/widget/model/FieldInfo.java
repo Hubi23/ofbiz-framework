@@ -73,47 +73,11 @@ public abstract class FieldInfo {
     private static List<Integer> nonInputFieldTypeList = createNonInputFieldTypeList();
 
     private static Map<String, Integer> createFieldTypeMap() {
-        Map<String, Integer> fieldTypeByName = new HashMap<>();
-        fieldTypeByName.put("display", 1);
-        fieldTypeByName.put("hyperlink", 2);
-        fieldTypeByName.put("text", 3);
-        fieldTypeByName.put("textarea", 4);
-        fieldTypeByName.put("date-time", 5);
-        fieldTypeByName.put("drop-down", 6);
-        fieldTypeByName.put("check", 7);
-        fieldTypeByName.put("radio", 8);
-        fieldTypeByName.put("submit", 9);
-        fieldTypeByName.put("reset", 10);
-        fieldTypeByName.put("hidden", 11);
-        fieldTypeByName.put("ignored", 12);
-        fieldTypeByName.put("text-find", 13);
-        fieldTypeByName.put("date-find", 14);
-        fieldTypeByName.put("range-find", 15);
-        fieldTypeByName.put("lookup", 16);
-        fieldTypeByName.put("file", 17);
-        fieldTypeByName.put("password", 18);
-        fieldTypeByName.put("image", 19);
-        fieldTypeByName.put("display-entity", 20);
-        fieldTypeByName.put("container", 21);
-        fieldTypeByName.put("include-menu", 22);
-        fieldTypeByName.put("include-form", 23);
-        fieldTypeByName.put("include-grid", 24);
-        fieldTypeByName.put("include-screen", 25);
-        return Collections.unmodifiableMap(fieldTypeByName);
+        return Map.ofEntries(Map.entry("display", 1), Map.entry("hyperlink", 2), Map.entry("text", 3), Map.entry("textarea", 4), Map.entry("date-time", 5), Map.entry("drop-down", 6), Map.entry("check", 7), Map.entry("radio", 8), Map.entry("submit", 9), Map.entry("reset", 10), Map.entry("hidden", 11), Map.entry("ignored", 12), Map.entry("text-find", 13), Map.entry("date-find", 14), Map.entry("range-find", 15), Map.entry("lookup", 16), Map.entry("file", 17), Map.entry("password", 18), Map.entry("image", 19), Map.entry("display-entity", 20), Map.entry("container", 21), Map.entry("include-menu", 22), Map.entry("include-form", 23), Map.entry("include-grid", 24), Map.entry("include-screen", 25));
     }
 
     private static List<Integer> createNonInputFieldTypeList() {
-        List<Integer> nonInputFieldTypeList = new ArrayList<>();
-        nonInputFieldTypeList.add(FieldInfo.IGNORED);
-        nonInputFieldTypeList.add(FieldInfo.HIDDEN);
-        nonInputFieldTypeList.add(FieldInfo.DISPLAY);
-        nonInputFieldTypeList.add(FieldInfo.DISPLAY_ENTITY);
-        nonInputFieldTypeList.add(FieldInfo.HYPERLINK);
-        nonInputFieldTypeList.add(FieldInfo.MENU);
-        nonInputFieldTypeList.add(FieldInfo.FORM);
-        nonInputFieldTypeList.add(FieldInfo.GRID);
-        nonInputFieldTypeList.add(FieldInfo.SCREEN);
-        return Collections.unmodifiableList(nonInputFieldTypeList);
+        return List.of(FieldInfo.IGNORED, FieldInfo.HIDDEN, FieldInfo.DISPLAY, FieldInfo.DISPLAY_ENTITY, FieldInfo.HYPERLINK, FieldInfo.MENU, FieldInfo.FORM, FieldInfo.GRID, FieldInfo.SCREEN);
     }
 
     public static int findFieldTypeFromName(String name) {
