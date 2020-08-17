@@ -93,3 +93,4 @@ contact heinz@javaspecialists.eu before the course.
         to make this more readable. The file RefactoringTasks.java at the bottom
         will be our starting point and the individual items further up will be
         done during one of the steps.
+
