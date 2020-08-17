@@ -6,19 +6,10 @@ public class RefactoringTasks {
 
         /*
         Some hints:
-        After each big refactoring, make sure that your project still compiles (with Ant).
+        After each big refactoring, make sure that your project still compiles with gradlew test.
         Be prepared to go back a few times to previous versions.
-        It won't compile in the IDE, since there are dependencies missing due to licensing.
         In production code, you would only refactor code that needs to be modified anyway.
         Refactoring can introduce bugs and change program performance or semantics in subtle ways.
-
-        Get started by going to Analyze -> Inspect Code.  Select the whole project including test sources
-        and then use the "Migration to Java 8" Profile.  This should produce roughly:
-        354 Java 5 warnings
-        1438 Java 7 warnings
-        502 Java 8 warnings
-
-        Now work down the list shown in this file, starting with Java 5
          */
     }
 
